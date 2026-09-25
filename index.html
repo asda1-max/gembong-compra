@@ -73,12 +73,41 @@
   ::-webkit-scrollbar{width:10px;}
   ::-webkit-scrollbar-track{background:var(--navy);}
   ::-webkit-scrollbar-thumb{background:var(--gold);border:2px solid var(--navy);}
+
+  /* === MOBILE (< 640px) === */
+  @media(max-width:639px){
+    .hud-mobile-hide{display:none !important;}
+    nav{top:0 !important;margin-top:0 !important;}
+    .hero-bg{padding-top:12px;padding-bottom:12px;}
+    .pixel-mountain-hide{display:none;}
+    .particle.rise{display:none;}
+    .pixel-diamond.drift{display:none;}
+    .blob{display:none;}
+    .hero-stack-center{text-align:center !important;}
+    .stat-box-inline{flex-direction:column !important;align-items:center !important;gap:8px !important;}
+    .float-card-visual-mobile-hide{display:none;}
+    .carousel-arrows-mobile{left:4px !important;right:4px !important;}
+    .footer-grid-mobile{grid-template-columns:1fr !important;gap:20px !important;}
+    .footer-grid-tablet{grid-template-columns:1fr 1fr !important;gap:16px !important;}
+    .section-pad-mobile{padding-left:16px !important;padding-right:16px !important;}
+    h1.font-display.text-lg{font-size:12px !important;line-height:2 !important;}
+    .font-script.text-sm.md\:text-base{font-size:10px !important;}
+    p.text-white\/60{font-size:9px !important;line-height:1.8 !important;}
+    .pixel-btn.px-6.py-3{text-align:center !important;width:100%;max-width:200px;margin:0 auto;display:block;}
+    .stat-box{width:100% !important;max-width:160px !important;text-align:center !important;}
+    .tag-pill.text-xs{font-size:8px !important;padding:4px 8px !important;}
+    .project-card.h-72.md\:h-80{height:160px !important;}
+    .font-display.text-sm.md\:text-base.font-bold{font-size:9px !important;}
+    p.text-\[var\(--navy\)\]\/60.text-center.font-display.text-\[10px\]{font-size:8px !important;}
+    p.text-\[var\(--navy\)\]{font-size:9px !important;line-height:1.8 !important;}
+    .hp-bar.w-32{width:80% !important;}
+  }
 </style>
 </head>
 <body class="text-white">
 
   <!-- TOP HUD BAR -->
-  <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--gold-light)]/20" style="background:rgba(13,27,76,.95);">
+  <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--gold-light)]/20 hud-mobile-hide" style="background:rgba(13,27,76,.95);">
     <span class="text-[var(--gold-light)]/60">SYS.ONLINE</span>
     <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:85%"></div></div>
     <span class="text-[var(--gold-light)]/60">NET.LINK</span>
@@ -87,24 +116,39 @@
   </div>
 
   <!-- NAV -->
-  <nav class="sticky top-6 z-30 mt-6">
+  <nav class="sticky z-30 sm:top-[32px] top-0" id="mainNav">
     <div class="max-w-5xl mx-auto flex items-center justify-between px-6 py-3" style="background:rgba(13,27,76,.92);border:2px solid rgba(242,201,76,.3);box-shadow:4px 4px 0 rgba(0,0,0,.5);backdrop-filter:blur(10px);">
       <a href="#home" class="flex items-center gap-3">
         <div class="w-8 h-8 border-2 border-[var(--gold-light)] flex items-center justify-center">
           <span class="font-display text-[8px] text-[var(--gold-light)]">G</span>
         </div>
-        <span class="font-display text-xs text-[var(--gold-light)]">GEMBONG IT</span>
+        <span class="font-display text-xs text-[var(--gold-light)] hidden sm:inline">GEMBONG IT</span>
       </a>
-      <ul class="flex items-center gap-1">
+      <!-- Desktop Nav -->
+      <ul class="hidden sm:flex items-center gap-1">
         <li><a href="#projects" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">PROJECTS</a></li>
         <li><a href="#home" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">HOME</a></li>
         <li><a href="#contact" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
+      </ul>
+      <!-- Mobile Hamburger -->
+      <button id="menuBtn" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--gold-light)]/30" onclick="toggleMenu()">
+        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--gold-light)]/30" style="background:rgba(13,27,76,.98);">
+      <ul class="flex flex-col p-4 gap-2">
+        <li><a href="#projects" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► PROJECTS</a></li>
+        <li><a href="#home" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 text-center tracking-wide">► HOME</a></li>
+        <li><a href="#contact" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► CONTACT</a></li>
       </ul>
     </div>
   </nav>
 
   <!-- HERO -->
-  <section id="home" class="hero-bg relative overflow-hidden px-6 md:px-16 py-20 md:py-28 mt-6">
+  <section id="home" class="hero-bg relative overflow-hidden px-6 md:px-16 py-20 md:py-28 pt-20">
     <div class="grid-overlay absolute inset-0"></div>
     <div class="scanlines absolute inset-0"></div>
 
@@ -127,7 +171,7 @@
     <div class="pixel-diamond drift" style="width:12px;height:12px;top:25%;left:18%;animation-delay:.5s;"></div>
 
     <!-- Pixel mountain decorations -->
-    <svg class="absolute bottom-0 left-0 opacity-10" width="240" height="60" viewBox="0 0 240 60">
+    <svg class="absolute bottom-0 left-0 opacity-10 pixel-mountain-hide" width="240" height="60" viewBox="0 0 240 60">
       <rect x="0" y="50" width="240" height="10" fill="var(--gold-light)"/>
       <rect x="20" y="30" width="10" height="20" fill="var(--gold-light)"/>
       <rect x="30" y="20" width="10" height="30" fill="var(--gold-light)"/>
@@ -146,7 +190,7 @@
       <rect x="190" y="18" width="10" height="32" fill="var(--gold-light)"/>
       <rect x="200" y="32" width="10" height="18" fill="var(--gold-light)"/>
     </svg>
-    <svg class="absolute bottom-0 right-0 opacity-10" width="180" height="60" viewBox="0 0 180 60">
+    <svg class="absolute bottom-0 right-0 opacity-10 pixel-mountain-hide" width="180" height="60" viewBox="0 0 180 60">
       <rect x="0" y="50" width="180" height="10" fill="var(--gold-light)"/>
       <rect x="10" y="20" width="10" height="40" fill="var(--gold-light)"/>
       <rect x="20" y="10" width="10" height="50" fill="var(--gold-light)"/>
@@ -164,9 +208,7 @@
     <div class="blob alt top-1/3 -right-20"></div>
 
     <div class="relative max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-
-
-      <div class="text-center md:text-left relative z-10">
+      <div class="text-center md:text-left hero-stack-center relative z-10">
         <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6">
           ★ TRUSTED IT PARTNER
         </span>
@@ -184,14 +226,14 @@
           <a href="#projects" class="pixel-btn pixel-btn-glass font-display font-semibold px-6 py-3 text-xs text-center">Lihat Proyek</a>
         </div>
 
-        <div class="flex justify-center md:justify-start gap-4 mt-10">
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">  50+</p><p class="text-white/50 text-[10px] mt-1">Proyek Selesai</p></div>
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">  30+</p><p class="text-white/50 text-[10px] mt-1">Klien Puas</p></div>
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">  5+</p><p class="text-white/50 text-[10px] mt-1"> Tahun Pengalaman</p></div>
+        <div class="flex justify-center md:justify-start gap-4 mt-10 stat-box-inline">
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">LVL 50+</p><p class="text-white/50 text-[10px] mt-1">Proyek Selesai</p></div>
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">LVL 30+</p><p class="text-white/50 text-[10px] mt-1">Klien Puas</p></div>
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--gold-light)]">LVL 5+</p><p class="text-white/50 text-[10px] mt-1">Tahun Exp</p></div>
         </div>
       </div>
 
-      <div class="relative h-80 md:h-96 hidden sm:block">
+      <div class="relative h-80 md:h-96 float-card-visual-mobile-hide hidden sm:block">
         <div class="glass float-card absolute inset-x-6 top-4 h-64 rounded-none p-8 shadow-2xl relative">
           <!-- Corner brackets -->
           <div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[var(--gold-light)]"></div>
@@ -254,7 +296,7 @@
   </section>
 
   <!-- ABOUT -->
-  <section id="about" class="bg-[var(--navy)] px-6 md:px-16 py-16 md:py-20">
+  <section id="about" class="bg-[var(--navy)] px-6 md:px-16 py-16 md:py-20 section-pad-mobile">
     <div class="max-w-3xl mx-auto text-center">
       <h2 class="font-script text-xl text-[var(--gold-light)] mb-6">★ About Us ★</h2>
       <div class="pixel-deco inline-block mb-6"></div>
@@ -274,7 +316,7 @@
   </section>
 
   <!-- LATEST PROJECT -->
-  <section id="projects" class="bg-[var(--gold)] px-6 md:px-16 py-16">
+  <section id="projects" class="bg-[var(--gold)] px-6 md:px-16 py-16 section-pad-mobile">
     <div class="max-w-6xl mx-auto">
       <h2 class="font-display text-sm md:text-base font-bold text-[var(--navy)] text-center mb-2">★ Our Latest Project ★</h2>
       <p class="text-[var(--navy)]/60 text-center font-display text-[10px] mb-10">SELECT YOUR MISSION →</p>
@@ -304,8 +346,8 @@
           </div>
         </div>
 
-        <button onclick="moveCarousel(-1)" aria-label="Sebelumnya" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-10 h-10 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs">&lt;</button>
-        <button onclick="moveCarousel(1)" aria-label="Berikutnya" class="absolute right-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-10 h-10 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs">&gt;</button>
+      <button onclick="moveCarousel(-1)" aria-label="Sebelumnya" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-8 h-8 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs carousel-arrows-mobile">&lt;</button>
+        <button onclick="moveCarousel(1)" aria-label="Berikutnya" class="absolute right-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-8 h-8 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs carousel-arrows-mobile">&gt;</button>
 
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           <button onclick="goToSlide(0)" class="dot active w-3 h-3 bg-[var(--navy)]/40"></button>
@@ -327,8 +369,8 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-[var(--navy)] border-t-4 border-[var(--gold-light)] px-6 md:px-16 pt-14 pb-8">
-    <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+  <footer class="bg-[var(--navy)] border-t-4 border-[var(--gold-light)] px-6 md:px-16 pt-14 pb-8 section-pad-mobile">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-10 footer-grid-tablet footer-grid-mobile">
       <div>
         <h3 class="font-display text-sm font-bold text-[var(--gold-light)]">Gembong IT</h3>
         <p class="font-script text-xs text-[var(--gold-light)] -mt-2">Information Technology</p>
@@ -413,6 +455,15 @@
       autoplay = setInterval(moveCarouselAuto, 4000);
     }
     render();
+  </script>
+  <script>
+    function toggleMenu(){
+      const m = document.getElementById('mobileMenu');
+      m.classList.toggle('hidden');
+    }
+    function closeMenu(){
+      document.getElementById('mobileMenu').classList.add('hidden');
+    }
   </script>
 </body>
 </html>
