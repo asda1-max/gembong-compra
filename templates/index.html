@@ -323,36 +323,24 @@
 
       <div class="relative rounded-none overflow-hidden pixel-border">
         <div id="carouselTrack" class="carousel-track w-full flex">
+          {% for item in carousel %}
           <div class="min-w-full">
             <div class="project-card h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">★ Sistem Manajemen Bisnis ★</span>
-              <span class="text-[var(--gold-light)]/70 max-w-md text-xs">Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.</span>
-              <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:90%"></div></div>
+              <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">{{ item.title }}</span>
+              <span class="text-[var(--gold-light)]/70 max-w-md text-xs">{{ item.desc }}</span>
+              <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:{{ item.hp }}%"></div></div>
             </div>
           </div>
-          <div class="min-w-full">
-            <div class="project-card h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">★ Aplikasi Web & Mobile ★</span>
-              <span class="text-[var(--gold-light)]/70 max-w-md text-xs">Produk digital custom yang responsif, cepat, dan mudah digunakan klien.</span>
-              <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:85%"></div></div>
-            </div>
-          </div>
-          <div class="min-w-full">
-            <div class="project-card h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">★ Infrastruktur Jaringan ★</span>
-              <span class="text-[var(--gold-light)]/70 max-w-md text-xs">Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.</span>
-              <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:95%"></div></div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
 
-      <button onclick="moveCarousel(-1)" aria-label="Sebelumnya" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-8 h-8 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs carousel-arrows-mobile">&lt;</button>
+        <button onclick="moveCarousel(-1)" aria-label="Sebelumnya" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-8 h-8 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs carousel-arrows-mobile">&lt;</button>
         <button onclick="moveCarousel(1)" aria-label="Berikutnya" class="absolute right-0 top-1/2 -translate-y-1/2 bg-[var(--navy)]/90 border-2 border-[var(--gold-light)] text-[var(--gold-light)] w-8 h-8 flex items-center justify-center hover:bg-[var(--navy)] transition font-display text-xs carousel-arrows-mobile">&gt;</button>
 
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          <button onclick="goToSlide(0)" class="dot active w-3 h-3 bg-[var(--navy)]/40"></button>
-          <button onclick="goToSlide(1)" class="dot w-3 h-3 bg-[var(--navy)]/40"></button>
-          <button onclick="goToSlide(2)" class="dot w-3 h-3 bg-[var(--navy)]/40"></button>
+          {% for item in carousel %}
+          <button onclick="goToSlide({{ loop.index0 }})" class="dot {{ 'active' if loop.index0 == 0 else '' }} w-3 h-3 bg-[var(--navy)]/40"></button>
+          {% endfor %}
         </div>
       </div>
 
@@ -428,7 +416,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     let idx = 0;
-    const total = 3;
+    const total = {{ carousel | length }};
     const dots = document.querySelectorAll('.dot');
 
     function render(){
