@@ -8,9 +8,9 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'gembong-it-secret-change-in
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data.json')
 
 CAROUSEL = [
-    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90},
-    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85},
-    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95},
+    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": ""},
+    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": ""},
+    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": ""},
 ]
 
 
@@ -58,20 +58,25 @@ def admin_save():
     if not session.get("logged_in"):
         return redirect(url_for("admin"))
 
-    slides = request.form.getlist("slides[][title]")
+    slides_raw = request.form.getlist("slides[][title]")
     descs = request.form.getlist("slides[][desc]")
     hps = request.form.getlist("slides[][hp]")
+    modes = request.form.getlist("slides[][mode]")
+    images = request.form.getlist("slides[][image]")
 
     carousel = []
-    for i in range(len(slides)):
-        carousel.append({
-            "title": slides[i],
-            "desc": descs[i],
-            "hp": int(hps[i]),
-        })
+    for i in range(len(slides_raw)):
+        mode = modes[i] if modes[i] else "text"
+        slide = {
+            "title": slides_raw[i].strip(),
+            "desc": descs[i].strip() if mode == "text" else "",
+            "hp": int(hps[i]) if mode == "text" and hps[i] else 80,
+            "mode": mode,
+            "image": images[i].strip() if mode == "image" else "",
+        }
+        carousel.append(slide)
 
     save_data({"carousel": carousel})
-    data = load_data()
     return render_template("admin.html", slides=carousel, message="Carousel updated successfully!", error=None)
 
 

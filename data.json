@@ -2,15 +2,24 @@
   "carousel": [
     {
       "title": "\u2605 Sistem Manajemen Bisnis \u2605",
-      "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat."
+      "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.",
+      "hp": 90,
+      "mode": "image",
+      "image": "https://imgs.search.brave.com/EpswMWzp4vzP126JmkytGmSJ-I55-5PMDXTdMmWHldA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMTYv/NzQ1Lzc2Ni9zbWFs/bC9idXNpbmVzcy13/ZWJpbmFyLWhvcml6/b250YWwtYmFubmVy/LWRlc2lnbi10ZW1w/bGF0ZS1lZGl0YWJs/ZS1tb2Rlcm4tYmFu/bmVyLXdpdGgtcGxh/Y2UtZm9yLXBob3Rv/LWNhbi1iZS11c2Vk/LWZvci1iYW5uZXJz/LWNvdmVycy1hbmQt/bWVkaWEtcG9zdHMt/d2ViLWZyZWUtdmVj/dG9yLmpwZw"
     },
     {
       "title": "\u2605 Aplikasi Web & Mobile \u2605",
-      "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien."
+      "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.",
+      "hp": 85,
+      "mode": "text",
+      "image": ""
     },
     {
       "title": "\u2605 Infrastruktur Jaringan \u2605",
-      "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh."
+      "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.",
+      "hp": 95,
+      "mode": "text",
+      "image": ""
     }
   ]
 }

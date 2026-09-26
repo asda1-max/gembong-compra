@@ -23,6 +23,7 @@
 
   .carousel-track{transition:transform .4s steps(4);}
   .project-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);}
+  .project-card-img{background-size:cover;background-position:center;}
   .dot{transition:all .2s ease;}
   .dot.active{background:var(--gold-light);width:14px;height:14px;border-radius:0;}
 
@@ -325,11 +326,21 @@
         <div id="carouselTrack" class="carousel-track w-full flex">
           {% for item in carousel %}
           <div class="min-w-full">
+            {% if item.mode == "image" and item.image %}
+            <div class="project-card-img h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
+              <div class="absolute inset-0 bg-black/40"></div>
+              <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-72 md:h-80">
+                <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">{{ item.title }}</span>
+                {% if item.desc %}<span class="text-white/80 max-w-md text-xs">{{ item.desc }}</span>{% endif %}
+              </div>
+            </div>
+            {% else %}
             <div class="project-card h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center">
               <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">{{ item.title }}</span>
               <span class="text-[var(--gold-light)]/70 max-w-md text-xs">{{ item.desc }}</span>
               <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:{{ item.hp }}%"></div></div>
             </div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>
