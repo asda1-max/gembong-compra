@@ -16,6 +16,7 @@
     --cream:#d9d1a8;
   }
   html,body{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+  html{scroll-behavior:smooth;}
   body{background:var(--navy);font-family:'Press Start 2P',monospace;}
   .font-display{font-family:'Press Start 2P',monospace;}
   .font-script{font-family:'Press Start 2P',monospace;}
@@ -75,6 +76,47 @@
   ::-webkit-scrollbar-track{background:var(--navy);}
   ::-webkit-scrollbar-thumb{background:var(--gold);border:2px solid var(--navy);}
 
+  /* === PIXEL ART ICONS === */
+  .pixel-art{image-rendering:pixelated;shape-rendering:crispEdges;flex-shrink:0;}
+
+  /* === BOOT SEQUENCE === */
+  body.booting{overflow:hidden;}
+  #bootScreen{display:none;position:fixed;inset:0;z-index:100;background:#081132;align-items:center;justify-content:center;padding:24px;}
+  #bootScreen.active{display:flex;}
+  #bootScreen.done{opacity:0;pointer-events:none;transition:opacity .4s steps(4);}
+  .boot-\boxed{width:100%;max-width:520px;border:3px solid var(--gold-light);background:rgba(13,27,76,.95);box-shadow:6px 6px 0 rgba(0,0,0,.6);padding:22px;}
+  .boot-title{font-size:11px;color:var(--gold-light);text-align:center;margin-bottom:16px;letter-spacing:2px;}
+  .boot-line{font-size:9px;line-height:2.2;color:var(--gold-light);white-space:pre-wrap;}
+  .boot-line .ok{color:#22c55e;}
+  .boot-cursor{display:inline-block;width:8px;height:12px;background:var(--gold-light);animation:blink .8s step-end infinite;vertical-align:-2px;margin-top:8px;}
+  .boot-skip{margin-top:18px;font-size:8px;color:rgba(242,201,76,.4);text-align:center;letter-spacing:2px;animation:blink 1.4s step-end infinite;}
+
+  /* === ACHIEVEMENT TOASTS === */
+  #toastLayer{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;flex-direction:column;gap:10px;align-items:flex-end;pointer-events:none;}
+  .toast{border:3px solid var(--gold-light);background:rgba(13,27,76,.97);box-shadow:4px 4px 0 rgba(0,0,0,.6);padding:10px 14px;max-width:280px;animation:toastIn .3s steps(3);}
+  .toast-kicker{display:block;font-size:8px;color:rgba(242,201,76,.6);letter-spacing:2px;margin-bottom:6px;}
+  .toast-title{display:block;font-size:10px;color:var(--gold-light);}
+  .toast-sub{display:block;font-size:8px;color:rgba(242,201,76,.7);margin-top:6px;line-height:1.8;}
+  .toast.out{opacity:0;transition:opacity .3s;}
+  @keyframes toastIn{from{transform:translateX(120%);}to{transform:translateX(0);}}
+
+  /* === TERMINAL CONTACT === */
+  .term-window{border:3px solid var(--gold-light);background:#081132;box-shadow:6px 6px 0 rgba(0,0,0,.6);}
+  .term-bar{display:flex;align-items:center;gap:8px;background:var(--navy);border-bottom:2px solid rgba(242,201,76,.4);padding:8px 12px;font-size:9px;color:var(--gold-light);}
+  .term-dot{width:8px;height:8px;background:var(--gold-light);border:1px solid rgba(0,0,0,.5);}
+  .term-body{height:260px;overflow-y:auto;padding:14px;font-size:10px;line-height:2;cursor:text;scrollbar-width:thin;}
+  .term-line{white-space:pre-wrap;word-break:break-word;color:var(--cream);}
+  .term-line .prompt{color:#22c55e;}
+  .term-line a{color:var(--gold-light);text-decoration:underline;text-underline-offset:3px;}
+  .term-line a:hover{background:var(--gold-light);color:var(--navy);text-decoration:none;}
+  .term-form{display:flex;align-items:center;gap:8px;border-top:2px solid rgba(242,201,76,.3);padding:10px 14px;}
+  .term-prompt{font-size:10px;color:#22c55e;white-space:nowrap;}
+  .term-input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;caret-color:var(--gold-light);}
+  .term-input::placeholder{color:rgba(242,201,76,.3);}
+  .term-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;}
+  .term-chip{border:2px solid rgba(242,201,76,.4);background:rgba(255,255,255,.05);color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:8px;padding:8px 12px;cursor:pointer;transition:all .1s;}
+  .term-chip:hover{background:var(--gold-light);color:var(--navy);}
+
   /* === MOBILE (< 640px) === */
   @media(max-width:639px){
     .hud-mobile-hide{display:none !important;}
@@ -102,10 +144,34 @@
     p.text-\[var\(--navy\)\]\/60.text-center.font-display.text-\[10px\]{font-size:8px !important;}
     p.text-\[var\(--navy\)\]{font-size:9px !important;line-height:1.8 !important;}
     .hp-bar.w-32{width:80% !important;}
+    .term-body{height:200px;padding:10px;font-size:9px;}
+    .term-prompt{font-size:8px;}
+    .term-form{padding:8px 10px;}
+    #toastLayer{right:10px;bottom:10px;left:10px;align-items:stretch;}
+    .toast{max-width:none;}
+  }
+
+  /* === REDUCED MOTION === */
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   }
 </style>
 </head>
 <body class="text-white">
+
+  <!-- BOOT SEQUENCE (JS-activated; hidden without JS) -->
+  <div id="bootScreen" aria-hidden="true">
+    <div class="boot-box">
+      <p class="boot-title">GEMBONG OS v1.0</p>
+      <div id="bootLines"></div>
+      <span class="boot-cursor"></span>
+      <p class="boot-skip">CLICK TO SKIP</p>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENT TOAST LAYER -->
+  <div id="toastLayer" aria-live="polite"></div>
 
   <!-- TOP HUD BAR -->
   <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--gold-light)]/20 hud-mobile-hide" style="background:rgba(13,27,76,.95);">
@@ -113,6 +179,9 @@
     <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:85%"></div></div>
     <span class="text-[var(--gold-light)]/60">NET.LINK</span>
     <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:60%"></div></div>
+    <span class="text-[var(--gold-light)]/60">EXP</span>
+    <div class="hp-bar w-20"><div id="expFill" class="hp-bar-fill" style="width:0%"></div></div>
+    <span id="lvlLabel" class="text-[var(--gold-light)]/60">LVL 1</span>
     <span class="text-[var(--gold-light)]/60 ml-auto">GEMBONG_IT v1.0</span>
   </div>
 
@@ -120,8 +189,26 @@
   <nav class="sticky z-30 sm:top-[32px] top-0" id="mainNav">
     <div class="max-w-5xl mx-auto flex items-center justify-between px-6 py-3" style="background:rgba(13,27,76,.92);border:2px solid rgba(242,201,76,.3);box-shadow:4px 4px 0 rgba(0,0,0,.5);backdrop-filter:blur(10px);">
       <a href="#home" class="flex items-center gap-3">
+        <span class="sr-only">Gembong IT</span>
         <div class="w-8 h-8 border-2 border-[var(--gold-light)] flex items-center justify-center">
-          <span class="font-display text-[8px] text-[var(--gold-light)]">G</span>
+          <svg class="pixel-art" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="5" y="2" width="6" height="1" fill="#f2c94c"/>
+            <rect x="4" y="3" width="8" height="1" fill="#f2c94c"/>
+            <rect x="3" y="4" width="10" height="1" fill="#f2c94c"/>
+            <rect x="2" y="5" width="12" height="1" fill="#f2c94c"/>
+            <rect x="1" y="6" width="14" height="1" fill="#f2c94c"/>
+            <rect x="0" y="7" width="16" height="1" fill="#f2c94c"/>
+            <rect x="0" y="8" width="16" height="1" fill="#d4af0e"/>
+            <rect x="1" y="9" width="14" height="1" fill="#d4af0e"/>
+            <rect x="2" y="10" width="12" height="1" fill="#d4af0e"/>
+            <rect x="3" y="11" width="10" height="1" fill="#d4af0e"/>
+            <rect x="4" y="12" width="8" height="1" fill="#a67f0a"/>
+            <rect x="5" y="13" width="6" height="1" fill="#a67f0a"/>
+            <rect x="6" y="14" width="4" height="1" fill="#a67f0a"/>
+            <rect x="6" y="3" width="1" height="4" fill="#fff6cf"/>
+            <rect x="7" y="4" width="1" height="3" fill="#fff6cf"/>
+            <rect x="0" y="7" width="16" height="1" fill="#0d1b4c" opacity=".4"/>
+          </svg>
         </div>
         <span class="font-display text-xs text-[var(--gold-light)] hidden sm:inline">GEMBONG IT</span>
       </a>
@@ -131,12 +218,15 @@
         <li><a href="#home" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">HOME</a></li>
         <li><a href="#contact" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
       </ul>
-      <!-- Mobile Hamburger -->
-      <button id="menuBtn" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--gold-light)]/30" onclick="toggleMenu()">
-        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
-        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
-        <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
-      </button>
+      <div class="flex items-center gap-2">
+        <button id="sfxBtn" type="button" aria-pressed="true" class="px-2 py-1.5 font-display text-[8px] border border-[var(--gold-light)]/30 text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] hover:border-[var(--gold-light)] transition tracking-wide">SFX ON</button>
+        <!-- Mobile Hamburger -->
+        <button id="menuBtn" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--gold-light)]/30" onclick="toggleMenu()" aria-label="Menu">
+          <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+          <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+          <span class="pixel-deco w-5 h-0.5" style="background:var(--gold-light);width:20px;height:2px;"></span>
+        </button>
+      </div>
     </div>
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--gold-light)]/30" style="background:rgba(13,27,76,.98);">
@@ -272,7 +362,14 @@
           <div class="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-[var(--gold-light)]"></div>
           <div class="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-[var(--gold-light)]"></div>
           <div class="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-[var(--gold-light)]"></div>
-          <span class="text-base">☁️</span>
+          <svg class="pixel-art" width="24" height="18" viewBox="0 0 16 12" aria-hidden="true">
+            <rect x="5" y="1" width="6" height="2" fill="#f2c94c"/>
+            <rect x="3" y="3" width="10" height="2" fill="#f2c94c"/>
+            <rect x="1" y="5" width="14" height="3" fill="#f2c94c"/>
+            <rect x="2" y="8" width="12" height="2" fill="#d4af0e"/>
+            <rect x="4" y="10" width="8" height="1" fill="#d4af0e"/>
+            <rect x="5" y="3" width="2" height="2" fill="#fff6cf"/>
+          </svg>
           <div>
             <p class="text-white text-xs font-semibold font-display">Cloud Infra</p>
             <p class="text-white/50 text-[10px]">99.9% Uptime</p>
@@ -285,7 +382,15 @@
           <div class="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-[var(--gold-light)]"></div>
           <div class="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-[var(--gold-light)]"></div>
           <div class="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-[var(--gold-light)]"></div>
-          <span class="text-base">🔒</span>
+          <svg class="pixel-art" width="18" height="20" viewBox="0 0 16 18" aria-hidden="true">
+            <rect x="4" y="1" width="8" height="2" fill="#f2c94c"/>
+            <rect x="3" y="3" width="2" height="4" fill="#f2c94c"/>
+            <rect x="11" y="3" width="2" height="4" fill="#f2c94c"/>
+            <rect x="2" y="7" width="12" height="9" fill="#a67f0a"/>
+            <rect x="3" y="8" width="10" height="7" fill="#f2c94c"/>
+            <rect x="7" y="10" width="2" height="4" fill="#0d1b4c"/>
+            <rect x="4" y="9" width="2" height="2" fill="#fff6cf"/>
+          </svg>
           <div>
             <p class="text-white text-xs font-semibold font-display">Keamanan Data</p>
             <p class="text-white/50 text-[10px]">Terenkripsi</p>
@@ -355,7 +460,7 @@
         </div>
       </div>
 
-      <p id="contact" class="text-[var(--navy)] text-justify leading-loose mt-10 text-xs">
+      <p class="text-[var(--navy)] text-justify leading-loose mt-10 text-xs">
         Proyek Unggulan Kami — Sebagai bukti komitmen kami dalam dunia information technology,
         kami telah berhasil menghadirkan berbagai proyek unggulan yang memberikan dampak nyata
         bagi klien kami. Mulai dari pengembangan sistem manajemen bisnis, aplikasi berbasis web
@@ -367,11 +472,58 @@
     </div>
   </section>
 
+  <!-- CONTACT TERMINAL -->
+  <section id="contact" class="bg-[var(--navy)] px-6 md:px-16 py-16 md:py-20 section-pad-mobile">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ Open A Channel ★</h2>
+      <p class="text-[var(--gold-light)]/60 text-center font-display text-[10px] mb-8">TYPE A COMMAND →</p>
+
+      <div class="term-window">
+        <div class="term-bar">
+          <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+          <span class="ml-2">gembong-it — terminal</span>
+        </div>
+        <div class="term-body" id="termBody">
+          <div class="term-line">GEMBONG IT TERMINAL v1.0 — channel established.</div>
+          <div class="term-line">Type 'help' to list commands, 'hire' to start a project.</div>
+          <div class="term-line">&nbsp;</div>
+        </div>
+        <form class="term-form" id="termForm" autocomplete="off">
+          <span class="term-prompt">guest@gembong:~$</span>
+          <input class="term-input" id="termInput" type="text" placeholder="help" aria-label="Terminal command" spellcheck="false" maxlength="80">
+        </form>
+      </div>
+
+      <div class="term-chips">
+        <button type="button" class="term-chip" data-cmd="help">help</button>
+        <button type="button" class="term-chip" data-cmd="services">services</button>
+        <button type="button" class="term-chip" data-cmd="contact">contact</button>
+        <button type="button" class="term-chip" data-cmd="hire">hire</button>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer class="bg-[var(--navy)] border-t-4 border-[var(--gold-light)] px-6 md:px-16 pt-14 pb-8 section-pad-mobile">
     <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-10 footer-grid-tablet footer-grid-mobile">
       <div>
-        <h3 class="font-display text-sm font-bold text-[var(--gold-light)]">Gembong IT</h3>
+        <h3 class="font-display text-sm font-bold text-[var(--gold-light)] flex items-center gap-2">
+          <svg class="pixel-art" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="5" y="2" width="6" height="1" fill="#f2c94c"/>
+            <rect x="4" y="3" width="8" height="1" fill="#f2c94c"/>
+            <rect x="3" y="4" width="10" height="1" fill="#f2c94c"/>
+            <rect x="2" y="5" width="12" height="1" fill="#f2c94c"/>
+            <rect x="1" y="6" width="14" height="1" fill="#f2c94c"/>
+            <rect x="0" y="7" width="16" height="2" fill="#f2c94c"/>
+            <rect x="1" y="9" width="14" height="1" fill="#d4af0e"/>
+            <rect x="2" y="10" width="12" height="1" fill="#d4af0e"/>
+            <rect x="3" y="11" width="10" height="1" fill="#d4af0e"/>
+            <rect x="4" y="12" width="8" height="1" fill="#a67f0a"/>
+            <rect x="5" y="13" width="6" height="2" fill="#a67f0a"/>
+            <rect x="6" y="4" width="1" height="3" fill="#fff6cf"/>
+          </svg>
+          Gembong IT
+        </h3>
         <p class="font-script text-xs text-[var(--gold-light)] -mt-2"></p>
         <p class="text-[var(--gold-light)]/60 text-[10px] mt-4 leading-loose">
           Mitra digital tepercaya untuk transformasi teknologi bisnis Anda.
@@ -409,9 +561,38 @@
           <li>+62 812-3456-7890</li>
         </ul>
         <div class="flex gap-3 mt-5">
-          <a href="#" aria-label="Instagram" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition text-[10px]">IG</a>
-          <a href="#" aria-label="LinkedIn" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition text-[10px]">IN</a>
-          <a href="#" aria-label="WhatsApp" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition text-[10px]">WA</a>
+          <a href="#" aria-label="Instagram" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+            <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="2" y="3" width="12" height="1" fill="currentColor"/>
+              <rect x="2" y="12" width="12" height="1" fill="currentColor"/>
+              <rect x="2" y="4" width="1" height="8" fill="currentColor"/>
+              <rect x="13" y="4" width="1" height="8" fill="currentColor"/>
+              <rect x="5" y="6" width="6" height="4" fill="currentColor"/>
+              <rect x="6" y="7" width="4" height="2" fill="#0d1b4c"/>
+              <rect x="11" y="5" width="1" height="1" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="LinkedIn" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+            <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="2" y="2" width="3" height="3" fill="currentColor"/>
+              <rect x="2" y="7" width="3" height="7" fill="currentColor"/>
+              <rect x="7" y="7" width="3" height="7" fill="currentColor"/>
+              <rect x="10" y="7" width="4" height="2" fill="currentColor"/>
+              <rect x="12" y="7" width="2" height="7" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="WhatsApp" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+            <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="4" y="2" width="8" height="1" fill="currentColor"/>
+              <rect x="3" y="3" width="10" height="7" fill="currentColor"/>
+              <rect x="4" y="10" width="8" height="1" fill="currentColor"/>
+              <rect x="4" y="11" width="4" height="1" fill="currentColor"/>
+              <rect x="4" y="12" width="2" height="1" fill="currentColor"/>
+              <rect x="4" y="5" width="2" height="2" fill="#0d1b4c"/>
+              <rect x="7" y="5" width="2" height="2" fill="#0d1b4c"/>
+              <rect x="10" y="5" width="2" height="2" fill="#0d1b4c"/>
+            </svg>
+          </a>
         </div>
       </div>
     </div>
@@ -463,6 +644,363 @@
     function closeMenu(){
       document.getElementById('mobileMenu').classList.add('hidden');
     }
+  </script>
+
+  <!-- ============ GEMBONG OS FEATURES: SFX / BOOT / ACHIEVEMENTS / TERMINAL ============ -->
+  <script>
+    /* ---------- 8-bit sound engine (WebAudio, no assets) ---------- */
+    const Sfx = {
+      enabled: true,
+      ctx: null,
+      init(){
+        try{ this.enabled = localStorage.getItem('gembong_sfx') !== 'off'; }catch(e){}
+      },
+      ensure(){
+        if(!this.ctx){
+          try{ this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+          catch(e){ this.enabled = false; return; }
+        }
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+      },
+      tone(freq, at, dur, vol){
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, at);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(at);
+        osc.stop(at + dur + 0.02);
+      },
+      play(seq, step, vol){
+        if(!this.enabled) return;
+        this.ensure();
+        if(!this.ctx) return;
+        const t = this.ctx.currentTime;
+        for(let i = 0; i < seq.length; i++) this.tone(seq[i], t + i * step, step * 0.9, vol);
+      },
+      hover(){ this.play([660], 0.045, 0.015); },
+      click(){ this.play([880, 1319], 0.06, 0.025); },
+      achievement(){ this.play([523, 659, 784, 1047], 0.09, 0.025); }
+    };
+    Sfx.init();
+
+    const sfxBtn = document.getElementById('sfxBtn');
+    function renderSfx(){
+      sfxBtn.textContent = Sfx.enabled ? 'SFX ON' : 'SFX OFF';
+      sfxBtn.setAttribute('aria-pressed', String(Sfx.enabled));
+    }
+    sfxBtn.addEventListener('click', function(){
+      Sfx.enabled = !Sfx.enabled;
+      try{ localStorage.setItem('gembong_sfx', Sfx.enabled ? 'on' : 'off'); }catch(e){}
+      renderSfx();
+      if(Sfx.enabled) Sfx.play([660, 990], 0.07, 0.025);
+    });
+    renderSfx();
+    window.addEventListener('pointerdown', function unlockAudio(){
+      Sfx.ensure();
+      window.removeEventListener('pointerdown', unlockAudio);
+    });
+
+    let lastHover = null;
+    document.addEventListener('mouseover', function(e){
+      const target = e.target && e.target.closest ? e.target.closest('a, button') : null;
+      if(target && target !== lastHover && target.id !== 'sfxBtn'){
+        Sfx.hover();
+        lastHover = target;
+      }else if(!target){
+        lastHover = null;
+      }
+    });
+    document.addEventListener('click', function(e){
+      const target = e.target && e.target.closest ? e.target.closest('a, button') : null;
+      if(target && target.id !== 'sfxBtn') Sfx.click();
+    });
+
+    /* ---------- Achievement toasts ---------- */
+    const Toast = {
+      layer: document.getElementById('toastLayer'),
+      seen: {},
+      show(title, sub){
+        const box = document.createElement('div');
+        box.className = 'toast';
+        const kicker = document.createElement('span');
+        kicker.className = 'toast-kicker';
+        kicker.textContent = 'ACHIEVEMENT UNLOCKED';
+        const head = document.createElement('span');
+        head.className = 'toast-title';
+        head.textContent = title;
+        box.appendChild(kicker);
+        box.appendChild(head);
+        if(sub){
+          const note = document.createElement('span');
+          note.className = 'toast-sub';
+          note.textContent = sub;
+          box.appendChild(note);
+        }
+        this.layer.appendChild(box);
+        setTimeout(function(){
+          box.classList.add('out');
+          setTimeout(function(){ box.remove(); }, 350);
+        }, 3400);
+      },
+      unlock(key, title, sub){
+        if(this.seen[key]) return;
+        this.seen[key] = true;
+        this.show(title, sub);
+        Sfx.achievement();
+      }
+    };
+
+    /* ---------- Boot sequence ---------- */
+    (function boot(){
+      const screen = document.getElementById('bootScreen');
+      const linesEl = document.getElementById('bootLines');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const LINES = [
+        'POST .............. OK',
+        'BIOS CHECK ........ OK',
+        'MEMORY 640K ....... OK',
+        'NET.LINK .......... OK',
+        'AUDIO DRIVER ...... OK',
+        'LOADING MODULES ...'
+      ];
+      let finished = false;
+      function addLine(text){
+        const div = document.createElement('div');
+        div.className = 'boot-line';
+        if(text.slice(-2) === 'OK'){
+          div.textContent = text.slice(0, -2);
+          const ok = document.createElement('span');
+          ok.className = 'ok';
+          ok.textContent = 'OK';
+          div.appendChild(ok);
+        }else{
+          div.textContent = text;
+        }
+        linesEl.appendChild(div);
+      }
+      function finish(){
+        if(finished) return;
+        finished = true;
+        screen.classList.add('done');
+        document.body.classList.remove('booting');
+        setTimeout(function(){
+          screen.remove();
+          Toast.unlock('first-boot', 'System Online', 'Welcome to Gembong IT');
+        }, 450);
+      }
+      document.body.classList.add('booting');
+      screen.classList.add('active');
+      screen.addEventListener('click', finish);
+      if(reduce){
+        LINES.forEach(addLine);
+        setTimeout(finish, 600);
+        return;
+      }
+      let i = 0;
+      function nextLine(){
+        if(finished) return;
+        if(i >= LINES.length){
+          setTimeout(finish, 550);
+          return;
+        }
+        addLine(LINES[i]);
+        i++;
+        setTimeout(nextLine, i === 1 ? 420 : 300);
+      }
+      setTimeout(nextLine, 250);
+    })();
+
+    /* ---------- HUD EXP bar (scroll progress) ---------- */
+    const expFill = document.getElementById('expFill');
+    const lvlLabel = document.getElementById('lvlLabel');
+    let expTicking = false;
+    function updateExp(){
+      expTicking = false;
+      const docEl = document.documentElement;
+      const max = docEl.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.min(100, Math.max(0, Math.round(window.scrollY / max * 100))) : 0;
+      expFill.style.width = pct + '%';
+      lvlLabel.textContent = 'LVL ' + (1 + Math.floor(pct / 25));
+      if(pct >= 100) Toast.unlock('scroll-master', 'Scroll Master', '100% EXP reached');
+    }
+    window.addEventListener('scroll', function(){
+      if(!expTicking){
+        expTicking = true;
+        requestAnimationFrame(updateExp);
+      }
+    }, {passive: true});
+    updateExp();
+
+    /* ---------- Section achievements ---------- */
+    const ACHIEVEMENTS = [
+      ['#about', 'lore', 'Lore Discovered', 'About Us section'],
+      ['#projects', 'missions', 'Mission Select', 'Our latest projects'],
+      ['#contact', 'channel', 'Channel Open', 'Contact terminal'],
+      ['footer', 'cartographer', 'End Of The Map', 'You reached the footer']
+    ];
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          const item = entry.target._ach;
+          Toast.unlock(item[1], item[2], item[3]);
+          io.unobserve(entry.target);
+        });
+      }, {threshold: 0.2});
+      ACHIEVEMENTS.forEach(function(item){
+        const el = document.querySelector(item[0]);
+        if(el){
+          el._ach = item;
+          io.observe(el);
+        }
+      });
+    }
+
+    /* ---------- Contact terminal ---------- */
+    (function terminal(){
+      const body = document.getElementById('termBody');
+      const form = document.getElementById('termForm');
+      const input = document.getElementById('termInput');
+      const history = [];
+      let histIdx = -1;
+
+      function printLine(text){
+        const div = document.createElement('div');
+        div.className = 'term-line';
+        div.textContent = text;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+      function printCommand(cmd){
+        const div = document.createElement('div');
+        div.className = 'term-line';
+        const prompt = document.createElement('span');
+        prompt.className = 'prompt';
+        prompt.textContent = 'guest@gembong:~$';
+        div.appendChild(prompt);
+        div.appendChild(document.createTextNode(' ' + cmd));
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+      function printLink(label, href){
+        const div = document.createElement('div');
+        div.className = 'term-line';
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = '► ' + label;
+        div.appendChild(a);
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+      function printAll(lines){
+        lines.forEach(function(line){ printLine(line); });
+      }
+
+      const CMDS = {
+        help: function(){
+          printAll([
+            'available commands:',
+            '  about     - who we are',
+            '  services  - what we build',
+            '  projects  - jump to our work',
+            '  contact   - reach us',
+            '  hire      - start a project',
+            '  clear     - clear this screen'
+          ]);
+        },
+        about: function(){
+          printAll([
+            'Gembong IT - mitra digital tepercaya untuk transformasi teknologi bisnis Anda.',
+            'Based in Yogyakarta, Indonesia. Systems, apps & networks.'
+          ]);
+        },
+        services: function(){
+          printAll([
+            'we build:',
+            '  > Pengembangan Sistem',
+            '  > Aplikasi Web & Mobile',
+            '  > Infrastruktur Jaringan',
+            '  > Konsultasi IT'
+          ]);
+        },
+        projects: function(){
+          printLine('Jumping to mission select...');
+          const el = document.getElementById('projects');
+          if(el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        },
+        contact: function(){
+          printLine('Reach us through:');
+          printLink('hello@gembong-it.com', 'mailto:hello@gembong-it.com');
+          printLine('Yogyakarta, Indonesia');
+          printLink('+62 812-3456-7890 (WhatsApp)', 'https://wa.me/6281234567890');
+        },
+        hire: function(){
+          printAll(['Starting a project is one command away:']);
+          printLink('open mail composer - project briefing',
+                    'mailto:hello@gembong-it.com?subject=Project%20Briefing%20-%20Gembong%20IT');
+          printLine("Or ping us on WhatsApp via 'contact'.");
+        },
+        whoami: function(){
+          printLine('guest - a future client of Gembong IT.');
+        },
+        ls: function(){
+          printLine('about.txt  services/  projects/  contact  hire');
+        },
+        sudo: function(){
+          printLine('guest is not in the sudoers file. This incident has been reported.');
+        },
+        clear: function(){
+          body.textContent = '';
+        }
+      };
+
+      function run(raw){
+        const cmd = raw.trim();
+        if(!cmd) return;
+        printCommand(cmd);
+        history.push(cmd);
+        histIdx = history.length;
+        input.value = '';
+        const name = cmd.split(/\s+/)[0].toLowerCase();
+        if(CMDS[name]){
+          CMDS[name]();
+        }else{
+          printLine('command not found: ' + name + " - type 'help'");
+        }
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        Sfx.click();
+        run(input.value);
+      });
+      input.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowUp'){
+          e.preventDefault();
+          if(histIdx > 0){
+            histIdx--;
+            input.value = history[histIdx];
+          }
+        }else if(e.key === 'ArrowDown'){
+          e.preventDefault();
+          if(histIdx < history.length - 1){
+            histIdx++;
+            input.value = history[histIdx];
+          }else{
+            histIdx = history.length;
+            input.value = '';
+          }
+        }
+      });
+      body.addEventListener('click', function(){ input.focus(); });
+      document.querySelectorAll('.term-chip').forEach(function(chip){
+        chip.addEventListener('click', function(){ run(chip.dataset.cmd); });
+      });
+    })();
   </script>
 </body>
 </html>

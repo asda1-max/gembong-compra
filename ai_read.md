@@ -1,7 +1,8 @@
 # AI Read — Workspace Scan
 
 > Auto-generated workspace overview for AI/agent context.
-> Scanned: 2026-09-26 · Repo: `C:\Productivity\Coding\gembonf compra` · Branch `main` @ `660bcc2`
+> Scanned: 2026-09-26 · Repo: `C:\Productivity\Coding\gembonf compra` · Branch `main` @ `0fc3047`
+> Updated: 2026-09-26 — retro "Gembong OS" feature pass on `templates/index.html` (uncommitted).
 
 ---
 
@@ -17,6 +18,13 @@ password-protected `/admin` panel.
 
 Language of site content: **Indonesian (`lang="id"`)**.
 
+**"Gembong OS" features** (added 2026-09-26, see §4a):
+- **Boot sequence** on page load (typing POST log, click-to-skip, skipped for reduced-motion/JS-off)
+- **Scroll = EXP** HUD bar + `ACHIEVEMENT UNLOCKED` toasts (IntersectionObserver per section)
+- **8-bit SFX** via WebAudio (hover/click/achievement jingles), `SFX ON/OFF` toggle in nav (localStorage)
+- **Contact terminal** — fake CLI (`help/about/services/projects/contact/hire/whoami/ls/sudo/clear`)
+- **Pixel SVG sprites** — gem logo, cloud/lock, IG/IN/WA icons (no emoji, no image files)
+
 ---
 
 ## 2. File map
@@ -24,10 +32,10 @@ Language of site content: **Indonesian (`lang="id"`)**.
 ```
 gembonf compra/
 ├── app.py                 # Flask app, all routes + data I/O (118 lines)
-├── data.json              # Persistent store: {"carousel": [...3 slides]}
+├── data.json              # Persistent store: {"carousel": [...4 slides, user-managed]}
 ├── index.html             # LEGACY static copy (469 lines) — NOT used by Flask, still git-tracked
 ├── templates/
-│   ├── index.html         # Public page (468 lines, Jinja)
+│   ├── index.html         # Public page (1006 lines, Jinja) — retro features added here
 │   └── admin.html         # Login + carousel editor (291 lines, Jinja) — MODIFIED, uncommitted
 ├── __pycache__/           # app.cpython-312.pyc — tracked in git (should be ignored)
 └── .git/
@@ -36,10 +44,10 @@ gembonf compra/
 | File | Lines | Role |
 |---|---|---|
 | `app.py` | 118 | Flask routes, auth, load/save of `data.json` |
-| `templates/index.html` | 468 | Public landing page (hero, about, carousel, footer) |
+| `templates/index.html` | 1006 | Public landing page (hero, about, carousel, terminal, footer) |
 | `templates/admin.html` | 291 | Admin login + slide editor (text/image modes) |
 | `index.html` | 469 | Superseded static version; diverged from template version |
-| `data.json` | 25 | Carousel content, currently 3 slides (slide 1 = image mode) |
+| `data.json` | 32 | Carousel content: **4 slides** (slide 1 = image mode, user-edited) |
 
 **Missing:** `requirements.txt`, `README.md`, `.gitignore`, tests, CI, `Procfile`/Docker.
 
@@ -79,25 +87,37 @@ app.py
 - Reusable classes in `templates/index.html <style>`: `.pixel-btn`, `.pixel-btn-gold`,
   `.pixel-btn-glass`, `.pixel-border`, `.glass`, `.stat-box`, `.tag-pill`, `.hp-bar`,
   `.particle`, `.pixel-diamond`, `.grid-overlay`, `.scanlines`, `.cursor-blink`
-- Mobile: heavy `@media(max-width:639px)` override block (lines 78–105), hamburger menu JS
-- Sections: TOP HUD → NAV (sticky) → HERO (`#home`) → ABOUT (`#about`) →
-  PROJECTS carousel (`#projects`, `#contact` anchor lives here) → FOOTER
+- Retro-feature classes: `.pixel-art` (crisp-edge SVGs), `#bootScreen`/`.boot-*`,
+  `.toast`/`#toastLayer`, `.term-window`/`.term-body`/`.term-chip`
+- Mobile: `@media(max-width:639px)` override block, hamburger menu JS;
+  `@media(prefers-reduced-motion:reduce)` kills animations + smooth scroll
+- Sections: TOP HUD (SYS/NET/EXP bars) → NAV (logo gem, links, **SFX toggle**) → HERO (`#home`) →
+  ABOUT (`#about`) → PROJECTS carousel (`#projects`) → **CONTACT TERMINAL (`#contact`)** → FOOTER
 - Carousel JS: `moveCarousel/goToSlide`, autoplay every 4 s, `translateX(-idx*100%)`,
   slides render `text` (title + desc + HP bar) or `image` (bg-image + dark overlay)
+
+### 4a. "Gembong OS" feature layer (last `<script>` in `templates/index.html`)
+
+| Object | Role |
+|---|---|
+| `Sfx` | WebAudio square-wave engine; `hover/click/achievement` jingles; `localStorage['gembong_sfx']`; resumed on first `pointerdown` |
+| `sfxBtn` (nav) | `SFX ON/OFF` toggle, `aria-pressed`, persisted |
+| `Toast` | `unlock(key,title,sub)` — deduped `ACHIEVEMENT UNLOCKED` popups + jingle |
+| `boot()` | IIFE: types `#bootLines` POST log, `body.booting` scroll-lock, click-to-skip, respects reduced-motion, no-JS safe (hidden until JS activates) |
+| `updateExp()` | scroll % → `#expFill` + `#lvlLabel` (LVL 1–5), rAF-throttled; `scroll-master` at 100% |
+| `ACHIEVEMENTS` | IntersectionObserver (threshold .2) on `#about/#projects/#contact/footer` |
+| `terminal()` | IIFE: `CMDS` map (help/about/services/projects/contact/hire/whoami/ls/sudo/clear), ↑/↓ history, chips (`data-cmd`), links built via DOM (`textContent` only — no user-input HTML) |
 
 ---
 
 ## 5. Git state
 
 - Remote: `https://github.com/asda1-max/gembong-compra.git` · branch `main` (tracks `origin/main`)
-- History (all 2026-09-25/26): `first stone → vv2 → goat → sys.moni → dad → flask integration → carousel`
-- **Uncommitted — admin bug fixes (2026-09-26 session):** `app.py`, `templates/admin.html`
-  - `app.py`: new `collect_slides()` parses `slides[<token>][field]` per card (see §6 FIXED-1)
-  - `admin.html`: `applyMode()` disables inactive field sections; `addSlide()` emits unique
-    `slides[<id>][...]` names and inserts the card **above** the button row (`#formActions`)
-  - Earlier uncommitted rewrite kept: `slideCount` → `slideNextId`, `reindexSlides()` → `refreshLabels()`
-- `ai_read.md` is new/untracked; `__pycache__/app.cpython-312.pyc` shows modified (recompiled)
-- Line-ending warnings: LF ↔ CRLF churn on `templates/admin.html` (`core.autocrlf` in play)
+- History: `first stone → vv2 → goat → sys.moni → dad → flask integration → carousel → 0fc3047 carousel and admin`
+- **`0fc3047` (user, 2026-09-26)** committed: admin save fixes (`app.py`, `templates/admin.html`),
+  `ai_read.md`, recompiled `.pyc`, and `data.json` now at **4 slides** (saved via the fixed admin panel)
+- **Uncommitted:** `templates/index.html` (+552 / −14) — the retro "Gembong OS" feature pass (§4a)
+- Line-ending warnings: LF ↔ CRLF churn (`core.autocrlf` in play)
 - `__pycache__/app.cpython-312.pyc` is committed; no `.gitignore`
 
 ---
@@ -177,11 +197,13 @@ python app.py              # debug server on http://127.0.0.1:5000
 
 ## 8. Suggested next steps
 
-1. ~~Fix the save-path key mismatch~~ ✅ done (see §6 FIXED-1..3); suite of 26 checks passes
-   in a temp copy (`test_save.py`, not committed). Consider committing it as a real test.
-2. Add `.gitignore` (`__pycache__/`, `*.pyc`), untrack the committed `.pyc`.
-3. Add `requirements.txt` (`flask==3.1.1`) and remove/rename root `index.html`.
-4. Externalize credentials (`FLASK_ADMIN_USER`/`FLASK_ADMIN_PASS` env) and set a real secret key.
-5. Review + commit (or revert) the now-extended uncommitted changes in `app.py` / `templates/admin.html`.
-6. Smoke-test `/admin` in a real browser (mode toggle, add/remove, save) — JS changes were
-   syntax-checked with `node --check` and DOM logic reviewed, but not executed in a browser.
+1. ~~Fix the admin save-path key mismatch~~ ✅ done + committed by user in `0fc3047`
+   (suite of 26+ checks in a temp copy, `test_save.py`, not committed).
+2. **Smoke-test the retro features in a real browser** (uncommitted `templates/index.html`):
+   boot sequence → skip → achievement toast, SFX toggle persistence, scroll EXP/level,
+   terminal commands + history, mobile layout. JS passes `node --check` (3 blocks) and render
+   checks pass, but no browser execution yet.
+3. Commit the `templates/index.html` feature pass after the smoke test.
+4. Add `.gitignore` (`__pycache__/`, `*.pyc`), untrack the committed `.pyc`.
+5. Add `requirements.txt` (`flask==3.1.1`) and remove/rename root `index.html`.
+6. Externalize credentials (`FLASK_ADMIN_USER`/`FLASK_ADMIN_PASS` env) and set a real secret key.
