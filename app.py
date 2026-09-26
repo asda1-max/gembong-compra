@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from flask import Flask, render_template, request, session, redirect, url_for
 
@@ -25,6 +26,45 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+# Matches slides[<token>][<field>] so both server-rendered (slides[0][title])
+# and JS-added (slides[3][title]) inputs are collected per card.
+SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image)\]$")
+
+
+def collect_slides(form):
+    cards = {}
+    order = []
+    for key, values in form.lists():
+        match = SLIDE_KEY_RE.match(key)
+        if not match:
+            continue
+        token, field = match.group(1), match.group(2)
+        if token not in cards:
+            cards[token] = {}
+            order.append(token)
+        picked = next((v for v in values if v.strip()), values[0]) if values else ""
+        cards[token][field] = picked
+
+    carousel = []
+    for token in order:
+        card = cards[token]
+        mode = (card.get("mode") or "").strip() or "text"
+        hp_raw = (card.get("hp") or "").strip()
+        try:
+            hp = int(float(hp_raw))
+        except (ValueError, OverflowError):
+            hp = 80
+        hp = max(0, min(100, hp))
+        carousel.append({
+            "title": (card.get("title") or "").strip(),
+            "desc": (card.get("desc") or "").strip(),
+            "hp": hp if hp_raw else 80,
+            "mode": mode,
+            "image": (card.get("image") or "").strip() if mode == "image" else "",
+        })
+    return carousel
 
 
 @app.route("/")
@@ -58,23 +98,11 @@ def admin_save():
     if not session.get("logged_in"):
         return redirect(url_for("admin"))
 
-    slides_raw = request.form.getlist("slides[][title]")
-    descs = request.form.getlist("slides[][desc]")
-    hps = request.form.getlist("slides[][hp]")
-    modes = request.form.getlist("slides[][mode]")
-    images = request.form.getlist("slides[][image]")
-
-    carousel = []
-    for i in range(len(slides_raw)):
-        mode = modes[i] if modes[i] else "text"
-        slide = {
-            "title": slides_raw[i].strip(),
-            "desc": descs[i].strip() if mode == "text" else "",
-            "hp": int(hps[i]) if mode == "text" and hps[i] else 80,
-            "mode": mode,
-            "image": images[i].strip() if mode == "image" else "",
-        }
-        carousel.append(slide)
+    carousel = collect_slides(request.form)
+    if not carousel:
+        data = load_data()
+        return render_template("admin.html", slides=data["carousel"], message=None,
+                               error="No slides found in the form, nothing was saved.")
 
     save_data({"carousel": carousel})
     return render_template("admin.html", slides=carousel, message="Carousel updated successfully!", error=None)

@@ -72,6 +72,10 @@
       <a href="/admin/logout" class="pixel-btn pixel-btn-secondary text-xs px-4 py-2">LOGOUT</a>
     </div>
 
+    {% if error %}
+    <div class="alert alert-error mb-6">{{ error }}</div>
+    {% endif %}
+
     {% if message %}
     <div class="alert alert-success mb-6">{{ message }}</div>
     {% endif %}
@@ -83,7 +87,7 @@
           <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE {{ loop.index }}</span>
           <span class="text-[10px] text-white/30">{{ loop.index0 + 1 }} of {{ slides | length }}</span>
           <div class="flex-1"></div>
-          <button type="button" onclick="removeSlide(this, {{ loop.index0 }})" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1 {% if slides | length <= 1 %}opacity-30 pointer-events-none{% endif %}">REMOVE</button>
+          <button type="button" onclick="removeSlide(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1 {% if slides | length <= 1 %}opacity-30 pointer-events-none{% endif %}">REMOVE</button>
         </div>
 
         <input type="hidden" name="slides[{{ loop.index0 }}][mode]" value="{{ slide.mode }}" class="mode-value">
@@ -135,7 +139,7 @@
       </div>
       {% endfor %}
 
-      <div class="flex gap-4 mt-8">
+      <div id="formActions" class="flex gap-4 mt-8">
         <button type="button" onclick="addSlide()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD SLIDE</button>
         <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE CHANGES</button>
       </div>
@@ -148,32 +152,42 @@
 </div>
 
 <script>
-let slideCount = {{ slides | length }};
+let slideNextId = {{ slides | length }};
 
-function setMode(btn, mode){
-  const card = btn.closest('.slide-card');
-  const hiddenInput = card.querySelector('.mode-value');
-  hiddenInput.value = mode;
+function getUniqueId(){
+  return slideNextId++;
+}
 
-  const buttons = card.querySelectorAll('.mode-toggle button');
-  buttons.forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function applyMode(card, mode){
+  const isText = mode !== 'image';
+  card.querySelector('.mode-value').value = isText ? 'text' : 'image';
 
   const textFields = card.querySelector('.text-fields');
   const imageFields = card.querySelector('.image-fields');
-  if(mode === 'text'){
-    textFields.classList.remove('hidden');
-    imageFields.classList.add('hidden');
-    // Clear image fields so they submit empty when switching back
-    imageFields.querySelectorAll('input').forEach(el => el.value = '');
-    // Also clear any preview img src
+  textFields.classList.toggle('hidden', !isText);
+  imageFields.classList.toggle('hidden', isText);
+
+  // Disable the inactive section so its inputs are neither submitted
+  // (keeps slides[i][field] arrays aligned) nor validated (required
+  // inputs inside display:none block form submission).
+  textFields.querySelectorAll('input, textarea').forEach(el => {
+    el.disabled = !isText;
+    if(!isText) el.value = '';
+  });
+  imageFields.querySelectorAll('input, textarea').forEach(el => {
+    el.disabled = isText;
+    if(isText) el.value = '';
+  });
+  if(isText){
     imageFields.querySelectorAll('img').forEach(el => { el.src = ''; el.style.display = 'none'; });
-  } else {
-    textFields.classList.add('hidden');
-    imageFields.classList.remove('hidden');
-    // Clear text fields so they submit empty when saving in image mode
-    textFields.querySelectorAll('input, textarea').forEach(el => el.value = '');
   }
+}
+
+function setMode(btn, mode){
+  const card = btn.closest('.slide-card');
+  applyMode(card, mode);
+  card.querySelectorAll('.mode-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 function previewImage(input){
@@ -187,16 +201,19 @@ function previewImage(input){
 }
 
 function addSlide(){
+  const id = getUniqueId();
   const card = document.createElement('div');
   card.className = 'slide-card';
+  card.dataset.id = id;
+  const total = document.querySelectorAll('.slide-card').length + 1;
   card.innerHTML = `
     <div class="flex items-center gap-3 mb-4">
-      <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE <span class="new-index">${slideCount + 1}</span></span>
-      <span class="text-[10px] text-white/30">${slideCount + 1} of ?</span>
+      <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE <span class="new-index">${total}</span></span>
+      <span class="text-[10px] text-white/30">${total} of ?</span>
       <div class="flex-1"></div>
-      <button type="button" onclick="removeSlide(this, ${slideCount})" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1">REMOVE</button>
+      <button type="button" onclick="removeSlide(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1">REMOVE</button>
     </div>
-    <input type="hidden" name="slides[${slideCount}][mode]" value="text" class="mode-value">
+    <input type="hidden" name="slides[${id}][mode]" value="text" class="mode-value">
     <div class="mb-4">
       <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">MODE</label>
       <div class="mode-toggle">
@@ -208,15 +225,15 @@ function addSlide(){
       <div class="grid grid-cols-1 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE</label>
-          <input type="text" name="slides[${slideCount}][title]" class="pixel-input" required placeholder="Slide title...">
+          <input type="text" name="slides[${id}][title]" class="pixel-input" required placeholder="Slide title...">
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
-          <textarea name="slides[${slideCount}][desc]" class="pixel-input" required placeholder="Slide description..."></textarea>
+          <textarea name="slides[${id}][desc]" class="pixel-input" required placeholder="Slide description..."></textarea>
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HP BAR (%)</label>
-          <input type="number" name="slides[${slideCount}][hp]" value="80" min="0" max="100" class="pixel-input" required>
+          <input type="number" name="slides[${id}][hp]" value="80" min="0" max="100" class="pixel-input" required>
         </div>
       </div>
     </div>
@@ -224,40 +241,32 @@ function addSlide(){
       <div class="grid grid-cols-1 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
-          <input type="url" name="slides[${slideCount}][image]" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
+          <input type="url" name="slides[${id}][image]" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
           <img src="" class="img-preview">
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE (optional overlay)</label>
-          <input type="text" name="slides[${slideCount}][title]" class="pixel-input">
+          <input type="text" name="slides[${id}][title]" class="pixel-input">
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (optional overlay)</label>
-          <textarea name="slides[${slideCount}][desc]" class="pixel-input"></textarea>
+          <textarea name="slides[${id}][desc]" class="pixel-input"></textarea>
         </div>
       </div>
     </div>`;
-  document.querySelector('form').appendChild(card);
-  // Disable image fields by default since new slide starts in TEXT mode
-  card.querySelector('.image-fields').querySelectorAll('input, textarea').forEach(el => el.disabled = true);
-  slideCount++;
-  reindexSlides();
+  const form = document.querySelector('form');
+  form.insertBefore(card, document.getElementById('formActions'));
+  applyMode(card, 'text');
 }
 
-function removeSlide(btn, index){
-  const card = btn.closest('.slide-card');
-  card.remove();
-  reindexSlides();
+function removeSlide(btn){
+  btn.closest('.slide-card').remove();
+  refreshLabels();
 }
 
-function reindexSlides(){
+function refreshLabels(){
   const cards = document.querySelectorAll('.slide-card');
   cards.forEach((card, i) => {
-    const inputs = card.querySelectorAll('input, textarea');
-    inputs.forEach(input => {
-      const name = input.name.replace(/\[\d+\]/, `[${i}]`);
-      input.name = name;
-    });
     const badge = card.querySelector('span.text-[var(--gold-light)].text-\\[10px\\]');
     if(badge){
       const span = badge.querySelector('.new-index');
@@ -267,8 +276,15 @@ function reindexSlides(){
     const counter = card.querySelector('span.text-white\\/30');
     if(counter) counter.textContent = `${i + 1} of ${cards.length}`;
   });
-  slideCount = cards.length;
 }
+
+// Apply the saved mode to every slide card on load: toggles the visible
+// section and disables the inactive one so only one title/desc per card
+// is submitted and required fields don't block saving.
+document.querySelectorAll('.slide-card').forEach(card => {
+  const modeInput = card.querySelector('.mode-value');
+  applyMode(card, modeInput ? modeInput.value : 'text');
+});
 </script>
 {% endif %}
 </body>
