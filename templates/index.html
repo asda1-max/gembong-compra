@@ -139,7 +139,7 @@
     .pixel-btn.px-6.py-3{text-align:center !important;width:100%;max-width:200px;margin:0 auto;display:block;}
     .stat-box{width:100% !important;max-width:160px !important;text-align:center !important;}
     .tag-pill.text-xs{font-size:8px !important;padding:4px 8px !important;}
-    .project-card.h-72.md\:h-80{height:160px !important;}
+    .project-card, .project-card-img{height:100% !important;}
     .font-display.text-sm.md\:text-base.font-bold{font-size:9px !important;}
     p.text-\[var\(--navy\)\]\/60.text-center.font-display.text-\[10px\]{font-size:8px !important;}
     p.text-\[var\(--navy\)\]{font-size:9px !important;line-height:1.8 !important;}
@@ -430,17 +430,17 @@
       <div class="relative rounded-none overflow-hidden pixel-border">
         <div id="carouselTrack" class="carousel-track w-full flex">
           {% for item in carousel %}
-          <div class="min-w-full">
+          <div class="min-w-full relative aspect-[16/9]">
             {% if item.mode == "image" and item.image %}
-            <div class="project-card-img h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
+            <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
               <div class="absolute inset-0 bg-black/40"></div>
-              <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-72 md:h-80">
+              <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-full w-full">
                 <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">{{ item.title }}</span>
                 {% if item.desc %}<span class="text-white/80 max-w-md text-xs">{{ item.desc }}</span>{% endif %}
               </div>
             </div>
             {% else %}
-            <div class="project-card h-72 md:h-80 flex flex-col items-center justify-center gap-3 px-8 text-center">
+            <div class="project-card absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
               <span class="font-display text-xs md:text-sm text-[var(--gold-light)] font-semibold">{{ item.title }}</span>
               <span class="text-[var(--gold-light)]/70 max-w-md text-xs">{{ item.desc }}</span>
               <div class="hp-bar w-32 mt-2"><div class="hp-bar-fill" style="width:{{ item.hp }}%"></div></div>
