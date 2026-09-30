@@ -26,9 +26,9 @@
       "hp": 95,
       "mode": "text",
       "image": "",
-      "primary": "#d4af0e",
-      "secondary": "#0d1b4c",
-      "text": "#0d1b4c"
+      "primary": "#edcf27",
+      "secondary": "#2c4930",
+      "text": "#565801"
     },
     {
       "title": "eek",
@@ -61,5 +61,7 @@
     "address": "Yogyakarta, Indonesia",
     "instagram": "https://instagram.com/gembong.it",
     "linkedin": "https://linkedin.com/company/gembong-it"
-  }
+  },
+  "carousel_interval": 15,
+  "theme": "retro"
 }
