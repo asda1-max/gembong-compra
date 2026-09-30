@@ -28,5 +28,17 @@
       "mode": "image",
       "image": "https://imgs.search.brave.com/ZKFDeGGEmDwO3npEybiws7E9FUT-HRzALGAzknLgQJw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kYW1h/c3NldGxpYnJhcnku/Y3ZzaW1hZ2VzLmNv/bS9hZG9iZS9hc3Nl/dHMvdXJuOmFhaWQ6/YWVtOmM2ZmRlZjE3/LTFkMDUtNDM0ZC04/ZmJlLWU0YTBjMDZh/ZTZlZi9hcy9UVU1C/X0NlbGVicmF0ZVJl/dGlyZW1lbnRDb25m/ZXR0aUJOMzA4OUww/V0hUXzh4Ml9CYS5q/cGVnP3dpZHRoPTQw/MCZoZWlnaHQ9NDAw/JnByZWZlcndlYnA9/dHJ1ZQ"
     }
+  ],
+  "projects": [
+    {
+      "name": "kontol",
+      "description": "kontil",
+      "repo_url": "https://kedungwinangun.com",
+      "demo_url": "https://kedungwinangun.com",
+      "tags": [
+        "flask"
+      ],
+      "status": "active"
+    }
   ]
 }

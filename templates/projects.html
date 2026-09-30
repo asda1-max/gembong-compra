@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Gembong IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;}
+  html,body{height:100%;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--navy);font-family:'Press Start 2P',monospace;}
+  .font-display{font-family:'Press Start 2P',monospace;}
+  *{image-rendering:pixelated;}
+
+  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+  .grid-overlay{
+    background-image:linear-gradient(rgba(242,201,76,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(242,201,76,.1) 1px,transparent 1px);
+    background-size:20px 20px;animation:gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse{0%,100%{opacity:.6}50%{opacity:1}}
+  .scanlines{background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);pointer-events:none;}
+  .pixel-border{border:3px solid var(--gold-light);box-shadow:4px 4px 0 rgba(0,0,0,.6),inset 0 0 0 1px rgba(242,201,76,.15);}
+  .pixel-btn{border:3px solid var(--gold);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;}
+  .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
+  .pixel-btn-gold{background:var(--gold-light);color:var(--navy);font-weight:700;}
+  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--gold-light);}
+  .pixel-btn-glass:hover{background:rgba(255,255,255,.12);}
+  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--gold-light);opacity:.5;}
+
+  .critter{position:absolute;width:4px;height:4px;background:var(--gold-light);opacity:.25;pointer-events:none;}
+  @keyframes rise{0%{transform:translateY(0) scale(1);opacity:.25}50%{opacity:.45}100%{transform:translateY(-120px) scale(.6);opacity:0}}
+  .critter.rise{animation:rise 6s ease-in-out infinite;}
+
+  /* REPO CARD */
+  .repo-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;display:flex;flex-direction:column;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
+  .repo-card::before{content:'';position:absolute;top:-3px;left:10px;width:8px;height:8px;background:var(--gold-light);}
+  .repo-card:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 rgba(0,0,0,.6);border-color:var(--gold-light);}
+  .repo-name{color:#fff;text-shadow:0 0 12px rgba(242,201,76,.25);word-break:break-word;}
+  .repo-desc{color:rgba(217,209,168,.8);font-size:9px;line-height:2;}
+  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--gold-light);font-size:8px;padding:4px 7px;}
+  .hp-bar{height:4px;background:rgba(242,201,76,.15);border:1px solid rgba(242,201,76,.3);}
+  .hp-bar-fill{height:100%;background:var(--gold-light);}
+
+  .status{border:2px solid;font-size:8px;padding:3px 7px;letter-spacing:1px;white-space:nowrap;}
+  .status-active{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.1);}
+  .status-beta{border-color:var(--gold-light);color:var(--gold-light);background:rgba(242,201,76,.1);}
+  .status-wip{border-color:#fb923c;color:#fb923c;background:rgba(251,146,60,.1);}
+  .status-archived{border-color:#94a3b8;color:#94a3b8;background:rgba(148,163,184,.1);}
+
+  .filter-chip{border:2px solid rgba(242,201,76,.35);background:rgba(255,255,255,.04);color:rgba(242,201,76,.7);font-family:'Press Start 2P',monospace;font-size:8px;padding:8px 12px;cursor:pointer;transition:all .1s;}
+  .filter-chip:hover{background:rgba(255,255,255,.1);color:var(--gold-light);}
+  .filter-chip.active{background:var(--gold-light);color:var(--navy);border-color:var(--gold-light);}
+  .search-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;padding:10px 12px;outline:none;width:100%;}
+  .search-input:focus{border-color:var(--gold-light);box-shadow:0 0 8px rgba(242,201,76,.3);}
+  .search-input::placeholder{color:rgba(242,201,76,.3);}
+
+  .cursor-blink{border-right:2px solid var(--gold-light);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
+  @keyframes cursor-blink{0%,100%{border-right-color:var(--gold-light)}50%{border-right-color:transparent}}
+  ::selection{background:var(--gold-light);color:var(--navy);}
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--navy);}
+  ::-webkit-scrollbar-thumb{background:var(--gold);border:2px solid var(--navy);}
+
+  @media(max-width:639px){
+    h1{font-size:12px !important;line-height:2 !important;}
+    .search-input{font-size:9px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body class="text-white">
+
+  <!-- TOP HUD -->
+  <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--gold-light)]/20" style="background:rgba(13,27,76,.95);">
+    <span class="text-[var(--gold-light)]/60">SYS.ONLINE</span>
+    <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:85%"></div></div>
+    <span class="text-[var(--gold-light)]/60">MISSIONS</span>
+    <div class="hp-bar w-20"><div class="hp-bar-fill" style="width:{{ [projects|length * 8, 100]|min }}%"></div></div>
+    <span class="text-[var(--gold-light)]/60">{{ projects|length }} TOTAL</span>
+    <span class="text-[var(--gold-light)]/60 ml-auto">GEMBONG_IT v1.0</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="sticky z-30 sm:top-[32px] top-0">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-6 py-3" style="background:rgba(13,27,76,.92);border:2px solid rgba(242,201,76,.3);box-shadow:4px 4px 0 rgba(0,0,0,.5);backdrop-filter:blur(10px);">
+      <a href="/" class="flex items-center gap-3">
+        <span class="sr-only">Gembong IT</span>
+        <div class="w-8 h-8 border-2 border-[var(--gold-light)] flex items-center justify-center">
+          <svg style="image-rendering:pixelated;shape-rendering:crispEdges;flex-shrink:0;" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="5" y="2" width="6" height="1" fill="#f2c94c"/>
+            <rect x="4" y="3" width="8" height="1" fill="#f2c94c"/>
+            <rect x="3" y="4" width="10" height="1" fill="#f2c94c"/>
+            <rect x="2" y="5" width="12" height="1" fill="#f2c94c"/>
+            <rect x="1" y="6" width="14" height="1" fill="#f2c94c"/>
+            <rect x="0" y="7" width="16" height="1" fill="#f2c94c"/>
+            <rect x="1" y="8" width="14" height="1" fill="#d4af0e"/>
+            <rect x="2" y="9" width="12" height="1" fill="#d4af0e"/>
+            <rect x="3" y="10" width="10" height="1" fill="#d4af0e"/>
+            <rect x="4" y="11" width="8" height="1" fill="#a67f0a"/>
+            <rect x="5" y="12" width="6" height="1" fill="#a67f0a"/>
+            <rect x="6" y="3" width="1" height="4" fill="#fff6cf"/>
+          </svg>
+        </div>
+        <span class="font-display text-xs text-[var(--gold-light)] hidden sm:inline">GEMBONG IT</span>
+      </a>
+      <ul class="flex items-center gap-1">
+        <li><a href="/" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">HOME</a></li>
+        <li><a href="/projects" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">PROJECTS</a></li>
+        <li><a href="/#contact" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="hero-bg relative overflow-hidden px-6 md:px-16 pt-16 pb-12">
+    <div class="grid-overlay absolute inset-0"></div>
+    <div class="scanlines absolute inset-0"></div>
+    <div class="critter rise" style="left:12%;top:60%;animation-duration:6s;"></div>
+    <div class="critter rise" style="left:38%;top:40%;animation-duration:7s;animation-delay:1s;"></div>
+    <div class="critter rise" style="left:70%;top:55%;animation-duration:5.5s;animation-delay:.6s;"></div>
+    <div class="critter rise" style="left:88%;top:35%;animation-duration:6.5s;animation-delay:1.4s;"></div>
+
+    <div class="relative max-w-6xl mx-auto text-center">
+      <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ MISSION ARCHIVE ★</span>
+      <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
+        Project <span class="text-[var(--gold-light)]">Repository</span><span class="cursor-blink"></span>
+      </h1>
+      <p class="text-white/60 mt-5 max-w-2xl mx-auto leading-loose text-xs">
+        Daftar lengkap proyek dan repositori yang kami kembangkan. Pilih satu untuk melihat
+        kode sumber atau demonstrasi langsung.
+      </p>
+    </div>
+  </header>
+
+  <!-- CONTROLS + GRID -->
+  <main class="bg-[var(--navy)] px-6 md:px-16 py-12">
+    <div class="max-w-6xl mx-auto">
+      {% if projects %}
+      <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-10">
+        <div class="w-full md:max-w-sm">
+          <label for="repoSearch" class="sr-only">Cari proyek</label>
+          <input id="repoSearch" class="search-input" type="text" placeholder="> cari project..." autocomplete="off">
+        </div>
+        <div class="flex flex-wrap gap-2" id="statusFilters">
+          <button type="button" class="filter-chip active" data-status="all">ALL</button>
+          <button type="button" class="filter-chip" data-status="active">ACTIVE</button>
+          <button type="button" class="filter-chip" data-status="beta">BETA</button>
+          <button type="button" class="filter-chip" data-status="wip">WIP</button>
+          <button type="button" class="filter-chip" data-status="archived">ARCHIVED</button>
+        </div>
+      </div>
+
+      <div id="repoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for repo in projects %}
+        <article class="repo-card p-5" data-status="{{ repo.status }}" data-search="{{ (repo.name ~ ' ' ~ repo.description ~ ' ' ~ repo.tags|join(' '))|lower }}">
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <span class="font-display text-[8px] text-[var(--gold-light)]/40 tracking-widest">REPO#{{ '%02d'|format(loop.index) }}</span>
+            <span class="status status-{{ repo.status }}">{{ repo.status|upper }}</span>
+          </div>
+
+          <h2 class="repo-name font-display text-xs leading-loose mb-3">{{ repo.name }}</h2>
+
+          {% if repo.description %}
+          <p class="repo-desc flex-1 mb-4">{{ repo.description }}</p>
+          {% else %}
+          <p class="repo-desc flex-1 mb-4 opacity-40">// no description provided</p>
+          {% endif %}
+
+          {% if repo.tags %}
+          <div class="flex flex-wrap gap-2 mb-4">
+            {% for tag in repo.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="mt-auto flex flex-wrap gap-2">
+            {% if repo.repo_url %}
+            <a href="{{ repo.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px] px-4 py-2">SOURCE &gt;</a>
+            {% endif %}
+            {% if repo.demo_url %}
+            <a href="{{ repo.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px] px-4 py-2">DEMO &gt;</a>
+            {% endif %}
+            {% if not repo.repo_url and not repo.demo_url %}
+            <span class="font-display text-[8px] text-[var(--gold-light)]/30">// no links yet</span>
+            {% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+
+      <p id="noResults" class="hidden text-center font-display text-[10px] text-[var(--gold-light)]/50 mt-16">
+        // NO MISSIONS MATCH YOUR QUERY
+      </p>
+
+      {% else %}
+      <div class="pixel-border max-w-xl mx-auto text-center px-8 py-16">
+        <p class="font-display text-sm text-[var(--gold-light)] mb-4">// NO PROJECTS YET</p>
+        <p class="text-white/50 text-[10px] leading-loose mb-8">
+          Belum ada repositori yang dipublikasikan. Tambahkan dari admin panel.
+        </p>
+        <a href="/" class="pixel-btn pixel-btn-gold font-display text-xs px-6 py-3 inline-block">BACK TO HOME</a>
+      </div>
+      {% endif %}
+
+      <div class="text-center mt-16">
+        <a href="/" class="font-display text-[10px] text-[var(--gold-light)]/50 hover:text-[var(--gold-light)] transition">&larr; Back to Site</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-[var(--navy)] border-t-4 border-[var(--gold-light)] px-6 md:px-16 py-8">
+    <div class="max-w-6xl mx-auto text-center">
+      <div class="flex justify-center gap-1 mb-4">
+        <span class="pixel-deco"></span><span class="pixel-deco"></span><span class="pixel-deco"></span>
+      </div>
+      <p class="font-display text-[10px] text-[var(--gold-light)]/50">
+        &copy; <span id="year"></span> Gembong IT
+      </p>
+      <p class="font-display text-[8px] text-[var(--gold-light)]/30 tracking-widest mt-2">PRESS START TO CONTINUE</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    (function repoFilter(){
+      const search = document.getElementById('repoSearch');
+      const grid = document.getElementById('repoGrid');
+      if(!search || !grid) return;
+      const cards = Array.prototype.slice.call(grid.querySelectorAll('.repo-card'));
+      const noResults = document.getElementById('noResults');
+      const chips = Array.prototype.slice.call(document.querySelectorAll('.filter-chip'));
+      let status = 'all';
+
+      function apply(){
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach(function(card){
+          const matchStatus = status === 'all' || card.dataset.status === status;
+          const matchQuery = !q || (card.dataset.search || '').indexOf(q) !== -1;
+          const show = matchStatus && matchQuery;
+          card.style.display = show ? '' : 'none';
+          if(show) visible++;
+        });
+        noResults.classList.toggle('hidden', visible !== 0);
+      }
+
+      search.addEventListener('input', apply);
+      chips.forEach(function(chip){
+        chip.addEventListener('click', function(){
+          chips.forEach(function(c){ c.classList.remove('active'); });
+          chip.classList.add('active');
+          status = chip.dataset.status;
+          apply();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

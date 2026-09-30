@@ -12,6 +12,8 @@
   .pixel-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--gold-light);font-family:'Press Start 2P',monospace;padding:8px 12px;font-size:10px;outline:none;width:100%;}
   .pixel-input:focus{border-color:var(--gold-light);box-shadow:0 0 8px rgba(242,201,76,.3);}
   .pixel-input::placeholder{color:rgba(242,201,76,.3);}
+  select.pixel-input{color-scheme:dark;}
+  select.pixel-input option{background:var(--navy);color:var(--gold-light);}
   .pixel-btn{border:3px solid var(--gold);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;background:var(--gold-light);color:var(--navy);font-weight:700;font-family:'Press Start 2P',monospace;}
   .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
   .pixel-btn-danger{background:#ef4444;border-color:#ef4444;color:#fff;}
@@ -30,6 +32,15 @@
   .login-container{min-height:100vh;display:flex;align-items:center;justify-content:center;}
   .login-box{background:rgba(255,255,255,.04);border:2px solid rgba(242,201,76,.3);padding:32px;width:100%;max-width:400px;}
   .img-preview{width:100%;max-height:120px;object-fit:cover;border:2px solid rgba(242,201,76,.3);margin-top:8px;display:none;}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+  .tab-btn{font-family:'Press Start 2P',monospace;font-size:9px;padding:10px 14px;border:2px solid rgba(242,201,76,.35);background:rgba(255,255,255,.04);color:rgba(242,201,76,.6);cursor:pointer;transition:all .1s;letter-spacing:1px;}
+  .tab-btn:hover{background:rgba(255,255,255,.1);color:var(--gold-light);}
+  .tab-btn.active{background:var(--gold-light);color:var(--navy);border-color:var(--gold-light);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .hint{font-size:8px;line-height:2;color:rgba(242,201,76,.5);}
+  .badge-status{display:inline-block;border:2px solid;font-size:8px;padding:3px 7px;letter-spacing:1px;}
 </style>
 </head>
 <body>
@@ -64,10 +75,10 @@
 <!-- ADMIN DASHBOARD -->
 <div class="min-h-screen px-6 py-8">
   <div class="max-w-4xl mx-auto">
-    <div class="flex items-center justify-between mb-10">
+    <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-sm text-[var(--gold-light)]">ADMIN PANEL</h1>
-        <p class="text-[10px] text-white/40 mt-1">Edit Carousel Slides</p>
+        <p class="text-[10px] text-white/40 mt-1">Login sebagai {{ session.get('admin_user', 'admin') }}</p>
       </div>
       <a href="/admin/logout" class="pixel-btn pixel-btn-secondary text-xs px-4 py-2">LOGOUT</a>
     </div>
@@ -80,70 +91,176 @@
     <div class="alert alert-success mb-6">{{ message }}</div>
     {% endif %}
 
-    <form method="POST" action="/admin/save">
-      {% for slide in slides %}
-      <div class="slide-card" id="card-{{ loop.index0 }}">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE {{ loop.index }}</span>
-          <span class="text-[10px] text-white/30">{{ loop.index0 + 1 }} of {{ slides | length }}</span>
-          <div class="flex-1"></div>
-          <button type="button" onclick="removeSlide(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1 {% if slides | length <= 1 %}opacity-30 pointer-events-none{% endif %}">REMOVE</button>
-        </div>
+    <div class="tabs">
+      <button type="button" class="tab-btn {{ 'active' if active_tab != 'projects' and active_tab != 'account' else '' }}" data-tab="carousel">CAROUSEL</button>
+      <button type="button" class="tab-btn {{ 'active' if active_tab == 'projects' else '' }}" data-tab="projects">PROJECTS ({{ projects | length }})</button>
+      <button type="button" class="tab-btn {{ 'active' if active_tab == 'account' else '' }}" data-tab="account">ACCOUNT</button>
+      <div class="flex-1"></div>
+      <a href="/projects" target="_blank" class="tab-btn">VIEW SITE &nearr;</a>
+    </div>
 
-        <input type="hidden" name="slides[{{ loop.index0 }}][mode]" value="{{ slide.mode }}" class="mode-value">
+    <!-- ===================== CAROUSEL TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab != 'projects' and active_tab != 'account' else '' }}" id="panel-carousel">
+      <p class="text-[10px] text-white/40 mb-6">Edit Carousel Slides</p>
+      <form method="POST" action="/admin/save">
+        {% for slide in slides %}
+        <div class="slide-card" id="card-{{ loop.index0 }}">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE {{ loop.index }}</span>
+            <span class="text-[10px] text-white/30">{{ loop.index0 + 1 }} of {{ slides | length }}</span>
+            <div class="flex-1"></div>
+            <button type="button" onclick="removeSlide(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1 {% if slides | length <= 1 %}opacity-30 pointer-events-none{% endif %}">REMOVE</button>
+          </div>
 
-        <div class="mb-4">
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">MODE</label>
-          <div class="mode-toggle">
-            <button type="button" class="{{ 'active' if slide.mode == 'text' else '' }}" onclick="setMode(this, 'text')">TEXT</button>
-            <button type="button" class="{{ 'active' if slide.mode == 'image' else '' }}" onclick="setMode(this, 'image')">IMAGE</button>
+          <input type="hidden" name="slides[{{ loop.index0 }}][mode]" value="{{ slide.mode }}" class="mode-value">
+
+          <div class="mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">MODE</label>
+            <div class="mode-toggle">
+              <button type="button" class="{{ 'active' if slide.mode == 'text' else '' }}" onclick="setMode(this, 'text')">TEXT</button>
+              <button type="button" class="{{ 'active' if slide.mode == 'image' else '' }}" onclick="setMode(this, 'image')">IMAGE</button>
+            </div>
+          </div>
+
+          <!-- TEXT MODE FIELDS -->
+          <div class="text-fields">
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE</label>
+                <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input" required>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
+                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input" required>{{ slide.desc }}</textarea>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HP BAR (%)</label>
+                <input type="number" name="slides[{{ loop.index0 }}][hp]" value="{{ slide.hp }}" min="0" max="100" class="pixel-input" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- IMAGE MODE FIELDS -->
+          <div class="image-fields hidden">
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
+                <input type="url" name="slides[{{ loop.index0 }}][image]" value="{{ slide.image }}" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
+                <img src="{{ slide.image }}" class="img-preview" onerror="this.style.display='none'" onload="this.style.display='block'">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE (optional overlay)</label>
+                <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (optional overlay)</label>
+                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input"></textarea>
+              </div>
+            </div>
           </div>
         </div>
+        {% endfor %}
 
-        <!-- TEXT MODE FIELDS -->
-        <div class="text-fields">
+        <div id="formActions" class="flex gap-4 mt-8">
+          <button type="button" onclick="addSlide()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD SLIDE</button>
+          <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE CHANGES</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===================== PROJECTS TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab == 'projects' else '' }}" id="panel-projects">
+      <div class="flex items-center justify-between mb-6">
+        <p class="text-[10px] text-white/40">Kelola Repository / Project</p>
+        <span class="text-[10px] text-white/30">{{ projects | length }} total</span>
+      </div>
+      <form method="POST" action="/admin/projects/save" id="repoForm">
+        {% for repo in projects %}
+        <div class="slide-card repo-edit-card">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">REPO {{ loop.index }}</span>
+            <span class="text-[10px] text-white/30 repo-counter">{{ loop.index0 + 1 }} of {{ projects | length }}</span>
+            <div class="flex-1"></div>
+            <button type="button" onclick="removeRepo(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1">REMOVE</button>
+          </div>
           <div class="grid grid-cols-1 gap-4">
             <div>
-              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE</label>
-              <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input" required>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">NAME</label>
+              <input type="text" name="repos[{{ loop.index0 }}][name]" value="{{ repo.name }}" class="pixel-input" required placeholder="Nama project...">
             </div>
             <div>
               <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
-              <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input" required>{{ slide.desc }}</textarea>
+              <textarea name="repos[{{ loop.index0 }}][description]" class="pixel-input" placeholder="Deskripsi singkat...">{{ repo.description }}</textarea>
             </div>
-            <div>
-              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HP BAR (%)</label>
-              <input type="number" name="slides[{{ loop.index0 }}][hp]" value="{{ slide.hp }}" min="0" max="100" class="pixel-input" required>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">REPOSITORY URL</label>
+                <input type="url" name="repos[{{ loop.index0 }}][repo_url]" value="{{ repo.repo_url }}" class="pixel-input" placeholder="https://github.com/...">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DEMO URL</label>
+                <input type="url" name="repos[{{ loop.index0 }}][demo_url]" value="{{ repo.demo_url }}" class="pixel-input" placeholder="https://demo.example.com">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TAGS (pisahkan dengan koma)</label>
+                <input type="text" name="repos[{{ loop.index0 }}][tags]" value="{{ repo.tags | join(', ') }}" class="pixel-input" placeholder="python, flask, web">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">STATUS</label>
+                <select name="repos[{{ loop.index0 }}][status]" class="pixel-input">
+                  <option value="active" {{ 'selected' if repo.status == 'active' else '' }}>ACTIVE</option>
+                  <option value="beta" {{ 'selected' if repo.status == 'beta' else '' }}>BETA</option>
+                  <option value="wip" {{ 'selected' if repo.status == 'wip' else '' }}>WIP</option>
+                  <option value="archived" {{ 'selected' if repo.status == 'archived' else '' }}>ARCHIVED</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
+        {% endfor %}
 
-        <!-- IMAGE MODE FIELDS -->
-        <div class="image-fields hidden">
+        <div id="repoActions" class="flex gap-4 mt-8">
+          <button type="button" onclick="addRepo()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD PROJECT</button>
+          <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE PROJECTS</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===================== ACCOUNT TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab == 'account' else '' }}" id="panel-account">
+      <p class="text-[10px] text-white/40 mb-6">Keamanan Akun</p>
+      <div class="slide-card">
+        <p class="hint mb-6">
+          // Password disimpan sebagai hash (scrypt) di auth.json, bukan teks biasa.<br>
+          // Username saat ini: <span class="text-[var(--gold-light)]">{{ session.get('admin_user', 'admin') }}</span>
+        </p>
+        <form method="POST" action="/admin/password">
           <div class="grid grid-cols-1 gap-4">
             <div>
-              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
-              <input type="url" name="slides[{{ loop.index0 }}][image]" value="{{ slide.image }}" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
-              <img src="{{ slide.image }}" class="img-preview" onerror="this.style.display='none'" onload="this.style.display='block'">
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">USERNAME BARU (opsional)</label>
+              <input type="text" name="username" class="pixel-input" placeholder="{{ session.get('admin_user', 'admin') }}" autocomplete="off">
             </div>
             <div>
-              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE (optional overlay)</label>
-              <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input">
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PASSWORD SAAT INI (wajib)</label>
+              <input type="password" name="current_password" class="pixel-input" required autocomplete="current-password">
             </div>
             <div>
-              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (optional overlay)</label>
-              <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input"></textarea>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PASSWORD BARU (opsional, min 6)</label>
+              <input type="password" name="new_password" class="pixel-input" autocomplete="new-password">
+            </div>
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">KONFIRMASI PASSWORD BARU</label>
+              <input type="password" name="confirm_password" class="pixel-input" autocomplete="new-password">
             </div>
           </div>
-        </div>
+          <div class="mt-8">
+            <button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN PERUBAHAN</button>
+          </div>
+        </form>
       </div>
-      {% endfor %}
-
-      <div id="formActions" class="flex gap-4 mt-8">
-        <button type="button" onclick="addSlide()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD SLIDE</button>
-        <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE CHANGES</button>
-      </div>
-    </form>
+    </section>
 
     <div class="mt-12 text-center">
       <a href="/" class="text-[10px] text-white/40 hover:text-[var(--gold-light)] transition">&larr; Back to Site</a>
@@ -152,6 +269,17 @@
 </div>
 
 <script>
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('.tab-btn[data-tab]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------------- Carousel editor ---------------- */
 let slideNextId = {{ slides | length }};
 
 function getUniqueId(){
@@ -167,9 +295,6 @@ function applyMode(card, mode){
   textFields.classList.toggle('hidden', !isText);
   imageFields.classList.toggle('hidden', isText);
 
-  // Disable the inactive section so its inputs are neither submitted
-  // (keeps slides[i][field] arrays aligned) nor validated (required
-  // inputs inside display:none block form submission).
   textFields.querySelectorAll('input, textarea').forEach(el => {
     el.disabled = !isText;
     if(!isText) el.value = '';
@@ -205,7 +330,7 @@ function addSlide(){
   const card = document.createElement('div');
   card.className = 'slide-card';
   card.dataset.id = id;
-  const total = document.querySelectorAll('.slide-card').length + 1;
+  const total = document.querySelectorAll('#panel-carousel .slide-card').length + 1;
   card.innerHTML = `
     <div class="flex items-center gap-3 mb-4">
       <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE <span class="new-index">${total}</span></span>
@@ -254,7 +379,7 @@ function addSlide(){
         </div>
       </div>
     </div>`;
-  const form = document.querySelector('form');
+  const form = document.querySelector('#panel-carousel form');
   form.insertBefore(card, document.getElementById('formActions'));
   applyMode(card, 'text');
 }
@@ -265,9 +390,9 @@ function removeSlide(btn){
 }
 
 function refreshLabels(){
-  const cards = document.querySelectorAll('.slide-card');
+  const cards = document.querySelectorAll('#panel-carousel .slide-card');
   cards.forEach((card, i) => {
-    const badge = card.querySelector('span.text-[var(--gold-light)].text-\\[10px\\]');
+    const badge = card.querySelector('span.text-\\[var\\(--gold-light\\)\\].text-\\[10px\\]');
     if(badge){
       const span = badge.querySelector('.new-index');
       if(span) span.textContent = i + 1;
@@ -278,13 +403,80 @@ function refreshLabels(){
   });
 }
 
-// Apply the saved mode to every slide card on load: toggles the visible
-// section and disables the inactive one so only one title/desc per card
-// is submitted and required fields don't block saving.
-document.querySelectorAll('.slide-card').forEach(card => {
+// Apply the saved mode to every slide card on load.
+document.querySelectorAll('#panel-carousel .slide-card').forEach(card => {
   const modeInput = card.querySelector('.mode-value');
   applyMode(card, modeInput ? modeInput.value : 'text');
 });
+
+/* ---------------- Projects editor ---------------- */
+let repoNextId = {{ projects | length }};
+
+function addRepo(){
+  const id = repoNextId++;
+  const card = document.createElement('div');
+  card.className = 'slide-card repo-edit-card';
+  const total = document.querySelectorAll('#panel-projects .repo-edit-card').length + 1;
+  card.innerHTML = `
+    <div class="flex items-center gap-3 mb-4">
+      <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">REPO <span class="new-index">${total}</span></span>
+      <span class="text-[10px] text-white/30 repo-counter">${total} of ?</span>
+      <div class="flex-1"></div>
+      <button type="button" onclick="removeRepo(this)" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1">REMOVE</button>
+    </div>
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">NAME</label>
+        <input type="text" name="repos[${id}][name]" class="pixel-input" required placeholder="Nama project...">
+      </div>
+      <div>
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
+        <textarea name="repos[${id}][description]" class="pixel-input" placeholder="Deskripsi singkat..."></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">REPOSITORY URL</label>
+          <input type="url" name="repos[${id}][repo_url]" class="pixel-input" placeholder="https://github.com/...">
+        </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DEMO URL</label>
+          <input type="url" name="repos[${id}][demo_url]" class="pixel-input" placeholder="https://demo.example.com">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TAGS (pisahkan dengan koma)</label>
+          <input type="text" name="repos[${id}][tags]" class="pixel-input" placeholder="python, flask, web">
+        </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">STATUS</label>
+          <select name="repos[${id}][status]" class="pixel-input">
+            <option value="active">ACTIVE</option>
+            <option value="beta">BETA</option>
+            <option value="wip">WIP</option>
+            <option value="archived">ARCHIVED</option>
+          </select>
+        </div>
+      </div>
+    </div>`;
+  const form = document.getElementById('repoForm');
+  form.insertBefore(card, document.getElementById('repoActions'));
+}
+
+function removeRepo(btn){
+  btn.closest('.repo-edit-card').remove();
+  const cards = document.querySelectorAll('#panel-projects .repo-edit-card');
+  cards.forEach((card, i) => {
+    const badge = card.querySelector('span.px-2.py-1');
+    if(badge){
+      const span = badge.querySelector('.new-index');
+      if(span) span.textContent = i + 1;
+      else badge.textContent = `REPO ${i + 1}`;
+    }
+    const counter = card.querySelector('.repo-counter');
+    if(counter) counter.textContent = `${i + 1} of ${cards.length}`;
+  });
+}
 </script>
 {% endif %}
 </body>
