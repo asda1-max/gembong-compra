@@ -94,13 +94,15 @@
     <div class="tabs">
       <button type="button" class="tab-btn {{ 'active' if active_tab != 'projects' and active_tab != 'account' else '' }}" data-tab="carousel">CAROUSEL</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'projects' else '' }}" data-tab="projects">PROJECTS ({{ projects | length }})</button>
+      <button type="button" class="tab-btn {{ 'active' if active_tab == 'contact' else '' }}" data-tab="contact">CONTACT</button>
+      <button type="button" class="tab-btn {{ 'active' if active_tab == 'messages' else '' }}" data-tab="messages">MESSAGES ({{ messages | length }})</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'account' else '' }}" data-tab="account">ACCOUNT</button>
       <div class="flex-1"></div>
       <a href="/projects" target="_blank" class="tab-btn">VIEW SITE &nearr;</a>
     </div>
 
     <!-- ===================== CAROUSEL TAB ===================== -->
-    <section class="tab-panel {{ 'active' if active_tab != 'projects' and active_tab != 'account' else '' }}" id="panel-carousel">
+    <section class="tab-panel {{ 'active' if active_tab != 'projects' and active_tab != 'account' and active_tab != 'messages' and active_tab != 'contact' else '' }}" id="panel-carousel">
       <p class="text-[10px] text-white/40 mb-6">Edit Carousel Slides</p>
       <form method="POST" action="/admin/save">
         {% for slide in slides %}
@@ -226,6 +228,83 @@
           <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE PROJECTS</button>
         </div>
       </form>
+    </section>
+
+    <!-- ===================== CONTACT TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab == 'contact' else '' }}" id="panel-contact">
+      <p class="text-[10px] text-white/40 mb-6">Info kontak yang tampil di seluruh situs</p>
+      <div class="slide-card">
+        <form method="POST" action="/admin/contact/save">
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">WHATSAPP (angka, boleh 08... atau 62...)</label>
+              <input type="text" name="whatsapp" value="{{ contact.whatsapp }}" class="pixel-input" placeholder="6281234567890">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">EMAIL</label>
+                <input type="text" name="email" value="{{ contact.email }}" class="pixel-input" placeholder="hello@contoh.com">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">NO. TELEPON (tampil)</label>
+                <input type="text" name="phone" value="{{ contact.phone }}" class="pixel-input" placeholder="+62 812-3456-7890">
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">ALAMAT / LOKASI</label>
+              <input type="text" name="address" value="{{ contact.address }}" class="pixel-input" placeholder="Yogyakarta, Indonesia">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">INSTAGRAM URL</label>
+                <input type="text" name="instagram" value="{{ contact.instagram }}" class="pixel-input" placeholder="https://instagram.com/...">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">LINKEDIN URL</label>
+                <input type="text" name="linkedin" value="{{ contact.linkedin }}" class="pixel-input" placeholder="https://linkedin.com/company/...">
+              </div>
+            </div>
+          </div>
+          <p class="hint mt-4">// Kosongkan sebuah kolom untuk menyembunyikan tombol/link terkait.</p>
+          <div class="mt-8">
+            <button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN KONTAK</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================== MESSAGES TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab == 'messages' else '' }}" id="panel-messages">
+      <div class="flex items-center justify-between mb-6">
+        <p class="text-[10px] text-white/40">Pesan masuk dari form kontak</p>
+        <span class="text-[10px] text-white/30">{{ messages | length }} pesan</span>
+      </div>
+      {% if messages %}
+        {% for msg in messages | reverse %}
+        <div class="slide-card">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">INBOX {{ messages | length - loop.index0 }}</span>
+            <span class="text-[10px] text-white/30">{{ msg.created_at }}</span>
+            <div class="flex-1"></div>
+            <form method="POST" action="/admin/messages/{{ messages | length - 1 - loop.index0 }}/delete" onsubmit="return confirm('Hapus pesan ini?')">
+              <button type="submit" class="pixel-btn pixel-btn-danger text-[10px] px-3 py-1">HAPUS</button>
+            </form>
+          </div>
+          <div class="grid grid-cols-1 gap-2 text-[10px]">
+            <p class="text-[var(--gold-light)]">Nama: <span class="text-white/80">{{ msg.name }}</span></p>
+            {% if msg.email %}<p class="text-[var(--gold-light)]">Email: <span class="text-white/80">{{ msg.email }}</span></p>{% endif %}
+            {% if msg.phone %}<p class="text-[var(--gold-light)]">HP/WA: <span class="text-white/80">{{ msg.phone }}</span></p>{% endif %}
+            <p class="text-[var(--gold-light)] mt-2">Pesan:</p>
+            <p class="text-white/70 leading-loose whitespace-pre-wrap">{{ msg.message }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div class="slide-card text-center py-12">
+        <p class="font-display text-[10px] text-[var(--gold-light)]/50">// INBOX KOSONG</p>
+        <p class="hint mt-4">Pesan dari form kontak akan muncul di sini.</p>
+      </div>
+      {% endif %}
     </section>
 
     <!-- ===================== ACCOUNT TAB ===================== -->

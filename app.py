@@ -2,6 +2,7 @@ import os
 import re
 import json
 import secrets
+from datetime import datetime
 from flask import Flask, render_template, request, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -23,6 +24,15 @@ CAROUSEL = [
 ]
 
 REPO_STATUS = ("active", "beta", "wip", "archived")
+
+CONTACT_DEFAULTS = {
+    "whatsapp": "6281234567890",
+    "email": "hello@gembong-it.com",
+    "phone": "+62 812-3456-7890",
+    "address": "Yogyakarta, Indonesia",
+    "instagram": "https://instagram.com/gembong.it",
+    "linkedin": "https://linkedin.com/company/gembong-it",
+}
 
 
 # --------------------------------------------------------------------------
@@ -62,7 +72,8 @@ def _write_json(path, obj):
 
 def load_data():
     if not os.path.exists(DATA_FILE):
-        data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": []}
+        data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": [],
+                "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS))}
         save_data(data)
         return data
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -76,6 +87,15 @@ def load_data():
         data["carousel"] = json.loads(json.dumps(CAROUSEL))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
+    if not isinstance(data.get("messages"), list):
+        data["messages"] = []
+    contact = data.get("contact")
+    if not isinstance(contact, dict):
+        data["contact"] = json.loads(json.dumps(CONTACT_DEFAULTS))
+    else:
+        merged = json.loads(json.dumps(CONTACT_DEFAULTS))
+        merged.update({k: (v if isinstance(v, str) else "") for k, v in contact.items() if k in merged})
+        data["contact"] = merged
     return data
 
 
@@ -200,6 +220,8 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
         "admin.html",
         slides=data["carousel"],
         projects=data["projects"],
+        messages=data.get("messages", []),
+        contact=data["contact"],
         message=message,
         error=error,
         active_tab=active_tab,
@@ -212,13 +234,66 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
 @app.route("/")
 def index():
     data = load_data()
-    return render_template("index.html", carousel=data["carousel"])
+    return render_template("index.html", carousel=data["carousel"], contact=data["contact"])
 
 
 @app.route("/projects")
 def projects():
     data = load_data()
     return render_template("projects.html", projects=data["projects"])
+
+
+@app.route("/info")
+def info():
+    data = load_data()
+    return render_template("info.html", contact=data["contact"])
+
+
+@app.route("/contact", methods=["POST"])
+def contact():
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip()
+    phone = request.form.get("phone", "").strip()
+    message = request.form.get("message", "").strip()
+
+    if not (name and message):
+        return {"ok": False, "error": "Nama dan pesan wajib diisi."}, 400
+
+    data = load_data()
+    data.setdefault("messages", []).append({
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "message": message,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    })
+    save_data(data)
+    return {"ok": True, "message": "Pesan terkirim! Kami akan menghubungi Anda segera."}
+
+
+CONTACT_FIELDS = ("whatsapp", "email", "phone", "address", "instagram", "linkedin")
+
+
+def collect_contact(form):
+    contact = {}
+    for field in CONTACT_FIELDS:
+        contact[field] = (form.get(field, "") or "").strip()
+    raw = (form.get("whatsapp", "") or "").strip()
+    digits = re.sub(r"\D", "", raw)
+    if digits.startswith("0"):
+        digits = "62" + digits[1:]
+    contact["whatsapp_digits"] = digits
+    return {k: contact[k] for k in CONTACT_FIELDS}
+
+
+def _wa_digits(value):
+    digits = re.sub(r"\D", "", value or "")
+    if digits.startswith("0"):
+        digits = "62" + digits[1:]
+    return digits
+
+
+app.jinja_env.filters["wa_digits"] = _wa_digits
 
 
 # --------------------------------------------------------------------------
@@ -237,7 +312,7 @@ def admin():
                 session["admin_user"] = username
                 return redirect(url_for("admin"))
             error = "Invalid credentials"
-        return render_template("admin.html", slides=[], projects=[],
+        return render_template("admin.html", slides=[], projects=[], messages=[], contact={},
                                error=error, message=None, active_tab="carousel")
 
     if request.method == "POST":
@@ -305,6 +380,32 @@ def admin_password():
 
     save_auth(auth)
     return _render_admin(message="Akun berhasil diperbarui.", active_tab="account")
+
+
+@app.route("/admin/contact/save", methods=["POST"])
+def admin_contact_save():
+    if not session.get("logged_in"):
+        return redirect(url_for("admin"))
+
+    data = load_data()
+    data["contact"] = collect_contact(request.form)
+    save_data(data)
+    return _render_admin(message="Contact info updated successfully!", active_tab="contact")
+
+
+@app.route("/admin/messages/<int:index>/delete", methods=["POST"])
+def admin_message_delete(index):
+    if not session.get("logged_in"):
+        return redirect(url_for("admin"))
+
+    data = load_data()
+    messages = data.get("messages", [])
+    if 0 <= index < len(messages):
+        messages.pop(index)
+        data["messages"] = messages
+        save_data(data)
+        return _render_admin(message="Pesan dihapus.", active_tab="messages")
+    return _render_admin(error="Pesan tidak ditemukan.", active_tab="messages")
 
 
 @app.route("/admin/logout")

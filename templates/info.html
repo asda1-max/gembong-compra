@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services &amp; FAQ — Gembong IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;}
+  html,body{height:100%;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--navy);font-family:'Press Start 2P',monospace;}
+  .font-display{font-family:'Press Start 2P',monospace;}
+  *{image-rendering:pixelated;}
+
+  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+  .grid-overlay{
+    background-image:linear-gradient(rgba(242,201,76,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(242,201,76,.1) 1px,transparent 1px);
+    background-size:20px 20px;animation:gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse{0%,100%{opacity:.6}50%{opacity:1}}
+  .scanlines{background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);pointer-events:none;}
+  .pixel-border{border:3px solid var(--gold-light);box-shadow:4px 4px 0 rgba(0,0,0,.6),inset 0 0 0 1px rgba(242,201,76,.15);}
+  .pixel-btn{border:3px solid var(--gold);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;}
+  .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
+  .pixel-btn-gold{background:var(--gold-light);color:var(--navy);font-weight:700;}
+  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--gold-light);}
+  .pixel-btn-glass:hover{background:rgba(255,255,255,.12);}
+  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--gold-light);opacity:.5;}
+
+  .critter{position:absolute;width:4px;height:4px;background:var(--gold-light);opacity:.25;pointer-events:none;}
+  @keyframes rise{0%{transform:translateY(0) scale(1);opacity:.25}50%{opacity:.45}100%{transform:translateY(-120px) scale(.6);opacity:0}}
+  .critter.rise{animation:rise 6s ease-in-out infinite;}
+  .hp-bar{height:4px;background:rgba(242,201,76,.15);border:1px solid rgba(242,201,76,.3);}
+  .hp-bar-fill{height:100%;background:var(--gold-light);}
+
+  .svc-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
+  .svc-card::before{content:'';position:absolute;top:-3px;left:10px;width:8px;height:8px;background:var(--gold-light);}
+  .svc-card:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 rgba(0,0,0,.6);border-color:var(--gold-light);}
+  .svc-num{font-size:20px;color:rgba(242,201,76,.25);}
+  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--gold-light);font-size:8px;padding:4px 7px;}
+
+  .step-num{width:44px;height:44px;border:3px solid var(--gold-light);display:flex;align-items:center;justify-content:center;background:rgba(242,201,76,.08);color:var(--gold-light);font-size:12px;flex-shrink:0;}
+
+  .faq-item{border:2px solid rgba(242,201,76,.3);background:rgba(255,255,255,.03);margin-bottom:10px;}
+  .faq-q{width:100%;text-align:left;background:transparent;border:none;cursor:pointer;padding:16px;color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.9;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
+  .faq-q:hover{background:rgba(255,255,255,.05);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s steps(6);padding:0 16px;color:rgba(217,209,168,.85);font-size:9px;line-height:2.2;}
+  .faq-item.open .faq-a{max-height:340px;padding-bottom:16px;}
+  .faq-mark{color:var(--gold-light);transition:transform .2s steps(2);flex-shrink:0;}
+  .faq-item.open .faq-mark{transform:rotate(45deg);}
+
+  .contact-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;padding:10px 12px;outline:none;width:100%;}
+  .contact-input:focus{border-color:var(--gold-light);box-shadow:0 0 8px rgba(242,201,76,.3);}
+  .contact-input::placeholder{color:rgba(242,201,76,.3);}
+
+  .cursor-blink{border-right:2px solid var(--gold-light);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
+  @keyframes cursor-blink{0%,100%{border-right-color:var(--gold-light)}50%{border-right-color:transparent}}
+  ::selection{background:var(--gold-light);color:var(--navy);}
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--navy);}
+  ::-webkit-scrollbar-thumb{background:var(--gold);border:2px solid var(--navy);}
+
+  @media(max-width:639px){
+    h1{font-size:12px !important;line-height:2 !important;}
+    h2{font-size:11px !important;line-height:2 !important;}
+    .svc-num{font-size:16px;}
+    .contact-input{font-size:9px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body class="text-white">
+
+  <!-- TOP HUD -->
+  <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--gold-light)]/20" style="background:rgba(13,27,76,.95);">
+    <span class="text-[var(--gold-light)]/60">SYS.ONLINE</span>
+    <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:85%"></div></div>
+    <span class="text-[var(--gold-light)]/60">KNOWLEDGE</span>
+    <div class="hp-bar w-20"><div class="hp-bar-fill" style="width:100%"></div></div>
+    <span class="text-[var(--gold-light)]/60">FULL</span>
+    <span class="text-[var(--gold-light)]/60 ml-auto">GEMBONG_IT v1.0</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="sticky z-30 sm:top-[32px] top-0">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-6 py-3" style="background:rgba(13,27,76,.92);border:2px solid rgba(242,201,76,.3);box-shadow:4px 4px 0 rgba(0,0,0,.5);backdrop-filter:blur(10px);">
+      <a href="/" class="flex items-center gap-3">
+        <span class="sr-only">Gembong IT</span>
+        <div class="w-8 h-8 border-2 border-[var(--gold-light)] flex items-center justify-center">
+          <svg style="image-rendering:pixelated;shape-rendering:crispEdges;flex-shrink:0;" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="5" y="2" width="6" height="1" fill="#f2c94c"/>
+            <rect x="4" y="3" width="8" height="1" fill="#f2c94c"/>
+            <rect x="3" y="4" width="10" height="1" fill="#f2c94c"/>
+            <rect x="2" y="5" width="12" height="1" fill="#f2c94c"/>
+            <rect x="1" y="6" width="14" height="1" fill="#f2c94c"/>
+            <rect x="0" y="7" width="16" height="1" fill="#f2c94c"/>
+            <rect x="1" y="8" width="14" height="1" fill="#d4af0e"/>
+            <rect x="2" y="9" width="12" height="1" fill="#d4af0e"/>
+            <rect x="3" y="10" width="10" height="1" fill="#d4af0e"/>
+            <rect x="4" y="11" width="8" height="1" fill="#a67f0a"/>
+            <rect x="5" y="12" width="6" height="1" fill="#a67f0a"/>
+            <rect x="6" y="3" width="1" height="4" fill="#fff6cf"/>
+          </svg>
+        </div>
+        <span class="font-display text-xs text-[var(--gold-light)] hidden sm:inline">GEMBONG IT</span>
+      </a>
+      <ul class="flex items-center gap-1">
+        <li><a href="/" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">HOME</a></li>
+        <li><a href="/projects" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">REPO</a></li>
+        <li><a href="/info" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">SERVICES</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="hero-bg relative overflow-hidden px-6 md:px-16 pt-16 pb-12">
+    <div class="grid-overlay absolute inset-0"></div>
+    <div class="scanlines absolute inset-0"></div>
+    <div class="critter rise" style="left:12%;top:60%;animation-duration:6s;"></div>
+    <div class="critter rise" style="left:38%;top:40%;animation-duration:7s;animation-delay:1s;"></div>
+    <div class="critter rise" style="left:70%;top:55%;animation-duration:5.5s;animation-delay:.6s;"></div>
+    <div class="critter rise" style="left:88%;top:35%;animation-duration:6.5s;animation-delay:1.4s;"></div>
+
+    <div class="relative max-w-6xl mx-auto text-center">
+      <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ LOADOUT &amp; INTEL ★</span>
+      <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
+        Services <span class="text-[var(--gold-light)]">&amp; FAQ</span><span class="cursor-blink"></span>
+      </h1>
+      <p class="text-white/60 mt-5 max-w-2xl mx-auto leading-loose text-xs">
+        Apa yang kami kerjakan, bagaimana prosesnya, dan jawaban untuk pertanyaan yang
+        paling sering ditanyakan calon klien.
+      </p>
+    </div>
+  </header>
+
+  <!-- SERVICES -->
+  <main class="bg-[var(--navy)] px-6 md:px-16 py-12">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ Layanan Kami ★</h2>
+      <p class="text-[var(--gold-light)]/50 text-center font-display text-[10px] mb-10">PICK YOUR QUEST →</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <article class="svc-card p-6">
+          <span class="svc-num font-display">01</span>
+          <h3 class="font-display text-xs text-[var(--gold-light)] mt-3 mb-4">Pengembangan Sistem</h3>
+          <p class="text-white/70 text-[10px] leading-loose mb-4">
+            Sistem informasi custom untuk operasional bisnis: ERP ringan, inventory, POS,
+            HR/payroll, hingga dashboard laporan real-time yang sesuai alur kerja Anda.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag-pill">ERP &amp; Inventory</span>
+            <span class="tag-pill">Dashboard</span>
+            <span class="tag-pill">Otomasi Laporan</span>
+          </div>
+        </article>
+
+        <article class="svc-card p-6">
+          <span class="svc-num font-display">02</span>
+          <h3 class="font-display text-xs text-[var(--gold-light)] mt-3 mb-4">Aplikasi Web &amp; Mobile</h3>
+          <p class="text-white/70 text-[10px] leading-loose mb-4">
+            Produk digital responsif dan cepat — dari landing page, portal pelanggan,
+            e-commerce, sampai aplikasi mobile yang terhubung ke sistem Anda.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag-pill">Website</span>
+            <span class="tag-pill">Web App</span>
+            <span class="tag-pill">Mobile</span>
+          </div>
+        </article>
+
+        <article class="svc-card p-6">
+          <span class="svc-num font-display">03</span>
+          <h3 class="font-display text-xs text-[var(--gold-light)] mt-3 mb-4">Infrastruktur Jaringan</h3>
+          <p class="text-white/70 text-[10px] leading-loose mb-4">
+            Perancangan dan instalasi jaringan kantor yang andal, VPN, server,
+            backup, serta monitoring agar operasional tetap menyala 24/7.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag-pill">LAN &amp; Wi-Fi</span>
+            <span class="tag-pill">Server</span>
+            <span class="tag-pill">Keamanan</span>
+          </div>
+        </article>
+
+        <article class="svc-card p-6">
+          <span class="svc-num font-display">04</span>
+          <h3 class="font-display text-xs text-[var(--gold-light)] mt-3 mb-4">Konsultasi &amp; Maintenance</h3>
+          <p class="text-white/70 text-[10px] leading-loose mb-4">
+            Pendampingan teknologi, audit sistem, dukungan berkala, dan pemeliharaan
+            agar solusi Anda terus relevan seiring pertumbuhan bisnis.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag-pill">Audit</span>
+            <span class="tag-pill">Support</span>
+            <span class="tag-pill">Training</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <!-- PROCESS -->
+  <section class="bg-[var(--gold)] px-6 md:px-16 py-16">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--navy)] text-center mb-2">★ Alur Kerja ★</h2>
+      <p class="text-[var(--navy)]/60 text-center font-display text-[10px] mb-12">HOW A PROJECT LEVELS UP</p>
+
+      <div class="flex flex-col gap-5">
+        <div class="flex items-start gap-4 bg-[var(--navy)] p-5" style="border:2px solid rgba(13,27,76,.9);box-shadow:4px 4px 0 rgba(0,0,0,.25);">
+          <div class="step-num font-display">1</div>
+          <div>
+            <h3 class="font-display text-[11px] text-[var(--gold-light)] mb-3">Discover &amp; Briefing</h3>
+            <p class="text-white/70 text-[10px] leading-loose">Kami dengarkan kebutuhan, tujuan, dan kendala bisnis Anda untuk menyusun lingkup kerja yang jelas.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-[var(--navy)] p-5" style="border:2px solid rgba(13,27,76,.9);box-shadow:4px 4px 0 rgba(0,0,0,.25);">
+          <div class="step-num font-display">2</div>
+          <div>
+            <h3 class="font-display text-[11px] text-[var(--gold-light)] mb-3">Design &amp; Prototype</h3>
+            <p class="text-white/70 text-[10px] leading-loose">Rancangan UI/UX dan arsitektur sistem dipresentasikan sebelum masuk tahap pengembangan, agar tidak ada kejutan.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-[var(--navy)] p-5" style="border:2px solid rgba(13,27,76,.9);box-shadow:4px 4px 0 rgba(0,0,0,.25);">
+          <div class="step-num font-display">3</div>
+          <div>
+            <h3 class="font-display text-[11px] text-[var(--gold-light)] mb-3">Build &amp; Review</h3>
+            <p class="text-white/70 text-[10px] leading-loose">Pengembangan berjalan dengan pembaruan berkala, sehingga Anda bisa memberi masukan sepanjang proses.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-[var(--navy)] p-5" style="border:2px solid rgba(13,27,76,.9);box-shadow:4px 4px 0 rgba(0,0,0,.25);">
+          <div class="step-num font-display">4</div>
+          <div>
+            <h3 class="font-display text-[11px] text-[var(--gold-light)] mb-3">Launch &amp; Support</h3>
+            <p class="text-white/70 text-[10px] leading-loose">Peluncuran, pelatihan penggunaan, dan dukungan pasca-rilis supaya solusi benar-benar terpakai maksimal.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-[var(--navy)] px-6 md:px-16 py-16">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ FAQ ★</h2>
+      <p class="text-[var(--gold-light)]/50 text-center font-display text-[10px] mb-10">FREQUENTLY ASKED QUESTIONS</p>
+
+      <div id="faqList">
+        <div class="faq-item">
+          <button type="button" class="faq-q">Berapa lama sebuah proyek biasanya dikerjakan?<span class="faq-mark">+</span></button>
+          <div class="faq-a">Durasi bergantung pada kompleksitas. Landing page bisa 1–2 minggu, sedangkan sistem custom umumnya 1–3 bulan. Estimasi rinci kami berikan setelah sesi briefing.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Bagaimana sistem pembayarannya?<span class="faq-mark">+</span></button>
+          <div class="faq-a">Kami memakai skema bertahap: uang muka di awal, pembayaran di tengah progres, dan pelunasan saat proyek selesai. Semua disepakati tertulis sebelum mulai.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Apakah ada garansi dan dukungan setelah rilis?<span class="faq-mark">+</span></button>
+          <div class="faq-a">Ya. Setiap proyek mendapat masa garansi untuk perbaikan bug, serta opsi paket maintenance bulanan untuk pemeliharaan dan pengembangan lanjutan.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Bisakah menyesuaikan dengan sistem yang sudah ada?<span class="faq-mark">+</span></button>
+          <div class="faq-a">Tentu. Kami dapat mengintegrasikan solusi baru dengan aplikasi, database, atau perangkat yang sudah Anda pakai, termasuk migrasi data bila diperlukan.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Apakah source code diserahkan ke klien?<span class="faq-mark">+</span></button>
+          <div class="faq-a">Untuk paket pengembangan penuh, ya — source code dan dokumentasi menjadi milik Anda setelah pelunasan. Untuk paket langganan, akses diberikan sesuai perjanjian.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="bg-[var(--gold)] px-6 md:px-16 py-16">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--navy)] text-center mb-2">★ Hubungi Kami ★</h2>
+      <p class="text-[var(--navy)]/60 text-center font-display text-[10px] mb-10">RESPON CEPAT — PILIH JALUR FAVORITMU</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        {% if contact.whatsapp %}
+        <a href="https://wa.me/{{ contact.whatsapp | wa_digits }}?text=Halo%20Gembong%20IT%2C%20saya%20ingin%20konsultasi" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[10px] px-5 py-4 text-center">WA CHAT</a>
+        {% endif %}
+        {% if contact.email %}
+        <a href="mailto:{{ contact.email }}?subject=Konsultasi%20Proyek%20-%20Gembong%20IT" class="pixel-btn font-display text-[10px] px-5 py-4 text-center" style="background:var(--navy);color:var(--gold-light);border-color:var(--navy);">KIRIM EMAIL</a>
+        {% endif %}
+        {% if contact.phone %}
+        <a href="tel:{{ contact.phone | wa_digits }}" class="pixel-btn font-display text-[10px] px-5 py-4 text-center" style="background:transparent;color:var(--navy);border-color:var(--navy);">TELEPON</a>
+        {% endif %}
+      </div>
+
+      <div class="pixel-border" style="background:var(--navy);">
+        <div class="p-6 md:p-8">
+          <h3 class="font-display text-xs text-[var(--gold-light)] mb-6">// atau tinggalkan pesan</h3>
+          <form id="contactForm" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block" for="cf-name">NAMA *</label>
+                <input class="contact-input" id="cf-name" name="name" type="text" placeholder="Nama Anda" required>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block" for="cf-email">EMAIL</label>
+                <input class="contact-input" id="cf-email" name="email" type="email" placeholder="email@contoh.com">
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block" for="cf-phone">NO. HP / WA</label>
+                <input class="contact-input" id="cf-phone" name="phone" type="text" placeholder="0812...">
+              </div>
+            </div>
+            <div class="mb-6">
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block" for="cf-message">PESAN *</label>
+              <textarea class="contact-input" id="cf-message" name="message" rows="4" placeholder="Ceritakan kebutuhan atau proyek Anda..." required style="resize:vertical;min-height:90px;"></textarea>
+            </div>
+            <button type="submit" class="pixel-btn pixel-btn-gold font-display text-xs px-8 py-3 w-full md:w-auto">KIRIM PESAN</button>
+            <p id="contactStatus" class="font-display text-[9px] mt-4 leading-loose" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-[var(--navy)] border-t-4 border-[var(--gold-light)] px-6 md:px-16 py-8">
+    <div class="max-w-6xl mx-auto text-center">
+      <div class="flex justify-center gap-1 mb-4">
+        <span class="pixel-deco"></span><span class="pixel-deco"></span><span class="pixel-deco"></span>
+      </div>
+      <p class="font-display text-[10px] text-[var(--gold-light)]/50">
+        &copy; <span id="year"></span> Gembong IT
+      </p>
+      <p class="font-display text-[8px] text-[var(--gold-light)]/30 tracking-widest mt-2">PRESS START TO CONTINUE</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    (function faq(){
+      const items = document.querySelectorAll('.faq-item');
+      items.forEach(function(item){
+        item.querySelector('.faq-q').addEventListener('click', function(){
+          item.classList.toggle('open');
+        });
+      });
+    })();
+
+    (function contactForm(){
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('contactStatus');
+      if(!form) return;
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        status.style.color = 'var(--gold-light)';
+        status.textContent = '// mengirim...';
+        const payload = new FormData(form);
+        fetch('/contact', {method: 'POST', body: payload})
+          .then(function(r){ return r.json().then(function(j){ return {ok: r.ok, body: j}; }); })
+          .then(function(res){
+            if(res.ok && res.body.ok){
+              status.style.color = '#22c55e';
+              status.textContent = '>> ' + res.body.message;
+              form.reset();
+            }else{
+              status.style.color = '#ef4444';
+              status.textContent = '!! ' + ((res.body && res.body.error) || 'Gagal mengirim pesan.');
+            }
+          })
+          .catch(function(){
+            status.style.color = '#ef4444';
+            status.textContent = '!! Koneksi gagal. Coba lagi atau hubungi via WhatsApp.';
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

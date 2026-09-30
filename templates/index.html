@@ -216,6 +216,7 @@
       <ul class="hidden sm:flex items-center gap-1">
         <li><a href="#projects" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">LATEST</a></li>
         <li><a href="/projects" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">REPOSITORY</a></li>
+        <li><a href="/info" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">SERVICES</a></li>
         <li><a href="#home" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">HOME</a></li>
         <li><a href="#contact" class="px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
       </ul>
@@ -234,6 +235,7 @@
       <ul class="flex flex-col p-4 gap-2">
         <li><a href="#projects" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► LATEST PROJECT</a></li>
         <li><a href="/projects" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► REPOSITORY</a></li>
+        <li><a href="/info" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► SERVICES &amp; FAQ</a></li>
         <li><a href="#home" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 text-center tracking-wide">► HOME</a></li>
         <li><a href="#contact" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 hover:text-[var(--gold-light)] border border-[var(--gold-light)]/20 hover:bg-[var(--gold-light)]/10 text-center tracking-wide">► CONTACT</a></li>
       </ul>
@@ -480,6 +482,17 @@
       <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ Open A Channel ★</h2>
       <p class="text-[var(--gold-light)]/60 text-center font-display text-[10px] mb-8">TYPE A COMMAND →</p>
 
+      <!-- Direct contact (for clients who would rather not type a command) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+        {% if contact.whatsapp %}
+        <a href="https://wa.me/{{ contact.whatsapp | wa_digits }}?text=Halo%20Gembong%20IT%2C%20saya%20ingin%20konsultasi" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[10px] px-5 py-3 text-center">WA CHAT</a>
+        {% endif %}
+        {% if contact.email %}
+        <a href="mailto:{{ contact.email }}?subject=Konsultasi%20Proyek%20-%20Gembong%20IT" class="pixel-btn font-display text-[10px] px-5 py-3 text-center" style="background:rgba(255,255,255,.06);color:var(--gold-light);border-color:var(--gold-light);">KIRIM EMAIL</a>
+        {% endif %}
+        <a href="/info#contact" class="pixel-btn pixel-btn-glass font-display text-[10px] px-5 py-3 text-center">FORM PESAN</a>
+      </div>
+
       <div class="term-window">
         <div class="term-bar">
           <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
@@ -540,7 +553,9 @@
         <ul class="space-y-3 text-[var(--gold-light)]/60 text-[10px]">
           <li><a href="#home" class="hover:text-[var(--gold-light)] transition">► Home</a></li>
           <li><a href="#about" class="hover:text-[var(--gold-light)] transition">► About Us</a></li>
-          <li><a href="#projects" class="hover:text-[var(--gold-light)] transition">► Projects</a></li>
+          <li><a href="#projects" class="hover:text-[var(--gold-light)] transition">► Latest Projects</a></li>
+          <li><a href="/projects" class="hover:text-[var(--gold-light)] transition">► Repository</a></li>
+          <li><a href="/info" class="hover:text-[var(--gold-light)] transition">► Services &amp; FAQ</a></li>
           <li><a href="#contact" class="hover:text-[var(--gold-light)] transition">► Contact us</a></li>
         </ul>
       </div>
@@ -553,17 +568,19 @@
           <li>► Infrastruktur Jaringan</li>
           <li>► Konsultasi IT</li>
         </ul>
+        <a href="/info" class="font-display text-[9px] text-[var(--gold-light)] hover:text-white transition mt-4 inline-block">LIHAT DETAIL &amp; FAQ →</a>
       </div>
 
       <div>
         <h4 class="font-display text-[var(--gold-light)] font-semibold mb-4 text-[10px] tracking-widest uppercase">Kontak</h4>
         <ul class="space-y-3 text-[var(--gold-light)]/60 text-[10px]">
-          <li>Yogyakarta, Indonesia</li>
-          <li>hello@gembong-it.com</li>
-          <li>+62 812-3456-7890</li>
+          {% if contact.address %}<li>{{ contact.address }}</li>{% endif %}
+          {% if contact.email %}<li><a href="mailto:{{ contact.email }}" class="hover:text-[var(--gold-light)] transition">{{ contact.email }}</a></li>{% endif %}
+          {% if contact.phone %}<li><a href="https://wa.me/{{ contact.whatsapp | wa_digits }}" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--gold-light)] transition">{{ contact.phone }}</a></li>{% endif %}
         </ul>
         <div class="flex gap-3 mt-5">
-          <a href="#" aria-label="Instagram" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+          {% if contact.instagram %}
+          <a href="{{ contact.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
             <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <rect x="2" y="3" width="12" height="1" fill="currentColor"/>
               <rect x="2" y="12" width="12" height="1" fill="currentColor"/>
@@ -574,7 +591,9 @@
               <rect x="11" y="5" width="1" height="1" fill="currentColor"/>
             </svg>
           </a>
-          <a href="#" aria-label="LinkedIn" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+          {% endif %}
+          {% if contact.linkedin %}
+          <a href="{{ contact.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
             <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <rect x="2" y="2" width="3" height="3" fill="currentColor"/>
               <rect x="2" y="7" width="3" height="7" fill="currentColor"/>
@@ -583,7 +602,9 @@
               <rect x="12" y="7" width="2" height="7" fill="currentColor"/>
             </svg>
           </a>
-          <a href="#" aria-label="WhatsApp" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
+          {% endif %}
+          {% if contact.whatsapp %}
+          <a href="https://wa.me/{{ contact.whatsapp | wa_digits }}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="w-8 h-8 border-2 border-[var(--gold-light)]/30 flex items-center justify-center text-[var(--gold-light)]/70 hover:border-[var(--gold-light)] hover:text-[var(--gold-light)] transition">
             <svg class="pixel-art" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
               <rect x="4" y="2" width="8" height="1" fill="currentColor"/>
               <rect x="3" y="3" width="10" height="7" fill="currentColor"/>
@@ -595,6 +616,7 @@
               <rect x="10" y="5" width="2" height="2" fill="#0d1b4c"/>
             </svg>
           </a>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -606,6 +628,15 @@
       <p class="font-display text-[8px] text-[var(--gold-light)]/30 tracking-widest">PRESS START TO CONTINUE</p>
     </div>
   </footer>
+
+  <script>
+    window.GEMBONG_CONTACT = {
+      email: {{ contact.email | tojson }},
+      phone: {{ contact.phone | tojson }},
+      whatsapp: {{ (contact.whatsapp | wa_digits) | tojson }},
+      address: {{ contact.address | tojson }}
+    };
+  </script>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -943,6 +974,7 @@
             '  > Infrastruktur Jaringan',
             '  > Konsultasi IT'
           ]);
+          printLink('buka halaman Services & FAQ', '/info');
         },
         projects: function(){
           printLine('Jumping to mission select...');
@@ -951,15 +983,20 @@
         },
         contact: function(){
           printLine('Reach us through:');
-          printLink('hello@gembong-it.com', 'mailto:hello@gembong-it.com');
-          printLine('Yogyakarta, Indonesia');
-          printLink('+62 812-3456-7890 (WhatsApp)', 'https://wa.me/6281234567890');
+          var c = window.GEMBONG_CONTACT || {};
+          if(c.email) printLink(c.email, 'mailto:' + c.email);
+          if(c.address) printLine(c.address);
+          if(c.whatsapp) printLink((c.phone || c.whatsapp) + ' (WhatsApp)', 'https://wa.me/' + c.whatsapp);
+          if(!c.email && !c.whatsapp && !c.address) printLine('(contact details not configured)');
         },
         hire: function(){
           printAll(['Starting a project is one command away:']);
-          printLink('open mail composer - project briefing',
-                    'mailto:hello@gembong-it.com?subject=Project%20Briefing%20-%20Gembong%20IT');
-          printLine("Or ping us on WhatsApp via 'contact'.");
+          var c = window.GEMBONG_CONTACT || {};
+          if(c.email){
+            printLink('open mail composer - project briefing',
+                      'mailto:' + c.email + '?subject=Project%20Briefing%20-%20Gembong%20IT');
+          }
+          if(c.whatsapp) printLink('chat on WhatsApp', 'https://wa.me/' + c.whatsapp);
         },
         whoami: function(){
           printLine('guest - a future client of Gembong IT.');
