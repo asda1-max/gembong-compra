@@ -7,9 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    var def = {{ site_theme | tojson }};
+    window.__GEMBONG_DEFAULT_THEME = def;
+    var t = def;
+    try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;}
+  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;--tp:#f2c94c;--ts:#0d1b4c;--tt:#0d1b4c;--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
   html,body{height:100%;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{background:var(--navy);font-family:'Press Start 2P',monospace;}
@@ -75,6 +85,7 @@
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
 <body class="text-white">
 
@@ -115,6 +126,13 @@
         <li><a href="/" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">HOME</a></li>
         <li><a href="/projects" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">REPO</a></li>
         <li><a href="/info" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">SERVICES</a></li>
+        <li>
+          <select data-theme-select class="theme-select ml-1" aria-label="Pilih tema situs">
+            <option value="retro">Retro</option>
+            <option value="modern">Modern</option>
+            <option value="professional">Profesional</option>
+          </select>
+        </li>
       </ul>
     </div>
   </nav>
@@ -376,5 +394,6 @@
       });
     })();
   </script>
+  <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>

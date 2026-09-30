@@ -1,0 +1,195 @@
+/* ==========================================================================
+   Gembong IT — site theme skins
+   The active theme is set as data-theme on <html> (retro | modern | professional).
+   Retro is the default and needs no overrides here; modern & professional
+   re-skin typography, shapes and effects. Colour still comes from the
+   per-slide carousel palette (--tp / --ts / --tt), so themes stay "gaya saja".
+   ========================================================================== */
+
+/* ---------- Theme dropdown (all themes) ---------- */
+.theme-select{
+  font-family:'Press Start 2P',monospace;
+  font-size:9px;
+  padding:6px 8px;
+  border:2px solid var(--tp);
+  background:var(--ts);
+  color:var(--tp);
+  cursor:pointer;
+  outline:none;
+  letter-spacing:1px;
+  max-width:130px;
+}
+.theme-select:hover{background:rgba(var(--tp-rgb), .12);}
+.theme-select option{background:var(--ts);color:var(--tp);}
+
+/* ==========================================================================
+   MODERN — rounded, airy, soft depth, friendly sans
+   ========================================================================== */
+html[data-theme="modern"],
+html[data-theme="modern"] *{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+}
+html[data-theme="modern"] *{image-rendering:auto !important;}
+html[data-theme="modern"] .scanlines,
+html[data-theme="modern"] .grid-overlay,
+html[data-theme="modern"] .particle,
+html[data-theme="modern"] .pixel-diamond,
+html[data-theme="modern"] .blob,
+html[data-theme="modern"] .pixel-mountain-hide,
+html[data-theme="modern"] .pixel-deco{display:none !important;}
+
+html[data-theme="modern"] .pixel-border,
+html[data-theme="modern"] .glass,
+html[data-theme="modern"] .project-card,
+html[data-theme="modern"] .project-card-img,
+html[data-theme="modern"] .repo-card,
+html[data-theme="modern"] .svc-card,
+html[data-theme="modern"] .term-window,
+html[data-theme="modern"] .stat-box,
+html[data-theme="modern"] .tag-pill,
+html[data-theme="modern"] .login-box,
+html[data-theme="modern"] .slide-card,
+html[data-theme="modern"] .faq-item,
+html[data-theme="modern"] .boot-box,
+html[data-theme="modern"] .toast{
+  border-radius:16px !important;
+}
+html[data-theme="modern"] .pixel-border{
+  border-width:1px !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.35) !important;
+}
+html[data-theme="modern"] .glass{
+  border-width:1px !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.3) !important;
+  backdrop-filter:blur(14px);
+}
+html[data-theme="modern"] .project-card,
+html[data-theme="modern"] .svc-card,
+html[data-theme="modern"] .repo-card{
+  border-width:1px !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.32) !important;
+}
+html[data-theme="modern"] .project-card::before,
+html[data-theme="modern"] .svc-card::before,
+html[data-theme="modern"] .repo-card::before,
+html[data-theme="modern"] .stat-box::before,
+html[data-theme="modern"] .tag-pill::after{display:none !important;}
+
+html[data-theme="modern"] .pixel-btn{
+  border-width:1px !important;
+  border-radius:12px !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.28) !important;
+  text-transform:none !important;
+  letter-spacing:0 !important;
+}
+html[data-theme="modern"] .pixel-btn:hover{
+  transform:translateY(-2px) !important;
+  box-shadow:0 14px 30px rgba(0,0,0,.34) !important;
+}
+html[data-theme="modern"] .hp-bar,
+html[data-theme="modern"] .hp-bar-fill{border-radius:999px !important;}
+html[data-theme="modern"] .term-window,
+html[data-theme="modern"] .boot-box{box-shadow:0 24px 60px rgba(0,0,0,.45) !important;}
+html[data-theme="modern"] .toast{box-shadow:0 18px 44px rgba(0,0,0,.42) !important;}
+html[data-theme="modern"] .cursor-blink{border-right-color:transparent !important;animation:none !important;}
+html[data-theme="modern"] nav > div{border-width:1px !important;border-radius:16px !important;}
+html[data-theme="modern"] footer{border-top-width:1px !important;}
+
+/* readable sizes with a proportional font */
+html[data-theme="modern"] [class*="text-[8px]"]{font-size:11px !important;line-height:1.7 !important;}
+html[data-theme="modern"] [class*="text-[9px]"]{font-size:12px !important;line-height:1.7 !important;}
+html[data-theme="modern"] [class*="text-[10px]"]{font-size:13px !important;line-height:1.7 !important;}
+html[data-theme="modern"] [class*="text-xs"]{font-size:14px !important;line-height:1.6 !important;}
+html[data-theme="modern"] [class*="text-sm"]{font-size:16px !important;line-height:1.6 !important;}
+html[data-theme="modern"] [class*="text-base"]{font-size:18px !important;line-height:1.6 !important;}
+html[data-theme="modern"] [class*="text-lg"]{font-size:24px !important;line-height:1.35 !important;}
+html[data-theme="modern"] [class*="text-xl"]{font-size:30px !important;line-height:1.3 !important;}
+html[data-theme="modern"] h1,html[data-theme="modern"] h2,html[data-theme="modern"] h3,html[data-theme="modern"] h4{letter-spacing:-.01em;}
+
+/* ==========================================================================
+   PROFESSIONAL — squared, corporate, thin borders, editorial serif headings
+   ========================================================================== */
+html[data-theme="professional"],
+html[data-theme="professional"] *{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+}
+html[data-theme="professional"] .font-display,
+html[data-theme="professional"] h1,
+html[data-theme="professional"] h2,
+html[data-theme="professional"] h3,
+html[data-theme="professional"] h4{
+  font-family:'Merriweather',Georgia,'Times New Roman',serif !important;
+}
+html[data-theme="professional"] *{image-rendering:auto !important;}
+html[data-theme="professional"] .scanlines,
+html[data-theme="professional"] .grid-overlay,
+html[data-theme="professional"] .particle,
+html[data-theme="professional"] .pixel-diamond,
+html[data-theme="professional"] .blob,
+html[data-theme="professional"] .pixel-mountain-hide,
+html[data-theme="professional"] .pixel-deco{display:none !important;}
+
+html[data-theme="professional"] .pixel-border,
+html[data-theme="professional"] .glass,
+html[data-theme="professional"] .project-card,
+html[data-theme="professional"] .repo-card,
+html[data-theme="professional"] .svc-card,
+html[data-theme="professional"] .term-window,
+html[data-theme="professional"] .stat-box,
+html[data-theme="professional"] .tag-pill,
+html[data-theme="professional"] .login-box,
+html[data-theme="professional"] .slide-card,
+html[data-theme="professional"] .faq-item,
+html[data-theme="professional"] .boot-box,
+html[data-theme="professional"] .toast{
+  border-radius:4px !important;
+}
+html[data-theme="professional"] .pixel-border{
+  border-width:1px !important;
+  box-shadow:0 1px 3px rgba(0,0,0,.3) !important;
+}
+html[data-theme="professional"] .glass{
+  border-width:1px !important;
+  box-shadow:0 2px 10px rgba(0,0,0,.28) !important;
+}
+html[data-theme="professional"] .project-card,
+html[data-theme="professional"] .svc-card,
+html[data-theme="professional"] .repo-card{
+  border-width:1px !important;
+  box-shadow:0 2px 10px rgba(0,0,0,.3) !important;
+}
+html[data-theme="professional"] .project-card::before,
+html[data-theme="professional"] .svc-card::before,
+html[data-theme="professional"] .repo-card::before,
+html[data-theme="professional"] .stat-box::before,
+html[data-theme="professional"] .tag-pill::after{display:none !important;}
+
+html[data-theme="professional"] .pixel-btn{
+  border-width:1px !important;
+  border-radius:4px !important;
+  box-shadow:none !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+}
+html[data-theme="professional"] .pixel-btn:hover{
+  transform:none !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.28) !important;
+}
+html[data-theme="professional"] .hp-bar,
+html[data-theme="professional"] .hp-bar-fill{border-radius:2px !important;}
+html[data-theme="professional"] .cursor-blink{border-right-color:transparent !important;animation:none !important;}
+html[data-theme="professional"] nav > div{border-width:1px !important;border-radius:4px !important;}
+html[data-theme="professional"] footer{border-top-width:1px !important;}
+
+html[data-theme="professional"] [class*="text-[8px]"]{font-size:11px !important;line-height:1.7 !important;}
+html[data-theme="professional"] [class*="text-[9px]"]{font-size:12px !important;line-height:1.7 !important;}
+html[data-theme="professional"] [class*="text-[10px]"]{font-size:13px !important;line-height:1.7 !important;}
+html[data-theme="professional"] [class*="text-xs"]{font-size:14px !important;line-height:1.6 !important;}
+html[data-theme="professional"] [class*="text-sm"]{font-size:15px !important;line-height:1.6 !important;}
+html[data-theme="professional"] [class*="text-base"]{font-size:17px !important;line-height:1.6 !important;}
+html[data-theme="professional"] [class*="text-lg"]{font-size:22px !important;line-height:1.35 !important;}
+html[data-theme="professional"] [class*="text-xl"]{font-size:27px !important;line-height:1.3 !important;}
+
+/* select styling follows the active skin */
+html[data-theme="modern"] .theme-select{border-radius:10px !important;border-width:1px;}
+html[data-theme="professional"] .theme-select{border-radius:4px !important;border-width:1px;}

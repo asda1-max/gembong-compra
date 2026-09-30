@@ -41,6 +41,17 @@ def _clean_interval(value):
     return max(INTERVAL_MIN, min(INTERVAL_MAX, minutes))
 
 
+# Site theme presets. The visitor can override per-browser; this value is the
+# admin-controlled default.
+THEMES = ("retro", "modern", "professional")
+THEME_DEFAULT = "retro"
+
+
+def _clean_theme(value):
+    v = (value or "").strip().lower()
+    return v if v in THEMES else THEME_DEFAULT
+
+
 def _clean_color(value, default):
     v = (value or "").strip()
     return v if HEX_RE.match(v) else default
@@ -113,7 +124,7 @@ def load_data():
     if not os.path.exists(DATA_FILE):
         data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": [],
                 "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS)),
-                "carousel_interval": INTERVAL_DEFAULT}
+                "carousel_interval": INTERVAL_DEFAULT, "theme": THEME_DEFAULT}
         save_data(data)
         return data
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -131,6 +142,7 @@ def load_data():
             slide["secondary"] = _clean_color(slide.get("secondary"), COLOR_DEFAULTS["secondary"])
             slide["text"] = _clean_color(slide.get("text"), COLOR_DEFAULTS["text"])
     data["carousel_interval"] = _clean_interval(data.get("carousel_interval"))
+    data["theme"] = _clean_theme(data.get("theme"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
     if not isinstance(data.get("messages"), list):
@@ -349,6 +361,16 @@ app.jinja_env.filters["wa_digits"] = _wa_digits
 app.jinja_env.filters["hexa"] = _hex_to_rgba
 
 
+@app.context_processor
+def inject_site_theme():
+    try:
+        data = load_data()
+        theme = data.get("theme", THEME_DEFAULT)
+    except Exception:
+        theme = THEME_DEFAULT
+    return {"site_theme": theme, "themes": THEMES}
+
+
 # --------------------------------------------------------------------------
 # Admin routes
 # --------------------------------------------------------------------------
@@ -446,6 +468,17 @@ def admin_contact_save():
     data["contact"] = collect_contact(request.form)
     save_data(data)
     return _render_admin(message="Contact info updated successfully!", active_tab="contact")
+
+
+@app.route("/admin/appearance/save", methods=["POST"])
+def admin_appearance_save():
+    if not session.get("logged_in"):
+        return redirect(url_for("admin"))
+
+    data = load_data()
+    data["theme"] = _clean_theme(request.form.get("theme"))
+    save_data(data)
+    return _render_admin(message="Tema default berhasil diperbarui.", active_tab="appearance")
 
 
 @app.route("/admin/messages/<int:index>/delete", methods=["POST"])

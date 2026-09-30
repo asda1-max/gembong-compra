@@ -7,6 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  // Apply the site theme before first paint to avoid a flash of the wrong skin.
+  (function () {
+    var def = {{ site_theme | tojson }};
+    window.__GEMBONG_DEFAULT_THEME = def;
+    var t = def;
+    try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root{
@@ -200,6 +211,7 @@
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
 <body class="text-white">
 
@@ -267,6 +279,11 @@
         <li><a href="#contact" class="px-4 py-2 font-display text-[10px] text-[var(--tp)]/60 hover:text-[var(--tp)] transition border border-transparent hover:border-[var(--tp)]/30 hover:bg-[var(--tp)]/5 tracking-wide">CONTACT</a></li>
       </ul>
       <div class="flex items-center gap-2">
+        <select id="themeSelect" data-theme-select class="theme-select" aria-label="Pilih tema situs">
+          <option value="retro">Retro</option>
+          <option value="modern">Modern</option>
+          <option value="professional">Profesional</option>
+        </select>
         <button id="sfxBtn" type="button" aria-pressed="true" class="px-2 py-1.5 font-display text-[8px] border border-[var(--tp)]/30 text-[var(--tp)]/70 hover:text-[var(--tp)] hover:border-[var(--tp)] transition tracking-wide">SFX ON</button>
         <!-- Mobile Hamburger -->
         <button id="menuBtn" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--tp)]/30" onclick="toggleMenu()" aria-label="Menu">
@@ -1171,5 +1188,6 @@
       });
     })();
   </script>
+  <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>
