@@ -41,6 +41,8 @@
   .tab-panel.active{display:block;}
   .hint{font-size:8px;line-height:2;color:rgba(242,201,76,.5);}
   .badge-status{display:inline-block;border:2px solid;font-size:8px;padding:3px 7px;letter-spacing:1px;}
+  .color-swatch{width:44px;height:38px;padding:0;border:2px solid rgba(242,201,76,.4);background:transparent;cursor:pointer;flex-shrink:0;}
+  .color-hex{flex:1;text-transform:uppercase;font-size:9px;}
 </style>
 </head>
 <body>
@@ -124,6 +126,34 @@
             </div>
           </div>
 
+          <!-- THEME COLORS (apply to both text + image modes) -->
+          <div class="color-fields mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
+                <div class="flex gap-2 items-center">
+                  <input type="color" name="slides[{{ loop.index0 }}][primary]" value="{{ slide.primary }}" class="color-swatch">
+                  <input type="text" class="pixel-input color-hex" value="{{ slide.primary }}" maxlength="7" spellcheck="false" aria-label="Primary color hex">
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SECONDARY</label>
+                <div class="flex gap-2 items-center">
+                  <input type="color" name="slides[{{ loop.index0 }}][secondary]" value="{{ slide.secondary }}" class="color-swatch">
+                  <input type="text" class="pixel-input color-hex" value="{{ slide.secondary }}" maxlength="7" spellcheck="false" aria-label="Secondary color hex">
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TEXT</label>
+                <div class="flex gap-2 items-center">
+                  <input type="color" name="slides[{{ loop.index0 }}][text]" value="{{ slide.text }}" class="color-swatch">
+                  <input type="text" class="pixel-input color-hex" value="{{ slide.text }}" maxlength="7" spellcheck="false" aria-label="Text color hex">
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- TEXT MODE FIELDS -->
           <div class="text-fields">
             <div class="grid grid-cols-1 gap-4">
@@ -162,6 +192,15 @@
           </div>
         </div>
         {% endfor %}
+
+        <div class="slide-card" id="intervalCard">
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">CAROUSEL COOLDOWN — GANTI SLIDE &amp; TEMA SETIAP</label>
+          <div class="flex items-center gap-3 flex-wrap">
+            <input type="number" name="carousel_interval" value="{{ carousel_interval }}" min="{{ interval_min }}" max="1440" step="1" class="pixel-input" style="max-width:160px;" required>
+            <span class="text-[10px] text-[var(--gold-light)]/70">MENIT</span>
+          </div>
+          <p class="hint mt-3">// Minimal {{ interval_min }} menit (wajib) supaya pergantian tema tidak terlalu sering dan halaman tetap ringan. Maksimal 1440 menit (24 jam).</p>
+        </div>
 
         <div id="formActions" class="flex gap-4 mt-8">
           <button type="button" onclick="addSlide()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD SLIDE</button>
@@ -425,6 +464,32 @@ function addSlide(){
         <button type="button" onclick="setMode(this, 'image')">IMAGE</button>
       </div>
     </div>
+    <div class="color-fields mb-4">
+      <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
+          <div class="flex gap-2 items-center">
+            <input type="color" name="slides[${id}][primary]" value="#d4af0e" class="color-swatch">
+            <input type="text" class="pixel-input color-hex" value="#d4af0e" maxlength="7" spellcheck="false">
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SECONDARY</label>
+          <div class="flex gap-2 items-center">
+            <input type="color" name="slides[${id}][secondary]" value="#0d1b4c" class="color-swatch">
+            <input type="text" class="pixel-input color-hex" value="#0d1b4c" maxlength="7" spellcheck="false">
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TEXT</label>
+          <div class="flex gap-2 items-center">
+            <input type="color" name="slides[${id}][text]" value="#0d1b4c" class="color-swatch">
+            <input type="text" class="pixel-input color-hex" value="#0d1b4c" maxlength="7" spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="text-fields">
       <div class="grid grid-cols-1 gap-4">
         <div>
@@ -459,8 +524,9 @@ function addSlide(){
       </div>
     </div>`;
   const form = document.querySelector('#panel-carousel form');
-  form.insertBefore(card, document.getElementById('formActions'));
+  form.insertBefore(card, document.getElementById('intervalCard'));
   applyMode(card, 'text');
+  initColorPairs(card);
 }
 
 function removeSlide(btn){
@@ -487,6 +553,35 @@ document.querySelectorAll('#panel-carousel .slide-card').forEach(card => {
   const modeInput = card.querySelector('.mode-value');
   applyMode(card, modeInput ? modeInput.value : 'text');
 });
+
+/* ---------------- Color swatch <-> hex sync ---------------- */
+function bindColorPair(swatch, hex){
+  if(!swatch || !hex) return;
+  swatch.addEventListener('input', function(){ hex.value = swatch.value.toLowerCase(); });
+  hex.addEventListener('input', function(){
+    var v = hex.value.trim();
+    if(!v.startsWith('#')) v = '#' + v;
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){ swatch.value = v; }
+  });
+  hex.addEventListener('blur', function(){
+    var v = hex.value.trim();
+    if(!v.startsWith('#')) v = '#' + v;
+    if(/^#[0-9a-fA-F]{3}$/.test(v)){
+      v = '#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3];
+    }
+    if(!/^#[0-9a-fA-F]{6}$/.test(v)){ v = swatch.value; }
+    hex.value = v.toLowerCase();
+    swatch.value = v.toLowerCase();
+  });
+}
+function initColorPairs(root){
+  (root || document).querySelectorAll('.color-fields').forEach(function(box){
+    var swatches = box.querySelectorAll('.color-swatch');
+    var hexes = box.querySelectorAll('.color-hex');
+    for(var i = 0; i < swatches.length; i++) bindColorPair(swatches[i], hexes[i]);
+  });
+}
+initColorPairs(document);
 
 /* ---------------- Projects editor ---------------- */
 let repoNextId = {{ projects | length }};

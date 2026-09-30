@@ -18,10 +18,49 @@ DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 AUTH_FILE = os.path.join(BASE_DIR, 'auth.json')
 
 CAROUSEL = [
-    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": ""},
-    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": ""},
-    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": ""},
+    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
 ]
+
+COLOR_DEFAULTS = {"primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"}
+HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
+# Carousel auto-rotate cooldown (minutes). Enforced floor so the full-page
+# theme change never fires too often and keeps the page smooth.
+INTERVAL_MIN = 15
+INTERVAL_MAX = 1440
+INTERVAL_DEFAULT = 15
+
+
+def _clean_interval(value):
+    try:
+        minutes = int(float(value))
+    except (TypeError, ValueError):
+        return INTERVAL_DEFAULT
+    return max(INTERVAL_MIN, min(INTERVAL_MAX, minutes))
+
+
+def _clean_color(value, default):
+    v = (value or "").strip()
+    return v if HEX_RE.match(v) else default
+
+
+def _hex_to_rgba(value, alpha=1.0):
+    v = (value or "").strip().lstrip("#")
+    if len(v) == 3:
+        v = "".join(ch * 2 for ch in v)
+    if len(v) != 6:
+        v = "d4af0e"
+    try:
+        r, g, b = int(v[0:2], 16), int(v[2:4], 16), int(v[4:6], 16)
+    except ValueError:
+        r, g, b = 212, 175, 14
+    try:
+        a = max(0.0, min(1.0, float(alpha)))
+    except (TypeError, ValueError):
+        a = 1.0
+    return "rgba(%d, %d, %d, %s)" % (r, g, b, a)
 
 REPO_STATUS = ("active", "beta", "wip", "archived")
 
@@ -73,7 +112,8 @@ def _write_json(path, obj):
 def load_data():
     if not os.path.exists(DATA_FILE):
         data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": [],
-                "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS))}
+                "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS)),
+                "carousel_interval": INTERVAL_DEFAULT}
         save_data(data)
         return data
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -85,6 +125,12 @@ def load_data():
         data = {}
     if not isinstance(data.get("carousel"), list):
         data["carousel"] = json.loads(json.dumps(CAROUSEL))
+    for slide in data["carousel"]:
+        if isinstance(slide, dict):
+            slide["primary"] = _clean_color(slide.get("primary"), COLOR_DEFAULTS["primary"])
+            slide["secondary"] = _clean_color(slide.get("secondary"), COLOR_DEFAULTS["secondary"])
+            slide["text"] = _clean_color(slide.get("text"), COLOR_DEFAULTS["text"])
+    data["carousel_interval"] = _clean_interval(data.get("carousel_interval"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
     if not isinstance(data.get("messages"), list):
@@ -136,7 +182,7 @@ def verify_login(username, password):
 # --------------------------------------------------------------------------
 # Matches slides[<token>][<field>] so both server-rendered (slides[0][title])
 # and JS-added (slides[3][title]) inputs are collected per card.
-SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image)\]$")
+SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text)\]$")
 
 
 def collect_slides(form):
@@ -169,6 +215,9 @@ def collect_slides(form):
             "hp": hp if hp_raw else 80,
             "mode": mode,
             "image": (card.get("image") or "").strip() if mode == "image" else "",
+            "primary": _clean_color(card.get("primary"), COLOR_DEFAULTS["primary"]),
+            "secondary": _clean_color(card.get("secondary"), COLOR_DEFAULTS["secondary"]),
+            "text": _clean_color(card.get("text"), COLOR_DEFAULTS["text"]),
         })
     return carousel
 
@@ -222,6 +271,8 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
         projects=data["projects"],
         messages=data.get("messages", []),
         contact=data["contact"],
+        carousel_interval=data["carousel_interval"],
+        interval_min=INTERVAL_MIN,
         message=message,
         error=error,
         active_tab=active_tab,
@@ -234,7 +285,8 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
 @app.route("/")
 def index():
     data = load_data()
-    return render_template("index.html", carousel=data["carousel"], contact=data["contact"])
+    return render_template("index.html", carousel=data["carousel"], contact=data["contact"],
+                           carousel_interval=data["carousel_interval"])
 
 
 @app.route("/projects")
@@ -294,6 +346,7 @@ def _wa_digits(value):
 
 
 app.jinja_env.filters["wa_digits"] = _wa_digits
+app.jinja_env.filters["hexa"] = _hex_to_rgba
 
 
 # --------------------------------------------------------------------------
@@ -313,6 +366,7 @@ def admin():
                 return redirect(url_for("admin"))
             error = "Invalid credentials"
         return render_template("admin.html", slides=[], projects=[], messages=[], contact={},
+                               carousel_interval=INTERVAL_DEFAULT, interval_min=INTERVAL_MIN,
                                error=error, message=None, active_tab="carousel")
 
     if request.method == "POST":
@@ -332,6 +386,7 @@ def admin_save():
 
     data = load_data()
     data["carousel"] = carousel
+    data["carousel_interval"] = _clean_interval(request.form.get("carousel_interval"))
     save_data(data)
     return _render_admin(message="Carousel updated successfully!", active_tab="carousel")
 
