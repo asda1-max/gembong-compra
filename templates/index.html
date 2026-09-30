@@ -722,6 +722,9 @@
     });
 
     /* ---------- Achievement toasts ---------- */
+    // Achievements are a desktop-only flourish: on phones the toast cards are
+    // too large, so we simply never trigger them there (SFX/EXP HUD unaffected).
+    const achievementMobile = window.matchMedia('(max-width: 639px)');
     const Toast = {
       layer: document.getElementById('toastLayer'),
       seen: {},
@@ -749,6 +752,7 @@
         }, 3400);
       },
       unlock(key, title, sub){
+        if(achievementMobile.matches) return;
         if(this.seen[key]) return;
         this.seen[key] = true;
         this.show(title, sub);
