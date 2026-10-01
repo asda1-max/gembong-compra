@@ -113,7 +113,7 @@
     <!-- ===================== CAROUSEL TAB ===================== -->
     <section class="tab-panel {{ 'active' if active_tab not in ['projects','account','messages','contact','appearance'] else '' }}" id="panel-carousel">
       <p class="text-[10px] text-white/40 mb-6">Edit Carousel Slides</p>
-      <form method="POST" action="/admin/save">
+      <form method="POST" action="/admin/save" enctype="multipart/form-data">
         {% for slide in slides %}
         <div class="slide-card" id="card-{{ loop.index0 }}">
           <div class="flex items-center gap-3 mb-4">
@@ -185,6 +185,8 @@
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
                 <input type="url" name="slides[{{ loop.index0 }}][image]" value="{{ slide.image }}" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 mt-3 block">OR ADD IMAGE FILE</label>
+                <input type="file" name="slides[{{ loop.index0 }}][image_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImageFile(this)">
                 <img src="{{ slide.image }}" class="img-preview" onerror="this.style.display='none'" onload="this.style.display='block'">
               </div>
               <div>
@@ -481,6 +483,17 @@ function previewImage(input){
   }
 }
 
+function previewImageFile(input){
+  const img = input.parentElement.querySelector('.img-preview');
+  if(!img) return;
+  if(input.dataset.previewUrl) URL.revokeObjectURL(input.dataset.previewUrl);
+  if(input.files && input.files[0]){
+    input.dataset.previewUrl = URL.createObjectURL(input.files[0]);
+    img.src = input.dataset.previewUrl;
+    img.style.display = 'block';
+  }
+}
+
 function addSlide(){
   const id = getUniqueId();
   const card = document.createElement('div');
@@ -549,6 +562,8 @@ function addSlide(){
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
           <input type="url" name="slides[${id}][image]" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 mt-3 block">OR ADD IMAGE FILE</label>
+          <input type="file" name="slides[${id}][image_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImageFile(this)">
           <img src="" class="img-preview">
         </div>
         <div>

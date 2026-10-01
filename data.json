@@ -5,19 +5,19 @@
       "desc": "",
       "hp": 80,
       "mode": "image",
-      "image": "https://imgs.search.brave.com/EpswMWzp4vzP126JmkytGmSJ-I55-5PMDXTdMmWHldA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMTYv/NzQ1Lzc2Ni9zbWFs/bC9idXNpbmVzcy13/ZWJpbmFyLWhvcml6/b250YWwtYmFubmVy/LWRlc2lnbi10ZW1w/bGF0ZS1lZGl0YWJs/ZS1tb2Rlcm4tYmFu/bmVyLXdpdGgtcGxh/Y2UtZm9yLXBob3Rv/LWNhbi1iZS11c2Vk/LWZvci1iYW5uZXJz/LWNvdmVycy1hbmQt/bWVkaWEtcG9zdHMt/d2ViLWZyZWUtdmVj/dG9yLmpwZw",
+      "image": "",
       "primary": "#d4af0e",
       "secondary": "#0d1b4c",
       "text": "#0d1b4c"
     },
     {
-      "title": "★ Aplikasi Web & Mobile ★",
-      "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.",
-      "hp": 85,
-      "mode": "text",
-      "image": "",
-      "primary": "#e10038",
-      "secondary": "#00593f",
+      "title": "",
+      "desc": "",
+      "hp": 80,
+      "mode": "image",
+      "image": "/static/uploads/966bc862881cc5b7da7c22ad4ec0d085.png",
+      "primary": "#fad605",
+      "secondary": "#46820b",
       "text": "#4e0158"
     },
     {

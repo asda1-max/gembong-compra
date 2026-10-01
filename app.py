@@ -4,6 +4,7 @@ import json
 import secrets
 from datetime import datetime
 from flask import Flask, render_template, request, session, redirect, url_for
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -16,6 +17,8 @@ app.config.update(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 AUTH_FILE = os.path.join(BASE_DIR, 'auth.json')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 
 CAROUSEL = [
     {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
@@ -197,7 +200,7 @@ def verify_login(username, password):
 SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text)\]$")
 
 
-def collect_slides(form):
+def collect_slides(form, files=None):
     cards = {}
     order = []
     for key, values in form.lists():
@@ -221,7 +224,7 @@ def collect_slides(form):
         except (ValueError, OverflowError):
             hp = 80
         hp = max(0, min(100, hp))
-        carousel.append({
+        slide = {
             "title": (card.get("title") or "").strip(),
             "desc": (card.get("desc") or "").strip(),
             "hp": hp if hp_raw else 80,
@@ -230,7 +233,18 @@ def collect_slides(form):
             "primary": _clean_color(card.get("primary"), COLOR_DEFAULTS["primary"]),
             "secondary": _clean_color(card.get("secondary"), COLOR_DEFAULTS["secondary"]),
             "text": _clean_color(card.get("text"), COLOR_DEFAULTS["text"]),
-        })
+        }
+        uploaded = (files or {}).get(f"slides[{token}][image_file]")
+        if uploaded and uploaded.filename:
+            filename = secure_filename(uploaded.filename)
+            extension = os.path.splitext(filename)[1].lower()
+            if extension not in ALLOWED_IMAGE_EXTENSIONS:
+                raise ValueError("Format gambar harus JPG, PNG, GIF, atau WEBP.")
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            stored_name = f"{secrets.token_hex(16)}{extension}"
+            uploaded.save(os.path.join(UPLOAD_FOLDER, stored_name))
+            slide["image"] = f"/static/uploads/{stored_name}"
+        carousel.append(slide)
     return carousel
 
 
@@ -401,7 +415,10 @@ def admin_save():
     if not session.get("logged_in"):
         return redirect(url_for("admin"))
 
-    carousel = collect_slides(request.form)
+    try:
+        carousel = collect_slides(request.form, request.files)
+    except ValueError as exc:
+        return _render_admin(error=str(exc), active_tab="carousel")
     if not carousel:
         return _render_admin(
             error="No slides found in the form, nothing was saved.", active_tab="carousel")
