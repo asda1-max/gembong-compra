@@ -62,7 +62,7 @@
   [class*="text-[var(--tp)]"],.theme-fg{transition:color .7s steps(8);}
   .project-title{color:var(--tp);}
   .project-card-img .project-title{color:#fff;}
-  .image-overlay{background:rgba(0,0,0,.4);}
+  .image-overlay{display:none;}
   #projects{background-color:var(--tp);}
   #projects h2,#projects > div > p{color:var(--tt);}
   #projects .project-desc{opacity:.75;}
@@ -527,7 +527,6 @@
           <div class="min-w-full relative aspect-[16/9]">
             {% if item.mode == "image" and item.image %}
             <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
-              <div class="absolute inset-0 image-overlay"></div>
               <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-full w-full">
                 <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
                 {% if item.desc %}<span class="text-white/80 max-w-md text-xs">{{ item.desc }}</span>{% endif %}

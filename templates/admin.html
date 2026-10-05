@@ -183,9 +183,8 @@
           <div class="image-fields hidden">
             <div class="grid grid-cols-1 gap-4">
               <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
-                <input type="url" name="slides[{{ loop.index0 }}][image]" value="{{ slide.image }}" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 mt-3 block">OR ADD IMAGE FILE</label>
+                <input type="hidden" name="slides[{{ loop.index0 }}][image]" value="{{ slide.image }}" class="image-value">
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">UPLOAD IMAGE</label>
                 <input type="file" name="slides[{{ loop.index0 }}][image_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImageFile(this)">
                 <img src="{{ slide.image }}" class="img-preview" onerror="this.style.display='none'" onload="this.style.display='block'">
               </div>
@@ -473,16 +472,6 @@ function setMode(btn, mode){
   btn.classList.add('active');
 }
 
-function previewImage(input){
-  const img = input.parentElement.querySelector('.img-preview');
-  if(img){
-    img.src = input.value;
-    img.style.display = 'none';
-    img.onerror = () => { img.style.display = 'none'; };
-    img.onload = () => { img.style.display = 'block'; };
-  }
-}
-
 function previewImageFile(input){
   const img = input.parentElement.querySelector('.img-preview');
   if(!img) return;
@@ -560,9 +549,8 @@ function addSlide(){
     <div class="image-fields hidden">
       <div class="grid grid-cols-1 gap-4">
         <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">IMAGE URL</label>
-          <input type="url" name="slides[${id}][image]" class="pixel-input" placeholder="https://example.com/image.jpg" oninput="previewImage(this)">
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 mt-3 block">OR ADD IMAGE FILE</label>
+          <input type="hidden" name="slides[${id}][image]" value="" class="image-value">
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">UPLOAD IMAGE</label>
           <input type="file" name="slides[${id}][image_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImageFile(this)">
           <img src="" class="img-preview">
         </div>

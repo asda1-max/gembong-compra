@@ -15,17 +15,17 @@
       "desc": "",
       "hp": 80,
       "mode": "image",
-      "image": "/static/uploads/966bc862881cc5b7da7c22ad4ec0d085.png",
+      "image": "/static/uploads/e9d0c9dc4ea811f55882940360e11ea1.png",
       "primary": "#fad605",
       "secondary": "#46820b",
       "text": "#4e0158"
     },
     {
-      "title": "★ Infrastruktur Jaringan ★",
-      "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.",
-      "hp": 95,
-      "mode": "text",
-      "image": "",
+      "title": "",
+      "desc": "",
+      "hp": 80,
+      "mode": "image",
+      "image": "/static/uploads/c9bb25165b4324cc81a3cb68e85b63b7.png",
       "primary": "#edcf27",
       "secondary": "#2c4930",
       "text": "#565801"
