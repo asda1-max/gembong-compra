@@ -34,9 +34,38 @@
         window.dispatchEvent(new CustomEvent('gembong:theme', { detail: theme }));
       });
     }
+    wirePageTransitions();
   }
 
-  // expose for programmatic use (e.g. a future "reset to default" button)
+  function wirePageTransitions() {
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    var busy = false;
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('a[href]');
+      if (!link || busy || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if ((link.target && link.target !== '_self') || link.hasAttribute('download')) return;
+
+      var destination;
+      try { destination = new URL(link.href, window.location.href); } catch (e) { return; }
+      if (destination.origin !== window.location.origin || destination.pathname === window.location.pathname) return;
+      if (destination.protocol !== 'http:' && destination.protocol !== 'https:') return;
+
+      busy = true;
+      event.preventDefault();
+      var outgoing = document.createElement('div');
+      outgoing.className = 'page-strip page-strip-out';
+      outgoing.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(outgoing);
+
+      window.setTimeout(function () {
+        try { sessionStorage.setItem('gembong_page_strip_in', '1'); } catch (e) {}
+        window.location.assign(destination.href);
+      }, 520);
+    });
+  }
+
   window.GembongTheme = {
     get: current,
     set: function (theme, persist) {

@@ -16,6 +16,14 @@
     try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
     document.documentElement.setAttribute('data-theme', t);
   })();
+  (function () {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (sessionStorage.getItem('gembong_page_strip_in') !== '1') return;
+      sessionStorage.removeItem('gembong_page_strip_in');
+      document.documentElement.classList.add('page-strip-pending');
+    } catch (e) {}
+  })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
