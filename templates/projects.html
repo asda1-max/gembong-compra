@@ -107,6 +107,7 @@
   ::-webkit-scrollbar-thumb{background:var(--gold);border:2px solid var(--navy);}
 
   @media(max-width:639px){
+    .hud-mobile-hide{display:none !important;}
     h1{font-size:12px !important;line-height:2 !important;}
     .search-input{font-size:9px;}
     .project-feature{min-height:360px;}
@@ -157,7 +158,7 @@
         </div>
         <span class="font-display text-xs text-[var(--gold-light)] hidden sm:inline">GEMBONG IT</span>
       </a>
-      <ul class="flex items-center gap-1">
+      <ul class="hidden sm:flex items-center gap-1">
         <li><a href="/" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">HOME</a></li>
         <li><a href="/projects" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">PROJECTS</a></li>
         <li><a href="/#contact" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
@@ -168,6 +169,23 @@
             <option value="professional">Profesional</option>
           </select>
         </li>
+      </ul>
+      <button id="menuBtn" type="button" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--gold-light)]/30" aria-label="Buka menu navigasi" aria-controls="mobileMenu" aria-expanded="false">
+        <span class="block w-5 h-0.5 bg-[var(--gold-light)]"></span>
+        <span class="block w-5 h-0.5 bg-[var(--gold-light)]"></span>
+        <span class="block w-5 h-0.5 bg-[var(--gold-light)]"></span>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--gold-light)]/30" style="background:rgba(13,27,76,.98);">
+      <ul class="flex flex-col p-4 gap-2">
+        <li><a href="/" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 border border-[var(--gold-light)]/20 text-center tracking-wide">HOME</a></li>
+        <li><a href="/projects" aria-current="page" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)] border border-[var(--gold-light)]/30 bg-[var(--gold-light)]/10 text-center tracking-wide">PROJECTS</a></li>
+        <li><a href="/#contact" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 border border-[var(--gold-light)]/20 text-center tracking-wide">CONTACT</a></li>
+        <li class="text-center"><select data-theme-select class="theme-select" aria-label="Pilih tema situs">
+          <option value="retro">Retro</option>
+          <option value="modern">Modern</option>
+          <option value="professional">Profesional</option>
+        </select></li>
       </ul>
     </div>
   </nav>
@@ -343,6 +361,35 @@
           status = chip.dataset.status;
           apply();
         });
+      });
+    })();
+  </script>
+  <script>
+    (function mobileNavigation(){
+      var button = document.getElementById('menuBtn');
+      var menu = document.getElementById('mobileMenu');
+      if (!button || !menu) return;
+
+      function setOpen(open){
+        menu.classList.toggle('hidden', !open);
+        button.setAttribute('aria-expanded', String(open));
+        button.setAttribute('aria-label', open ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+      }
+
+      button.addEventListener('click', function(){
+        setOpen(menu.classList.contains('hidden'));
+      });
+      menu.querySelectorAll('a').forEach(function(link){
+        link.addEventListener('click', function(){ setOpen(false); });
+      });
+      document.addEventListener('click', function(event){
+        if (!menu.classList.contains('hidden') && !menu.contains(event.target) && !button.contains(event.target)) setOpen(false);
+      });
+      document.addEventListener('keydown', function(event){
+        if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
+          setOpen(false);
+          button.focus();
+        }
       });
     })();
   </script>
