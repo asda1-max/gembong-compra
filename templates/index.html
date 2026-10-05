@@ -258,6 +258,9 @@
   <!-- ACHIEVEMENT TOAST LAYER -->
   <div id="toastLayer" aria-live="polite"></div>
 
+  {% include 'hud_navbar.html' %}
+  {#
+  <!-- Legacy HUD/NAV retained temporarily for migration; rendered from hud_navbar.html above. -->
   <!-- TOP HUD BAR -->
   <div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--tp)]/20 hud-mobile-hide" style="background:rgba(var(--ts-rgb), .95);">
     <span class="text-[var(--tp)]/60">SYS.ONLINE</span>
@@ -332,7 +335,8 @@
     </div>
   </nav>
 
-  <!-- HERO -->
+  #}
+  <!-- HEADER -->
   <section id="home" class="hero-bg relative overflow-hidden px-6 md:px-16 py-20 md:py-28 pt-20">
     <div class="grid-overlay absolute inset-0"></div>
     <div class="scanlines absolute inset-0"></div>
@@ -836,22 +840,6 @@
     });
     render();
   </script>
-  <script>
-    function toggleMenu(){
-      const m = document.getElementById('mobileMenu');
-      m.classList.toggle('hidden');
-      document.getElementById('menuBtn').setAttribute('aria-expanded', String(!m.classList.contains('hidden')));
-    }
-    function closeMenu(){
-      document.getElementById('mobileMenu').classList.add('hidden');
-      document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
-    }
-    document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
-    document.getElementById('menuBtn').addEventListener('click', function(){
-      this.setAttribute('aria-expanded', String(!document.getElementById('mobileMenu').classList.contains('hidden')));
-    });
-  </script>
-
   <!-- ============ GEMBONG OS FEATURES: SFX / BOOT / ACHIEVEMENTS / TERMINAL ============ -->
   <script>
     /* ---------- 8-bit sound engine (WebAudio, no assets) ---------- */

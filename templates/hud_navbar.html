@@ -1,0 +1,67 @@
+{% set page_id = 'home' if request.path == '/' else ('projects' if request.path == '/projects' else 'info') %}
+<style>@media(max-width:639px){.hud-mobile-hide{display:none!important;}nav{top:0!important;margin-top:0!important;}}</style>
+{% if page_id == 'home' %}{% set hud_label = 'EXP' %}{% set hud_value = 'LVL 1' %}{% set hud_width = 0 %}
+{% elif page_id == 'projects' %}{% set hud_label = 'MISSIONS' %}{% set hud_value = projects|length ~ ' TOTAL' %}{% set hud_width = [projects|length * 8, 100]|min %}
+{% else %}{% set hud_label = 'KNOWLEDGE' %}{% set hud_value = 'FULL' %}{% set hud_width = 100 %}{% endif %}
+<div class="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-1.5 text-[8px] font-display tracking-widest border-b-2 border-[var(--tp)]/20 hud-mobile-hide" style="background:rgba(var(--ts-rgb), .95);">
+  <span class="text-[var(--tp)]/60">SYS.ONLINE</span>
+  <div class="hp-bar w-16"><div class="hp-bar-fill" style="width:85%"></div></div>
+  <span class="text-[var(--tp)]/60">{{ hud_label }}</span>
+  <div class="hp-bar w-20"><div class="hp-bar-fill"{% if page_id == 'home' %} id="expFill"{% endif %} style="width:{{ hud_width }}%"></div></div>
+  <span class="text-[var(--tp)]/60"{% if page_id == 'home' %} id="lvlLabel"{% endif %}>{{ hud_value }}</span>
+  <span class="text-[var(--tp)]/60 ml-auto">GEMBONG_IT v1.0</span>
+</div>
+
+<nav class="sticky z-30 sm:top-[32px] top-0"{% if page_id == 'home' %} id="mainNav"{% endif %}>
+  <div class="max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3" style="background:rgba(var(--ts-rgb), .92);border:2px solid rgba(var(--tp-rgb), .3);box-shadow:4px 4px 0 rgba(0,0,0,.5);backdrop-filter:blur(10px);">
+    <a href="/" class="flex items-center gap-3" aria-label="Gembong IT — Beranda">
+      <span class="w-8 h-8 border-2 border-[var(--tp)] flex items-center justify-center font-display text-[8px] text-[var(--tp)]" aria-hidden="true">G</span>
+      <span class="font-display text-xs text-[var(--tp)] hidden sm:inline">GEMBONG IT</span>
+    </a>
+    <ul class="hidden sm:flex items-center gap-1">
+      <li><a href="/#projects" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">LATEST</a></li>
+      <li><a href="/projects" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'projects' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">REPOSITORY</a></li>
+      <li><a href="/info" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'info' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">SERVICES</a></li>
+      <li><a href="/#home" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">HOME</a></li>
+      <li><a href="/#contact" class="px-3 py-2 font-display text-[10px] text-[var(--tp)]/60 border border-transparent hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">CONTACT</a></li>
+    </ul>
+    <div class="flex items-center gap-2">
+      <select data-theme-select class="theme-select" aria-label="Pilih tema situs">
+        <option value="retro">Retro</option><option value="modern">Modern</option><option value="professional">Profesional</option>
+      </select>
+      {% if page_id == 'home' %}<button id="sfxBtn" type="button" aria-pressed="true" class="hidden sm:inline-block px-2 py-1.5 font-display text-[8px] border border-[var(--tp)]/30 text-[var(--tp)]/70 tracking-wide">SFX ON</button>{% endif %}
+      <button id="menuBtn" type="button" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--tp)]/30" aria-label="Buka menu navigasi" aria-controls="mobileMenu" aria-expanded="false">
+        <span class="block w-5 h-0.5 bg-[var(--tp)]"></span><span class="block w-5 h-0.5 bg-[var(--tp)]"></span><span class="block w-5 h-0.5 bg-[var(--tp)]"></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--tp)]/30" style="background:rgba(var(--ts-rgb), .98);">
+    <ul class="flex flex-col p-4 gap-2">
+      <li><a href="/#projects" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► LATEST PROJECTS</a></li>
+      <li><a href="/projects" class="block px-4 py-3 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border-[var(--tp)]/30' if page_id == 'projects' else 'text-[var(--tp)]/70 border-[var(--tp)]/20' }} border text-center">► REPOSITORY</a></li>
+      <li><a href="/info" class="block px-4 py-3 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border-[var(--tp)]/30' if page_id == 'info' else 'text-[var(--tp)]/70 border-[var(--tp)]/20' }} border text-center">► SERVICES &amp; FAQ</a></li>
+      <li><a href="/#home" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► HOME</a></li>
+      <li><a href="/#contact" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► CONTACT</a></li>
+      {% if page_id == 'home' %}<li class="text-center"><button id="mobileSfxBtn" type="button" aria-pressed="true" class="px-4 py-3 font-display text-[10px] border border-[var(--tp)]/30 text-[var(--tp)]">SFX ON / OFF</button></li>{% endif %}
+    </ul>
+  </div>
+</nav>
+<script>
+(function(){
+  var button=document.getElementById('menuBtn'), menu=document.getElementById('mobileMenu');
+  if(!button||!menu)return;
+  function setOpen(open){menu.classList.toggle('hidden',!open);button.setAttribute('aria-expanded',String(open));button.setAttribute('aria-label',open?'Tutup menu navigasi':'Buka menu navigasi');}
+  button.addEventListener('click',function(){setOpen(menu.classList.contains('hidden'));});
+  menu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){setOpen(false);});});
+  document.addEventListener('click',function(event){if(!menu.classList.contains('hidden')&&!menu.contains(event.target)&&!button.contains(event.target))setOpen(false);});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&!menu.classList.contains('hidden')){setOpen(false);button.focus();}});
+})();
+</script>
+<script>
+(function(){
+  var desktop=document.getElementById('sfxBtn'), mobile=document.getElementById('mobileSfxBtn');
+  if(!desktop||!mobile)return;
+  mobile.addEventListener('click',function(){desktop.click();mobile.setAttribute('aria-pressed',desktop.getAttribute('aria-pressed'));mobile.textContent=desktop.textContent;});
+  desktop.addEventListener('click',function(){mobile.setAttribute('aria-pressed',desktop.getAttribute('aria-pressed'));mobile.textContent=desktop.textContent;});
+})();
+</script>
