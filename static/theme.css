@@ -393,15 +393,9 @@ html[data-theme="professional"] .repo-card:hover{
 .page-strip{
   position:fixed;inset:0;z-index:9999;pointer-events:none;
   background-color:var(--ts,#0d1b4c);
-  background-image:
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0),
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0);
-  background-size:34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%;
-  background-position:100% 0,66% 0,32% 0,0 0,100% 52%,66% 52%,32% 52%,0 52%,100% 100%,66% 100%,32% 100%,0 100%;
+  background-image:linear-gradient(var(--ts,#0d1b4c) 0 0);
+  background-size:34% 52%;
+  background-position:100% 0;
   background-repeat:no-repeat;
 }
 .page-strip-out{animation:pixelTilesOut .5s steps(1,end) forwards;}
@@ -421,15 +415,9 @@ html[data-theme="professional"] .repo-card:hover{
 html.page-strip-pending::before{
   content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;
   background-color:var(--ts,#0d1b4c);
-  background-image:
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0),
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--tp,#f2c94c) 0 0),linear-gradient(var(--ts,#0d1b4c) 0 0),
-    linear-gradient(var(--ts,#0d1b4c) 0 0),linear-gradient(var(--tp,#f2c94c) 0 0);
-  background-size:34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%,34% 52%;
-  background-position:100% 0,66% 0,32% 0,0 0,100% 52%,66% 52%,32% 52%,0 52%,100% 100%,66% 100%,32% 100%,0 100%;
+  background-image:linear-gradient(var(--ts,#0d1b4c) 0 0);
+  background-size:34% 52%;
+  background-position:100% 0;
   background-repeat:no-repeat;
   animation:pixelTilesIn .5s steps(1,end) forwards;
 }
