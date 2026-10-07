@@ -27,14 +27,24 @@
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;--tp:#f2c94c;--ts:#0d1b4c;--tt:#0d1b4c;--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
+  :root{--navy:{{ site_palette.secondary }};--gold:{{ site_palette.primary }};--gold-light:{{ site_palette.label }};--cream:{{ site_palette.body }};--tp:{{ site_palette.primary }};--ts:{{ site_palette.secondary }};--tt:{{ site_palette.body }};--color-title-primary:{{ site_palette.title_primary }};--color-title-secondary:{{ site_palette.title_secondary }};--color-subtitle:{{ site_palette.subtitle }};--color-body:{{ site_palette.body }};--color-muted:{{ site_palette.muted }};--color-label:{{ site_palette.label }};--color-inverse:{{ site_palette.inverse }};--projects-bg:{{ site_palette.projects_background }};--projects-title:{{ site_palette.projects_title }};--projects-subtitle:{{ site_palette.projects_subtitle }};--projects-body:{{ site_palette.projects_body }};--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
   html,body{height:100%;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{background:var(--navy);font-family:'Press Start 2P',monospace;}
+  body{background:var(--navy);font-family:'Press Start 2P',monospace;color:var(--color-body);}
+  body.text-white{color:var(--color-body) !important;}
+  .text-white{color:var(--color-body) !important;}
+  [class~="text-white/60"],[class~="text-white/70"],[class~="text-white/80"],[class~="text-white/50"],[class~="text-white/40"],[class~="text-white/30"]{color:var(--color-muted) !important;}
+  h1,h2,h3,h4{color:var(--color-title-primary);}
+  h1.text-white,h2.text-white,h3.text-white,h4.text-white{color:var(--color-title-primary) !important;}
+  [class~="text-[var(--gold-light)]"]{color:var(--color-title-secondary) !important;}
+  [class~="text-[var(--gold-light)]/50"],[class~="text-[var(--gold-light)]/60"]{color:var(--color-subtitle) !important;}
+  [class~="text-[var(--gold-light)]/30"],[class~="text-[var(--gold-light)]/40"]{color:var(--color-muted) !important;}
+  [class~="text-[var(--navy)]"]{color:var(--color-inverse) !important;}
+  [class~="text-[var(--navy)]/60"]{color:var(--color-muted) !important;}
   .font-display{font-family:'Press Start 2P',monospace;}
   *{image-rendering:pixelated;}
 
-  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,var(--ts) 55%,#081132 100%);}
   .grid-overlay{
     background-image:linear-gradient(rgba(242,201,76,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(242,201,76,.1) 1px,transparent 1px);
     background-size:20px 20px;animation:gridPulse 4s ease-in-out infinite;
@@ -44,39 +54,41 @@
   .pixel-border{border:3px solid var(--gold-light);box-shadow:4px 4px 0 rgba(0,0,0,.6),inset 0 0 0 1px rgba(242,201,76,.15);}
   .pixel-btn{border:3px solid var(--gold);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;}
   .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
-  .pixel-btn-gold{background:var(--gold-light);color:var(--navy);font-weight:700;}
-  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--gold-light);}
+  .pixel-btn-gold{background:var(--gold-light);color:var(--color-inverse);font-weight:700;}
+  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--color-title-secondary);}
   .pixel-btn-glass:hover{background:rgba(255,255,255,.12);}
-  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--gold-light);opacity:.5;}
+  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--color-label);opacity:.5;}
+  .pixel-btn-gold:active{filter:brightness(.9);}
+  .pixel-btn-gold:hover{filter:brightness(.95);}
 
-  .critter{position:absolute;width:4px;height:4px;background:var(--gold-light);opacity:.25;pointer-events:none;}
+  .critter{position:absolute;width:4px;height:4px;background:var(--color-label);opacity:.25;pointer-events:none;}
   @keyframes rise{0%{transform:translateY(0) scale(1);opacity:.25}50%{opacity:.45}100%{transform:translateY(-120px) scale(.6);opacity:0}}
   .critter.rise{animation:rise 6s ease-in-out infinite;}
   .hp-bar{height:4px;background:rgba(242,201,76,.15);border:1px solid rgba(242,201,76,.3);}
-  .hp-bar-fill{height:100%;background:var(--gold-light);}
+  .hp-bar-fill{height:100%;background:var(--color-label);}
 
-  .svc-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
+  .svc-card{background:linear-gradient(160deg,#12245e 0%,var(--ts) 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
   .svc-card::before{content:'';position:absolute;top:-3px;left:10px;width:8px;height:8px;background:var(--gold-light);}
-  .svc-card:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 rgba(0,0,0,.6);border-color:var(--gold-light);}
+  .svc-card:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 rgba(0,0,0,.6);border-color:var(--color-title-secondary);}
   .svc-num{font-size:20px;color:rgba(242,201,76,.25);}
-  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--gold-light);font-size:8px;padding:4px 7px;}
+  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--color-label);font-size:8px;padding:4px 7px;}
 
-  .step-num{width:44px;height:44px;border:3px solid var(--gold-light);display:flex;align-items:center;justify-content:center;background:rgba(242,201,76,.08);color:var(--gold-light);font-size:12px;flex-shrink:0;}
+  .step-num{width:44px;height:44px;border:3px solid var(--gold-light);display:flex;align-items:center;justify-content:center;background:rgba(242,201,76,.08);color:var(--color-title-secondary);font-size:12px;flex-shrink:0;}
 
   .faq-item{border:2px solid rgba(242,201,76,.3);background:rgba(255,255,255,.03);margin-bottom:10px;}
-  .faq-q{width:100%;text-align:left;background:transparent;border:none;cursor:pointer;padding:16px;color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.9;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
+  .faq-q{width:100%;text-align:left;background:transparent;border:none;cursor:pointer;padding:16px;color:var(--color-title-secondary);font-family:'Press Start 2P',monospace;font-size:10px;line-height:1.9;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
   .faq-q:hover{background:rgba(255,255,255,.05);}
   .faq-a{max-height:0;overflow:hidden;transition:max-height .3s steps(6);padding:0 16px;color:rgba(217,209,168,.85);font-size:9px;line-height:2.2;}
   .faq-item.open .faq-a{max-height:340px;padding-bottom:16px;}
-  .faq-mark{color:var(--gold-light);transition:transform .2s steps(2);flex-shrink:0;}
+  .faq-mark{color:var(--color-title-secondary);transition:transform .2s steps(2);flex-shrink:0;}
   .faq-item.open .faq-mark{transform:rotate(45deg);}
 
-  .contact-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--gold-light);font-family:'Press Start 2P',monospace;font-size:10px;padding:10px 12px;outline:none;width:100%;}
-  .contact-input:focus{border-color:var(--gold-light);box-shadow:0 0 8px rgba(242,201,76,.3);}
+  .contact-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--color-title-secondary);font-family:'Press Start 2P',monospace;font-size:10px;padding:10px 12px;outline:none;width:100%;}
+  .contact-input:focus{border-color:var(--color-title-secondary);box-shadow:0 0 8px rgba(242,201,76,.3);}
   .contact-input::placeholder{color:rgba(242,201,76,.3);}
 
   .cursor-blink{border-right:2px solid var(--gold-light);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
-  @keyframes cursor-blink{0%,100%{border-right-color:var(--gold-light)}50%{border-right-color:transparent}}
+  @keyframes cursor-blink{0%,100%{border-right-color:var(--color-title-secondary)}50%{border-right-color:transparent}}
   ::selection{background:var(--gold-light);color:var(--navy);}
   ::-webkit-scrollbar{width:10px;}
   ::-webkit-scrollbar-track{background:var(--navy);}
@@ -160,10 +172,10 @@
 
     <div class="relative max-w-6xl mx-auto text-center">
       <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ LOADOUT &amp; INTEL ★</span>
-      <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
-        Services <span class="text-[var(--gold-light)]">&amp; FAQ</span><span class="cursor-blink"></span>
+      <h1 class="font-display text-lg md:text-xl font-bold text-[var(--color-title-primary)] leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
+        Services <span class="text-[var(--color-title-secondary)]">&amp; FAQ</span><span class="cursor-blink"></span>
       </h1>
-      <p class="text-white/60 mt-5 max-w-2xl mx-auto leading-loose text-xs">
+      <p class="text-[var(--color-muted)] mt-5 max-w-2xl mx-auto leading-loose text-xs">
         Apa yang kami kerjakan, bagaimana prosesnya, dan jawaban untuk pertanyaan yang
         paling sering ditanyakan calon klien.
       </p>
@@ -173,8 +185,8 @@
   <!-- SERVICES -->
   <main class="bg-[var(--navy)] px-6 md:px-16 py-12">
     <div class="max-w-6xl mx-auto">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ Layanan Kami ★</h2>
-      <p class="text-[var(--gold-light)]/50 text-center font-display text-[10px] mb-10">PICK YOUR QUEST →</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--color-title-primary)] text-center mb-2">★ Layanan Kami ★</h2>
+      <p class="text-[var(--color-subtitle)] text-center font-display text-[10px] mb-10">PICK YOUR QUEST →</p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <article class="svc-card p-6">
@@ -239,8 +251,8 @@
   <!-- PROCESS -->
   <section class="bg-[var(--gold)] px-6 md:px-16 py-16">
     <div class="max-w-5xl mx-auto">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--navy)] text-center mb-2">★ Alur Kerja ★</h2>
-      <p class="text-[var(--navy)]/60 text-center font-display text-[10px] mb-12">HOW A PROJECT LEVELS UP</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--color-inverse)] text-center mb-2">★ Alur Kerja ★</h2>
+      <p class="text-[var(--color-muted)] text-center font-display text-[10px] mb-12">HOW A PROJECT LEVELS UP</p>
 
       <div class="flex flex-col gap-5">
         <div class="flex items-start gap-4 bg-[var(--navy)] p-5" style="border:2px solid rgba(13,27,76,.9);box-shadow:4px 4px 0 rgba(0,0,0,.25);">
@@ -278,8 +290,8 @@
   <!-- FAQ -->
   <section class="bg-[var(--navy)] px-6 md:px-16 py-16">
     <div class="max-w-3xl mx-auto">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--gold-light)] text-center mb-2">★ FAQ ★</h2>
-      <p class="text-[var(--gold-light)]/50 text-center font-display text-[10px] mb-10">FREQUENTLY ASKED QUESTIONS</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--color-title-primary)] text-center mb-2">★ FAQ ★</h2>
+      <p class="text-[var(--color-subtitle)] text-center font-display text-[10px] mb-10">FREQUENTLY ASKED QUESTIONS</p>
 
       <div id="faqList">
         <div class="faq-item">
@@ -309,15 +321,15 @@
   <!-- CONTACT -->
   <section id="contact" class="bg-[var(--gold)] px-6 md:px-16 py-16">
     <div class="max-w-4xl mx-auto">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--navy)] text-center mb-2">★ Hubungi Kami ★</h2>
-      <p class="text-[var(--navy)]/60 text-center font-display text-[10px] mb-10">RESPON CEPAT — PILIH JALUR FAVORITMU</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--color-inverse)] text-center mb-2">★ Hubungi Kami ★</h2>
+      <p class="text-[var(--color-muted)] text-center font-display text-[10px] mb-10">RESPON CEPAT — PILIH JALUR FAVORITMU</p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         {% if contact.whatsapp %}
         <a href="https://wa.me/{{ contact.whatsapp | wa_digits }}?text=Halo%20Gembong%20IT%2C%20saya%20ingin%20konsultasi" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[10px] px-5 py-4 text-center">WA CHAT</a>
         {% endif %}
         {% if contact.email %}
-        <a href="mailto:{{ contact.email }}?subject=Konsultasi%20Proyek%20-%20Gembong%20IT" class="pixel-btn font-display text-[10px] px-5 py-4 text-center" style="background:var(--navy);color:var(--gold-light);border-color:var(--navy);">KIRIM EMAIL</a>
+        <a href="mailto:{{ contact.email }}?subject=Konsultasi%20Proyek%20-%20Gembong%20IT" class="pixel-btn font-display text-[10px] px-5 py-4 text-center" style="background:var(--navy);color:var(--color-title-secondary);border-color:var(--navy);">KIRIM EMAIL</a>
         {% endif %}
         {% if contact.phone %}
         <a href="tel:{{ contact.phone | wa_digits }}" class="pixel-btn font-display text-[10px] px-5 py-4 text-center" style="background:transparent;color:var(--navy);border-color:var(--navy);">TELEPON</a>

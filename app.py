@@ -19,11 +19,26 @@ DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 AUTH_FILE = os.path.join(BASE_DIR, 'auth.json')
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+PALETTE_DEFAULTS = {
+    "primary": "#d4af0e",
+    "secondary": "#0d1b4c",
+    "title_primary": "#ffffff",
+    "title_secondary": "#f2c94c",
+    "subtitle": "#f2c94c",
+    "body": "#ffffff",
+    "muted": "#9ca3af",
+    "label": "#f2c94c",
+    "inverse": "#0d1b4c",
+    "projects_background": "#d4af0e",
+    "projects_title": "#ffffff",
+    "projects_subtitle": "#9b7200",
+    "projects_body": "#ffffff",
+}
 
 CAROUSEL = [
-    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
-    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
-    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "color_palette": json.loads(json.dumps(PALETTE_DEFAULTS))},
+    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": "", "color_palette": json.loads(json.dumps(PALETTE_DEFAULTS))},
+    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "color_palette": json.loads(json.dumps(PALETTE_DEFAULTS))},
 ]
 
 COLOR_DEFAULTS = {"primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"}
@@ -58,6 +73,49 @@ def _clean_theme(value):
 def _clean_color(value, default):
     v = (value or "").strip()
     return v if HEX_RE.match(v) else default
+
+
+def _clean_palette(value):
+    """Return a complete named palette, migrating the legacy text role."""
+    source = value if isinstance(value, dict) else {}
+    legacy_text = _clean_color(source.get("text"), PALETTE_DEFAULTS["body"])
+    legacy_primary = _clean_color(source.get("primary"), PALETTE_DEFAULTS["primary"])
+    legacy_secondary = _clean_color(source.get("secondary"), PALETTE_DEFAULTS["secondary"])
+    legacy_title = _clean_color(source.get("title"), legacy_primary)
+    return {
+        role: _clean_color(
+            source.get(role),
+            legacy_text if role == "body"
+            else legacy_text if role == "subtitle" and "text" in source
+            else legacy_title if role == "title_secondary"
+            else legacy_primary if role == "label"
+            else legacy_secondary if role == "inverse"
+            else PALETTE_DEFAULTS[role],
+        )
+        for role in PALETTE_DEFAULTS
+    }
+
+
+def _palette_from_slide(slide):
+    palette = slide.get("color_palette") if isinstance(slide, dict) else None
+    if isinstance(palette, dict):
+        return _clean_palette(palette)
+    return _clean_palette(slide if isinstance(slide, dict) else {})
+
+
+def _palette_from_form(form, token):
+    return _clean_palette({
+        role: form.get(f"slides[{token}][color_palette][{role}]")
+        for role in PALETTE_DEFAULTS
+    })
+
+
+def _site_palette_from_form(form, existing=None):
+    existing = existing if isinstance(existing, dict) else {}
+    return _clean_palette({
+        role: form.get(f"site_palette[{role}]", existing.get(role))
+        for role in PALETTE_DEFAULTS
+    })
 
 
 def _hex_to_rgba(value, alpha=1.0):
@@ -127,7 +185,8 @@ def load_data():
     if not os.path.exists(DATA_FILE):
         data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": [],
                 "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS)),
-                "carousel_interval": INTERVAL_DEFAULT, "theme": THEME_DEFAULT}
+                "carousel_interval": INTERVAL_DEFAULT, "theme": THEME_DEFAULT,
+                "site_palette": json.loads(json.dumps(PALETTE_DEFAULTS))}
         save_data(data)
         return data
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -140,12 +199,17 @@ def load_data():
     if not isinstance(data.get("carousel"), list):
         data["carousel"] = json.loads(json.dumps(CAROUSEL))
     for slide in data["carousel"]:
-        if isinstance(slide, dict):
-            slide["primary"] = _clean_color(slide.get("primary"), COLOR_DEFAULTS["primary"])
-            slide["secondary"] = _clean_color(slide.get("secondary"), COLOR_DEFAULTS["secondary"])
-            slide["text"] = _clean_color(slide.get("text"), COLOR_DEFAULTS["text"])
+        if not isinstance(slide, dict):
+            continue
+        if isinstance(slide.get("color_palette"), dict):
+            slide["color_palette"] = _clean_palette(slide["color_palette"])
+        else:
+            slide["color_palette"] = _palette_from_slide(slide)
+        for legacy_role in ("primary", "secondary", "text"):
+            slide.pop(legacy_role, None)
     data["carousel_interval"] = _clean_interval(data.get("carousel_interval"))
     data["theme"] = _clean_theme(data.get("theme"))
+    data["site_palette"] = _clean_palette(data.get("site_palette"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
     if not isinstance(data.get("messages"), list):
@@ -197,7 +261,10 @@ def verify_login(username, password):
 # --------------------------------------------------------------------------
 # Matches slides[<token>][<field>] so both server-rendered (slides[0][title])
 # and JS-added (slides[3][title]) inputs are collected per card.
-SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text)\]$")
+SLIDE_KEY_RE = re.compile(
+    r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text)\]$"
+)
+PALETTE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[color_palette\]\[([^\]]+)\]$")
 
 
 def collect_slides(form, files=None):
@@ -205,14 +272,23 @@ def collect_slides(form, files=None):
     order = []
     for key, values in form.lists():
         match = SLIDE_KEY_RE.match(key)
-        if not match:
+        palette_match = PALETTE_KEY_RE.match(key)
+        if not match and not palette_match:
             continue
-        token, field = match.group(1), match.group(2)
+        if match:
+            token, field = match.group(1), match.group(2)
+        else:
+            palette_key = palette_match
+            assert palette_key is not None
+            token, field = palette_key.group(1), None
         if token not in cards:
-            cards[token] = {}
+            cards[token] = {"color_palette": {}}
             order.append(token)
         picked = next((v for v in values if v.strip()), values[0]) if values else ""
-        cards[token][field] = picked
+        if match:
+            cards[token][field] = picked
+        elif palette_match and palette_match.group(2) in PALETTE_DEFAULTS:
+            cards[token]["color_palette"][palette_match.group(2)] = picked
 
     carousel = []
     for token in order:
@@ -230,9 +306,10 @@ def collect_slides(form, files=None):
             "hp": hp if hp_raw else 80,
             "mode": mode,
             "image": (card.get("image") or "").strip() if mode == "image" else "",
-            "primary": _clean_color(card.get("primary"), COLOR_DEFAULTS["primary"]),
-            "secondary": _clean_color(card.get("secondary"), COLOR_DEFAULTS["secondary"]),
-            "text": _clean_color(card.get("text"), COLOR_DEFAULTS["text"]),
+            "color_palette": _clean_palette({
+                **card.get("color_palette", {}),
+                **{role: card[role] for role in ("primary", "secondary", "text") if role in card},
+            }),
         }
         uploaded = (files or {}).get(f"slides[{token}][image_file]")
         if uploaded and uploaded.filename:
@@ -377,12 +454,13 @@ app.jinja_env.filters["hexa"] = _hex_to_rgba
 
 @app.context_processor
 def inject_site_theme():
+    data = {}
     try:
         data = load_data()
         theme = data.get("theme", THEME_DEFAULT)
     except Exception:
         theme = THEME_DEFAULT
-    return {"site_theme": theme, "themes": THEMES}
+    return {"site_theme": theme, "themes": THEMES, "site_palette": _clean_palette(data.get("site_palette"))}
 
 
 # --------------------------------------------------------------------------
@@ -494,8 +572,9 @@ def admin_appearance_save():
 
     data = load_data()
     data["theme"] = _clean_theme(request.form.get("theme"))
+    data["site_palette"] = _site_palette_from_form(request.form, data.get("site_palette"))
     save_data(data)
-    return _render_admin(message="Tema default berhasil diperbarui.", active_tab="appearance")
+    return _render_admin(message="Tema dan palet berhasil diperbarui.", active_tab="appearance")
 
 
 @app.route("/admin/messages/<int:index>/delete", methods=["POST"])

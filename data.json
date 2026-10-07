@@ -6,9 +6,21 @@
       "hp": 80,
       "mode": "image",
       "image": "",
-      "primary": "#d4af0e",
-      "secondary": "#0d1b4c",
-      "text": "#0d1b4c"
+      "color_palette": {
+        "primary": "#d4af0e",
+        "secondary": "#0d1b4c",
+        "title_primary": "#ffffff",
+        "title_secondary": "#d4af0e",
+        "subtitle": "#c79f03",
+        "body": "#ffffff",
+        "muted": "#c0c0c0",
+        "label": "#800040",
+        "inverse": "#0d1b4c",
+        "projects_background": "#ffff00",
+        "projects_title": "#000040",
+        "projects_subtitle": "#000040",
+        "projects_body": "#000040"
+      }
     },
     {
       "title": "",
@@ -16,9 +28,21 @@
       "hp": 80,
       "mode": "image",
       "image": "/static/uploads/e9d0c9dc4ea811f55882940360e11ea1.png",
-      "primary": "#fad605",
-      "secondary": "#46820b",
-      "text": "#4e0158"
+      "color_palette": {
+        "primary": "#fad605",
+        "secondary": "#46820b",
+        "title_primary": "#ffffff",
+        "title_secondary": "#fad605",
+        "subtitle": "#4e0158",
+        "body": "#4e0158",
+        "muted": "#9ca3af",
+        "label": "#fad605",
+        "inverse": "#46820b",
+        "projects_background": "#d4af0e",
+        "projects_title": "#ffffff",
+        "projects_subtitle": "#9b7200",
+        "projects_body": "#ffffff"
+      }
     },
     {
       "title": "",
@@ -26,9 +50,21 @@
       "hp": 80,
       "mode": "image",
       "image": "/static/uploads/c9bb25165b4324cc81a3cb68e85b63b7.png",
-      "primary": "#edcf27",
-      "secondary": "#2c4930",
-      "text": "#565801"
+      "color_palette": {
+        "primary": "#edcf27",
+        "secondary": "#2c4930",
+        "title_primary": "#ffffff",
+        "title_secondary": "#edcf27",
+        "subtitle": "#565801",
+        "body": "#565801",
+        "muted": "#9ca3af",
+        "label": "#edcf27",
+        "inverse": "#2c4930",
+        "projects_background": "#d4af0e",
+        "projects_title": "#ffffff",
+        "projects_subtitle": "#9b7200",
+        "projects_body": "#ffffff"
+      }
     },
     {
       "title": "eek",
@@ -36,9 +72,21 @@
       "hp": 80,
       "mode": "image",
       "image": "https://imgs.search.brave.com/ZKFDeGGEmDwO3npEybiws7E9FUT-HRzALGAzknLgQJw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kYW1h/c3NldGxpYnJhcnku/Y3ZzaW1hZ2VzLmNv/bS9hZG9iZS9hc3Nl/dHMvdXJuOmFhaWQ6/YWVtOmM2ZmRlZjE3/LTFkMDUtNDM0ZC04/ZmJlLWU0YTBjMDZh/ZTZlZi9hcy9UVU1C/X0NlbGVicmF0ZVJl/dGlyZW1lbnRDb25m/ZXR0aUJOMzA4OUww/V0hUXzh4Ml9CYS5q/cGVnP3dpZHRoPTQw/MCZoZWlnaHQ9NDAw/JnByZWZlcndlYnA9/dHJ1ZQ",
-      "primary": "#d4af0e",
-      "secondary": "#0d1b4c",
-      "text": "#0d1b4c"
+      "color_palette": {
+        "primary": "#d4af0e",
+        "secondary": "#0d1b4c",
+        "title_primary": "#ffffff",
+        "title_secondary": "#d4af0e",
+        "subtitle": "#0d1b4c",
+        "body": "#0d1b4c",
+        "muted": "#9ca3af",
+        "label": "#d4af0e",
+        "inverse": "#0d1b4c",
+        "projects_background": "#d4af0e",
+        "projects_title": "#ffffff",
+        "projects_subtitle": "#9b7200",
+        "projects_body": "#ffffff"
+      }
     }
   ],
   "projects": [
@@ -63,5 +111,20 @@
     "linkedin": "https://linkedin.com/company/gembong-it"
   },
   "carousel_interval": 15,
-  "theme": "retro"
+  "theme": "retro",
+  "site_palette": {
+    "primary": "#d4af0e",
+    "secondary": "#0d1b4c",
+    "title_primary": "#ffffff",
+    "title_secondary": "#d4af0e",
+    "subtitle": "#f2c94c",
+    "body": "#ffffff",
+    "muted": "#9ca3af",
+    "label": "#d4af0e",
+    "inverse": "#0d1b4c",
+    "projects_background": "#d4af0e",
+    "projects_title": "#ffffff",
+    "projects_subtitle": "#9b7200",
+    "projects_body": "#ffffff"
+  }
 }

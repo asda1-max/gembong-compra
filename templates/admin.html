@@ -9,6 +9,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
   :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;}
   body{background:var(--navy);font-family:'Press Start 2P',monospace;color:#fff;}
+  [class~="text-white/60"],[class~="text-white/70"],[class~="text-white/80"],[class~="text-white/50"],[class~="text-white/40"],[class~="text-white/30"]{color:#9ca3af !important;}
+  h1,h2,h3,h4{color:#fff;}
   .pixel-input{background:rgba(255,255,255,.06);border:2px solid rgba(242,201,76,.4);color:var(--gold-light);font-family:'Press Start 2P',monospace;padding:8px 12px;font-size:10px;outline:none;width:100%;}
   .pixel-input:focus{border-color:var(--gold-light);box-shadow:0 0 8px rgba(242,201,76,.3);}
   .pixel-input::placeholder{color:rgba(242,201,76,.3);}
@@ -115,6 +117,7 @@
       <p class="text-[10px] text-white/40 mb-6">Edit Carousel Slides</p>
       <form method="POST" action="/admin/save" enctype="multipart/form-data">
         {% for slide in slides %}
+        {% set slide_index = loop.index0 %}
         <div class="slide-card" id="card-{{ loop.index0 }}">
           <div class="flex items-center gap-3 mb-4">
             <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE {{ loop.index }}</span>
@@ -136,29 +139,18 @@
           <!-- THEME COLORS (apply to both text + image modes) -->
           <div class="color-fields mb-4">
             <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
-                <div class="flex gap-2 items-center">
-                  <input type="color" name="slides[{{ loop.index0 }}][primary]" value="{{ slide.primary }}" class="color-swatch">
-                  <input type="text" class="pixel-input color-hex" value="{{ slide.primary }}" maxlength="7" spellcheck="false" aria-label="Primary color hex">
-                </div>
-              </div>
-              <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SECONDARY</label>
-                <div class="flex gap-2 items-center">
-                  <input type="color" name="slides[{{ loop.index0 }}][secondary]" value="{{ slide.secondary }}" class="color-swatch">
-                  <input type="text" class="pixel-input color-hex" value="{{ slide.secondary }}" maxlength="7" spellcheck="false" aria-label="Secondary color hex">
-                </div>
-              </div>
-              <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TEXT</label>
-                <div class="flex gap-2 items-center">
-                  <input type="color" name="slides[{{ loop.index0 }}][text]" value="{{ slide.text }}" class="color-swatch">
-                  <input type="text" class="pixel-input color-hex" value="{{ slide.text }}" maxlength="7" spellcheck="false" aria-label="Text color hex">
-                </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {% for role, color in slide.color_palette.items() %}
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">{{ role | replace('_', ' ') | upper }}</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" name="slides[{{ slide_index }}][color_palette][{{ role }}]" value="{{ color }}" class="color-swatch">
+                <input type="hidden" name="slides[{{ slide_index }}][color_palette][{{ role }}]" value="{{ color }}" class="color-value">
+                <input type="text" class="pixel-input color-hex" value="{{ color }}" maxlength="7" spellcheck="false" aria-label="{{ role }} color hex">
               </div>
             </div>
+            {% endfor %}
+          </div>
           </div>
 
           <!-- TEXT MODE FIELDS -->
@@ -279,31 +271,71 @@
 
     <!-- ===================== APPEARANCE TAB ===================== -->
     <section class="tab-panel {{ 'active' if active_tab == 'appearance' else '' }}" id="panel-appearance">
-      <p class="text-[10px] text-white/40 mb-6">Tema default situs (pengunjung tetap bisa ganti sendiri)</p>
+      <p class="text-[10px] text-white/40 mb-6">Atur tema dan palet situs untuk seluruh halaman</p>
       <div class="slide-card">
         <form method="POST" action="/admin/appearance/save">
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-3 block">TEMA DEFAULT</label>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="retro" {{ 'checked' if site_theme == 'retro' else '' }}>
-              <span class="theme-choice-name">RETRO</span>
-              <span class="theme-choice-desc">Pixel / arcade 8-bit (saat ini)</span>
-            </label>
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="modern" {{ 'checked' if site_theme == 'modern' else '' }}>
-              <span class="theme-choice-name">MODERN</span>
-              <span class="theme-choice-desc">Rounded, lembut, sans-serif</span>
-            </label>
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="professional" {{ 'checked' if site_theme == 'professional' else '' }}>
-              <span class="theme-choice-name">PROFESIONAL</span>
-              <span class="theme-choice-desc">Korporat, tegas, serif</span>
-            </label>
+            <label class="theme-choice"><input type="radio" name="theme" value="retro" {{ 'checked' if site_theme == 'retro' else '' }}><span class="theme-choice-name">RETRO</span><span class="theme-choice-desc">Pixel / arcade 8-bit</span></label>
+            <label class="theme-choice"><input type="radio" name="theme" value="modern" {{ 'checked' if site_theme == 'modern' else '' }}><span class="theme-choice-name">MODERN</span><span class="theme-choice-desc">Rounded, lembut, sans-serif</span></label>
+            <label class="theme-choice"><input type="radio" name="theme" value="professional" {{ 'checked' if site_theme == 'professional' else '' }}><span class="theme-choice-name">PROFESIONAL</span><span class="theme-choice-desc">Korporat, tegas, serif</span></label>
           </div>
-          <p class="hint mt-4">// Tema hanya mengubah gaya (font, bentuk, efek). Warna tetap dari pengaturan carousel.</p>
-          <div class="mt-8">
-            <button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN TEMA</button>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mt-8 mb-3 block">GLOBAL SITE PALETTE</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for role in ['primary', 'secondary', 'title_primary', 'title_secondary', 'subtitle', 'body'] %}
+            {% set color = site_palette[role] %}
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">{{ role | replace('_', ' ') | upper }}</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" name="site_palette[{{ role }}]" value="{{ color }}" class="color-swatch">
+                <input type="hidden" name="site_palette[{{ role }}]" value="{{ color }}" class="color-value">
+                <input type="text" class="pixel-input color-hex" value="{{ color }}" maxlength="7" spellcheck="false" aria-label="{{ role }} color hex">
+              </div>
+            </div>
+            {% endfor %}
           </div>
+          <p class="hint mt-3">// Atur primary, secondary, title utama/highlight, dan subtitle secara terpisah.</p>
+          <div class="flex justify-between items-center gap-4 p-4 bg-white/5 border border-white/10">
+            <div>
+              <p class="text-[10px] text-[var(--color-label)] font-display">MUTED TEXT</p>
+              <p class="text-[8px] text-white/50 mt-2">Warna teks pendukung dengan kontras lebih rendah.</p>
+            </div>
+            <input type="color" name="site_palette[muted]" value="{{ site_palette.muted }}" class="color-swatch" aria-label="Muted text color">
+            <input type="hidden" name="site_palette[muted]" value="{{ site_palette.muted }}" class="color-value">
+            <input type="text" class="pixel-input color-hex" value="{{ site_palette.muted }}" maxlength="7" spellcheck="false" aria-label="Muted text color hex">
+          </div>
+          <div class="flex justify-between items-center gap-4 p-4 bg-white/5 border border-white/10">
+            <div>
+              <p class="text-[10px] text-[var(--color-label)] font-display">LABEL &amp; INVERSE</p>
+              <p class="text-[8px] text-white/50 mt-2">Warna badge/label dan teks di atas latar accent.</p>
+            </div>
+            {% for role in ['label', 'inverse'] %}
+            <div class="flex gap-2 items-center">
+              <label class="text-[8px]">{{ role|upper }}</label>
+              <input type="color" name="site_palette[{{ role }}]" value="{{ site_palette[role] }}" class="color-swatch">
+              <input type="hidden" name="site_palette[{{ role }}]" value="{{ site_palette[role] }}" class="color-value">
+              <input type="text" class="pixel-input color-hex" value="{{ site_palette[role] }}" maxlength="7" spellcheck="false" aria-label="{{ role }} color hex">
+            </div>
+            {% endfor %}
+          </div>
+          <p class="hint mt-3">// Judul utama, highlight, subtitle, body, muted, label, dan inverse memiliki warna terpisah.</p>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mt-8 mb-3 block">PROJECT SECTION PALETTE</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for role in ['projects_background', 'projects_title', 'projects_subtitle', 'projects_body'] %}
+            {% set color = site_palette[role] %}
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">{{ role | replace('_', ' ') | upper }}</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" name="site_palette[{{ role }}]" value="{{ color }}" class="color-swatch">
+                <input type="hidden" name="site_palette[{{ role }}]" value="{{ color }}" class="color-value">
+                <input type="text" class="pixel-input color-hex" value="{{ color }}" maxlength="7" spellcheck="false" aria-label="{{ role }} color hex">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <p class="hint mt-3">// Warna khusus bagian Our Latest Project; latar dan hierarki teksnya dapat berbeda dari bagian lain.</p>
+          <p class="hint mt-4">// Palet teks lain tetap mencakup title, subtitle, body, muted, label, dan inverse.</p>
+          <div class="mt-8"><button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN TEMA &amp; PALET</button></div>
         </form>
       </div>
     </section>
@@ -506,29 +538,7 @@ function addSlide(){
     </div>
     <div class="color-fields mb-4">
       <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
-          <div class="flex gap-2 items-center">
-            <input type="color" name="slides[${id}][primary]" value="#d4af0e" class="color-swatch">
-            <input type="text" class="pixel-input color-hex" value="#d4af0e" maxlength="7" spellcheck="false">
-          </div>
-        </div>
-        <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SECONDARY</label>
-          <div class="flex gap-2 items-center">
-            <input type="color" name="slides[${id}][secondary]" value="#0d1b4c" class="color-swatch">
-            <input type="text" class="pixel-input color-hex" value="#0d1b4c" maxlength="7" spellcheck="false">
-          </div>
-        </div>
-        <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TEXT</label>
-          <div class="flex gap-2 items-center">
-            <input type="color" name="slides[${id}][text]" value="#0d1b4c" class="color-swatch">
-            <input type="text" class="pixel-input color-hex" value="#0d1b4c" maxlength="7" spellcheck="false">
-          </div>
-        </div>
-      </div>
+      <p class="hint">// Warna per slide hanya accent/primary dan background sekunder; teks dikendalikan global di Appearance.</p>
     </div>
     <div class="text-fields">
       <div class="grid grid-cols-1 gap-4">
@@ -598,11 +608,13 @@ document.querySelectorAll('#panel-carousel .slide-card').forEach(card => {
 /* ---------------- Color swatch <-> hex sync ---------------- */
 function bindColorPair(swatch, hex){
   if(!swatch || !hex) return;
-  swatch.addEventListener('input', function(){ hex.value = swatch.value.toLowerCase(); });
+  var hidden = swatch.parentElement.querySelector('.color-value');
+  function syncValue(value){ if(hidden) hidden.value = value; }
+  swatch.addEventListener('input', function(){ hex.value = swatch.value.toLowerCase(); syncValue(hex.value); });
   hex.addEventListener('input', function(){
     var v = hex.value.trim();
     if(!v.startsWith('#')) v = '#' + v;
-    if(/^#[0-9a-fA-F]{6}$/.test(v)){ swatch.value = v; }
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){ swatch.value = v; syncValue(v); }
   });
   hex.addEventListener('blur', function(){
     var v = hex.value.trim();
@@ -613,6 +625,7 @@ function bindColorPair(swatch, hex){
     if(!/^#[0-9a-fA-F]{6}$/.test(v)){ v = swatch.value; }
     hex.value = v.toLowerCase();
     swatch.value = v.toLowerCase();
+    syncValue(v.toLowerCase());
   });
 }
 function initColorPairs(root){

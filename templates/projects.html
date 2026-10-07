@@ -27,14 +27,25 @@
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{--navy:#0d1b4c;--gold:#d4af0e;--gold-light:#f2c94c;--cream:#d9d1a8;--tp:#f2c94c;--ts:#0d1b4c;--tt:#0d1b4c;--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
+  :root{--navy:{{ site_palette.secondary }};--gold:{{ site_palette.primary }};--gold-light:{{ site_palette.label }};--cream:{{ site_palette.body }};--tp:{{ site_palette.primary }};--ts:{{ site_palette.secondary }};--tt:{{ site_palette.body }};--color-title-primary:{{ site_palette.title_primary }};--color-title-secondary:{{ site_palette.title_secondary }};--color-subtitle:{{ site_palette.subtitle }};--color-body:{{ site_palette.body }};--color-muted:{{ site_palette.muted }};--color-label:{{ site_palette.label }};--color-inverse:{{ site_palette.inverse }};--projects-bg:{{ site_palette.projects_background }};--projects-title:{{ site_palette.projects_title }};--projects-subtitle:{{ site_palette.projects_subtitle }};--projects-body:{{ site_palette.projects_body }};--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
   html,body{height:100%;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{background:var(--navy);font-family:'Press Start 2P',monospace;}
+  body{background:var(--navy);font-family:'Press Start 2P',monospace;color:var(--color-body);}
+  [class~="text-[var(--navy)]"]{color:var(--color-inverse) !important;}
+  [class~="text-[var(--navy)]/60"]{color:var(--color-muted) !important;}
+  .text-white{color:var(--color-body) !important;}
+  [class~="text-white/60"],[class~="text-white/70"],[class~="text-white/80"],[class~="text-white/50"]{color:var(--color-muted) !important;}
+  h1,h2,h3,h4{color:var(--color-title-primary);}
+  h1.text-white,h2.text-white,h3.text-white,h4.text-white{color:var(--color-title-primary) !important;}
+  [class~="text-[var(--gold-light)]"]{color:var(--color-title-secondary) !important;}
+  [class~="text-[var(--gold-light)]/50"],[class~="text-[var(--gold-light)]/60"]{color:var(--color-subtitle) !important;}
+  [class~="text-[var(--gold-light)]/30"],[class~="text-[var(--gold-light)]/40"]{color:var(--color-muted) !important;}
+  [class~="text-[var(--navy)]"]{color:var(--color-inverse) !important;}
+  [class~="text-[var(--navy)]/60"]{color:var(--color-muted) !important;}
   .font-display{font-family:'Press Start 2P',monospace;}
   *{image-rendering:pixelated;}
 
-  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+  .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,var(--ts) 55%,#081132 100%);}
   .grid-overlay{
     background-image:linear-gradient(rgba(242,201,76,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(242,201,76,.1) 1px,transparent 1px);
     background-size:20px 20px;animation:gridPulse 4s ease-in-out infinite;
@@ -44,22 +55,22 @@
   .pixel-border{border:3px solid var(--gold-light);box-shadow:4px 4px 0 rgba(0,0,0,.6),inset 0 0 0 1px rgba(242,201,76,.15);}
   .pixel-btn{border:3px solid var(--gold);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;}
   .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
-  .pixel-btn-gold{background:var(--gold-light);color:var(--navy);font-weight:700;}
-  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--gold-light);}
+  .pixel-btn-gold{background:var(--gold-light);color:var(--color-inverse);font-weight:700;}
+  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--color-title-secondary);}
   .pixel-btn-glass:hover{background:rgba(255,255,255,.12);}
-  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--gold-light);opacity:.5;}
+  .pixel-deco{display:inline-block;width:8px;height:8px;background:var(--color-label);opacity:.5;}
 
-  .critter{position:absolute;width:4px;height:4px;background:var(--gold-light);opacity:.25;pointer-events:none;}
+  .critter{position:absolute;width:4px;height:4px;background:var(--color-label);opacity:.25;pointer-events:none;}
   @keyframes rise{0%{transform:translateY(0) scale(1);opacity:.25}50%{opacity:.45}100%{transform:translateY(-120px) scale(.6);opacity:0}}
   .critter.rise{animation:rise 6s ease-in-out infinite;}
 
   /* REPO CARD */
-  .repo-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;display:flex;flex-direction:column;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
+  .repo-card{background:linear-gradient(160deg,#12245e 0%,var(--ts) 100%);border:3px solid rgba(242,201,76,.4);box-shadow:6px 6px 0 rgba(0,0,0,.55);position:relative;display:flex;flex-direction:column;transition:transform .12s steps(2),box-shadow .12s steps(2),border-color .12s;}
   .repo-card::before{content:'';position:absolute;top:-3px;left:10px;width:8px;height:8px;background:var(--gold-light);}
   .repo-card:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 rgba(0,0,0,.6);border-color:var(--gold-light);}
-  .repo-name{color:#fff;text-shadow:0 0 12px rgba(242,201,76,.25);word-break:break-word;}
-  .repo-desc{color:rgba(217,209,168,.8);font-size:9px;line-height:2;}
-  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--gold-light);font-size:8px;padding:4px 7px;}
+  .repo-name{color:var(--projects-title);text-shadow:none;}
+  .repo-desc{color:var(--projects-body);font-size:9px;line-height:2;}
+  .tag-pill{border:1px solid rgba(242,201,76,.5);background:rgba(242,201,76,.08);color:var(--color-label);font-size:8px;padding:4px 7px;}
   .hp-bar{height:4px;background:rgba(242,201,76,.15);border:1px solid rgba(242,201,76,.3);}
   .hp-bar-fill{height:100%;background:var(--gold-light);}
 
@@ -77,30 +88,32 @@
   .search-input::placeholder{color:rgba(242,201,76,.3);}
 
   /* Editorial project explorer */
-  .project-feature{position:relative;overflow:hidden;min-height:340px;background:linear-gradient(115deg,rgba(242,201,76,.13),transparent 58%),linear-gradient(145deg,#14265e,#091333);border:1px solid rgba(242,201,76,.42);box-shadow:10px 10px 0 rgba(0,0,0,.35);}
+  .project-feature{position:relative;overflow:hidden;min-height:340px;background:var(--projects-bg);border:1px solid rgba(242,201,76,.42);box-shadow:10px 10px 0 rgba(0,0,0,.35);}
   .project-feature[hidden]{display:none;}
   .project-feature::after{content:'';position:absolute;inset:14px;border:1px solid rgba(242,201,76,.12);pointer-events:none;}
   .feature-orbit{position:absolute;width:290px;height:290px;border:1px solid rgba(242,201,76,.17);border-radius:50%;right:8%;top:50%;transform:translateY(-50%);box-shadow:0 0 0 28px rgba(242,201,76,.025),0 0 0 58px rgba(242,201,76,.02);}
   .feature-orbit::before,.feature-orbit::after{content:'';position:absolute;width:10px;height:10px;background:var(--gold-light);box-shadow:0 0 24px var(--gold-light);}
   .feature-orbit::before{top:20%;left:8%;}.feature-orbit::after{right:12%;bottom:18%;width:6px;height:6px;}
-  .feature-index{font-size:clamp(64px,12vw,142px);line-height:1;color:rgba(242,201,76,.09);letter-spacing:-.12em;}
+  .feature-index{font-size:clamp(64px,12vw,142px);line-height:1;color:var(--projects-title);opacity:.12;letter-spacing:-.12em;}
   .project-entry{border-top:1px solid rgba(242,201,76,.2);transition:background .2s ease,border-color .2s ease;}
   .project-entry:last-child{border-bottom:1px solid rgba(242,201,76,.2);}
   .project-entry:hover,.project-entry[open]{background:rgba(242,201,76,.045);border-color:rgba(242,201,76,.55);}
   .project-entry summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:56px minmax(0,1fr) auto 24px;align-items:center;gap:16px;padding:20px 14px;}
   .project-entry summary::-webkit-details-marker{display:none;}
+  .project-entry .entry-name{color:var(--projects-title);}
+  .entry-details{padding:0 54px 22px 86px;animation:entryReveal .24s ease both;color:var(--projects-body);}
+  @keyframes entryReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .entry-number{color:rgba(242,201,76,.45);font-size:9px;}
   .entry-toggle{width:22px;height:22px;border:1px solid rgba(242,201,76,.45);color:var(--gold-light);display:grid;place-items:center;transition:transform .2s ease,background .2s ease;}
   .project-entry[open] .entry-toggle{transform:rotate(45deg);background:rgba(242,201,76,.12);}
-  .entry-details{padding:0 54px 22px 86px;animation:entryReveal .24s ease both;}
   @keyframes entryReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .filter-count{font-size:8px;color:rgba(242,201,76,.48);white-space:nowrap;}
   .project-entry.is-entering{animation:repoAppear .3s ease both;}
   @keyframes repoAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   :where(a,button,input,summary):focus-visible{outline:2px dashed var(--gold-light);outline-offset:4px;}
 
-  .cursor-blink{border-right:2px solid var(--gold-light);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
-  @keyframes cursor-blink{0%,100%{border-right-color:var(--gold-light)}50%{border-right-color:transparent}}
+  .cursor-blink{border-right:2px solid var(--color-title-secondary);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
+  @keyframes cursor-blink{0%,100%{border-right-color:var(--color-title-secondary)}50%{border-right-color:transparent}}
   ::selection{background:var(--gold-light);color:var(--navy);}
   ::-webkit-scrollbar{width:10px;}
   ::-webkit-scrollbar-track{background:var(--navy);}
@@ -204,11 +217,11 @@
     <div class="critter rise" style="left:88%;top:35%;animation-duration:6.5s;animation-delay:1.4s;"></div>
 
     <div class="relative max-w-6xl mx-auto text-center">
-      <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ MISSION ARCHIVE ★</span>
-      <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
-        Project <span class="text-[var(--gold-light)]">Repository</span><span class="cursor-blink"></span>
+      <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--color-label)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ MISSION ARCHIVE ★</span>
+      <h1 class="font-display text-lg md:text-xl font-bold text-[var(--color-title-primary)] leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
+        Project <span class="text-[var(--color-title-secondary)]">Repository</span><span class="cursor-blink"></span>
       </h1>
-      <p class="text-white/60 mt-5 max-w-2xl mx-auto leading-loose text-xs">
+      <p class="text-[var(--color-muted)] mt-5 max-w-2xl mx-auto leading-loose text-xs">
         Eksplorasi karya digital kami — dari eksperimen pertama hingga solusi yang siap digunakan.
       </p>
     </div>
@@ -226,16 +239,16 @@
             <span class="pixel-deco"></span><span class="font-display text-[8px] text-[var(--gold-light)]/70 tracking-[.25em]">FEATURED BUILD / 001</span>
             <span class="status status-{{ featured.status }}">{{ featured.status|upper }}</span>
           </div>
-          <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">01</span>
-          <h2 id="featuredTitle" class="font-display text-sm md:text-xl leading-loose text-white mb-5">{{ featured.name }}</h2>
-          <p class="text-white/60 text-[10px] leading-loose max-w-lg mb-7">{{ featured.description or 'Sebuah karya dari Gembong IT.' }}</p>
+        <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">01</span>
+        <h2 id="featuredTitle" class="font-display text-sm md:text-xl leading-loose mb-5" style="color:{{ site_palette.projects_title }}">{{ featured.name }}</h2>
+        <p class="text-[10px] leading-loose max-w-lg mb-7" style="color:{{ site_palette.projects_body }}">{{ featured.description or 'Sebuah karya dari Gembong IT.' }}</p>
           {% if featured.tags %}
           <div class="flex flex-wrap gap-2 mb-8">{% for tag in featured.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>
           {% endif %}
           <div class="flex flex-wrap gap-3">
             {% if featured.repo_url %}<a href="{{ featured.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px] px-5 py-3">EXPLORE SOURCE ↗</a>{% endif %}
             {% if featured.demo_url %}<a href="{{ featured.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px] px-5 py-3">OPEN LIVE DEMO ↗</a>{% endif %}
-            {% if not featured.repo_url and not featured.demo_url %}<span class="font-display text-[8px] text-[var(--gold-light)]/40">// LINKS COMING SOON</span>{% endif %}
+            {% if not featured.repo_url and not featured.demo_url %}<span class="font-display text-[8px] text-[var(--color-muted)]">// LINKS COMING SOON</span>{% endif %}
           </div>
         </div>
       </section>

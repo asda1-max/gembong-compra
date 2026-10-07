@@ -29,26 +29,44 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root{
-    --navy:#0d1b4c;
-    --gold:#d4af0e;
-    --gold-light:#f2c94c;
-    --cream:#d9d1a8;
-    --tp:#f2c94c;
-    --ts:#0d1b4c;
-    --tt:#0d1b4c;
+    --navy:{{ site_palette.secondary }};
+    --gold:{{ site_palette.primary }};
+    --gold-light:{{ site_palette.label }};
+    --cream:{{ site_palette.body }};
+    --tp:{{ site_palette.primary }};
+    --ts:{{ site_palette.secondary }};
+    --tt:{{ site_palette.body }};
+    --color-title-primary:{{ site_palette.title_primary }};
+    --color-title-secondary:{{ site_palette.title_secondary }};
+    --color-subtitle:{{ site_palette.subtitle }};
+    --color-body:{{ site_palette.body }};
+    --color-muted:{{ site_palette.muted }};
+    --color-label:{{ site_palette.label }};
+    --color-inverse:{{ site_palette.inverse }};
+    --projects-bg:{{ site_palette.projects_background }};
+    --projects-title:{{ site_palette.projects_title }};
+    --projects-subtitle:{{ site_palette.projects_subtitle }};
+    --projects-body:{{ site_palette.projects_body }};
     --tp-rgb:242,201,76;
     --ts-rgb:13,27,76;
   }
   html,body{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
   html{scroll-behavior:smooth;}
-  body{background:var(--ts);font-family:'Press Start 2P',monospace;}
+  body{background:var(--ts);font-family:'Press Start 2P',monospace;color:var(--color-body);}
+  body.text-white{color:var(--color-body) !important;}
+  [class~="text-white/60"],[class~="text-white/70"],[class~="text-white/80"],[class~="text-white/50"],[class~="text-white/40"],[class~="text-white/30"]{color:var(--color-muted) !important;}
+  h1,h2,h3,h4{color:var(--color-title-primary);}
   .font-display{font-family:'Press Start 2P',monospace;}
   .font-script{font-family:'Press Start 2P',monospace;}
   *{image-rendering:pixelated;}
 
   .carousel-track{transition:transform .4s steps(4);}
-  .project-card{background:linear-gradient(160deg,var(--ts) 0%,#000 170%);}
+  .project-card{background:var(--ts);}
   .project-card-img{background-size:cover;background-position:center;}
+  #projectsCarousel .pixel-border{background-color:var(--projects-bg) !important;}
+  #projectsCarousel .carousel-track > div{background:var(--projects-bg) !important;}
+  #projectsCarousel .project-card{background:var(--projects-bg) !important;}
+  #projectsCarousel .project-card-img{background-color:var(--projects-bg) !important;}
   .dot{transition:all .2s ease;background:rgba(var(--ts-rgb), .4);}
   .dot.active{background:var(--tp);width:14px;height:14px;border-radius:0;box-shadow:0 0 10px var(--tp);}
 
@@ -60,15 +78,28 @@
   #bootScreen,.boot-box,.toast{transition:background-color .7s steps(8);}
   .term-window,.term-bar,.hero-bg{transition:background-color .7s steps(8),background .7s steps(8);}
   [class*="text-[var(--tp)]"],.theme-fg{transition:color .7s steps(8);}
-  .project-title{color:var(--tp);}
-  .project-card-img .project-title{color:#fff;}
+  #projects #carouselTrack > div{background:var(--projects-bg) !important;}
+  #projects .project-card{background:var(--projects-bg) !important;}
+  #projects .project-card-img{background-color:var(--projects-bg) !important;background-blend-mode:normal !important;}
+  #projects .project-title{color:var(--projects-title) !important;}
+  #projects .project-desc{color:var(--projects-body) !important;opacity:1 !important;}
+  [class~="text-[var(--tp)]"]{color:var(--color-label) !important;}
+  [class~="text-[var(--tp)]/60"],[class~="text-[var(--tp)]/70"]{color:var(--color-subtitle) !important;}
+  [class~="text-[var(--tt)]"]{color:var(--color-body) !important;}
+  .project-title{color:var(--color-title-primary);}
+  .project-card-img .project-title{color:var(--color-title-primary);}
   .image-overlay{display:none;}
-  #projects{background-color:var(--tp);}
-  #projects h2,#projects > div > p{color:var(--tt);}
-  #projects .project-desc{opacity:.75;}
+  #projects{background-color:var(--projects-bg);}
+  #projects h2{color:var(--projects-title) !important;}
+  #projects > div > p:not(.project-desc){color:var(--projects-subtitle) !important;}
+  #projects > div > p.project-desc{color:var(--projects-body) !important;}
+  #projects .project-title{color:var(--projects-title) !important;}
+  #projects .project-desc{color:var(--projects-body) !important;opacity:1 !important;}
+  #projects .project-card,#projects .project-card-img{background-color:var(--ts);}
+  #projects .project-card-img{background-blend-mode:normal;}
   .project-hp{background:rgba(0,0,0,.18);border-color:var(--tp);}
   .project-hp-fill{background:var(--tp);}
-  .theme-arrow{border-color:var(--tp);color:var(--tp);background:rgba(var(--ts-rgb), .9);}
+  .theme-arrow{border-color:var(--tp);color:var(--color-title-secondary);background:rgba(var(--ts-rgb), .9);}
   .theme-arrow:hover{background:var(--ts);}
 
   /* === THEME TRANSITION: pixel-column wipe ===
@@ -113,8 +144,8 @@
   .pixel-border{border:3px solid var(--tp);box-shadow:4px 4px 0 rgba(0,0,0,.6),inset 0 0 0 1px rgba(var(--tp-rgb), .15);}
   .pixel-btn{border:3px solid var(--tp);box-shadow:4px 4px 0 rgba(0,0,0,.5);transition:all .1s;}
   .pixel-btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.5);}
-  .pixel-btn-gold{background:var(--tp);color:var(--ts);font-weight:700;}
-  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--tp);}
+  .pixel-btn-gold{background:var(--tp);color:var(--color-inverse);font-weight:700;}
+  .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--color-title-secondary);}
   .pixel-btn-glass:hover{background:rgba(255,255,255,.12);}
 
   .stat-box{border:2px solid var(--tp);padding:10px 14px;background:rgba(var(--tp-rgb), .05);position:relative;transition:all .2s;}
@@ -184,6 +215,7 @@
   :where(a,button,select,input,.stat-box,.glass,.project-card,.term-window){
     transition:transform .22s steps(4),box-shadow .22s steps(4),border-color .22s steps(4),background-color .22s steps(4),color .22s steps(4);
   }
+  [class~="text-[var(--ts)]/80"]{color:var(--projects-body) !important;}
   :where(a,button,select):focus-visible,input:focus-visible{outline:3px dashed var(--tp);outline-offset:4px;}
   .reveal-ready .reveal-on-scroll{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.75,.25,1);}
   .reveal-ready .reveal-on-scroll.is-visible{opacity:1;transform:translateY(0);}
@@ -398,14 +430,14 @@
 
     <div class="relative max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
       <div class="text-center md:text-left hero-stack-center relative z-10 reveal-on-scroll">
-        <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--tp)] font-display mb-6">
-          ★ TRUSTED IT PARTNER
-        </span>
-        <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(var(--tp-rgb), .3);">
-          Solusi <span class="text-[var(--tp)]">Teknologi Digital</span> untuk Bisnis Masa Kini<span class="cursor-blink"></span>
-        </h1>
-        <p class="font-script text-sm md:text-base text-[var(--tp)] mt-4">Gembong IT</p>
-        <p class="text-white/60 mt-5 max-w-md mx-auto md:mx-0 leading-loose text-xs">
+          <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--color-label)] font-display mb-6">
+            ★ TRUSTED IT PARTNER
+          </span>
+          <h1 class="font-display text-lg md:text-xl font-bold text-[var(--color-title-primary)] leading-loose" style="text-shadow:0 0 20px rgba(var(--tp-rgb), .3);">
+            Solusi <span class="text-[var(--color-title-secondary)]">Teknologi Digital</span> untuk Bisnis Masa Kini<span class="cursor-blink"></span>
+          </h1>
+          <p class="font-script text-sm md:text-base text-[var(--color-subtitle)] mt-4">Gembong IT</p>
+          <p class="text-[var(--color-muted)] mt-5 max-w-md mx-auto md:mx-0 leading-loose text-xs">
           Kami membantu bisnis Anda bertransformasi digital lewat pengembangan sistem,
           aplikasi, dan infrastruktur jaringan yang cepat, andal, dan tepat guna.
         </p>
@@ -416,9 +448,9 @@
         </div>
 
         <div class="flex justify-center md:justify-start gap-4 mt-10 stat-box-inline">
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--tp)]">LVL 50+</p><p class="text-white/50 text-[10px] mt-1">Proyek Selesai</p></div>
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--tp)]">LVL 30+</p><p class="text-white/50 text-[10px] mt-1">Klien Puas</p></div>
-          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--tp)]">LVL 5+</p><p class="text-white/50 text-[10px] mt-1">Tahun Exp</p></div>
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--color-title-secondary)]">LVL 50+</p><p class="text-[var(--color-muted)] text-[10px] mt-1">Proyek Selesai</p></div>
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--color-title-secondary)]">LVL 30+</p><p class="text-[var(--color-muted)] text-[10px] mt-1">Klien Puas</p></div>
+          <div class="stat-box"><p class="font-display text-xs font-bold text-[var(--color-title-secondary)]">LVL 5+</p><p class="text-[var(--color-muted)] text-[10px] mt-1">Tahun Exp</p></div>
         </div>
       </div>
 
@@ -430,7 +462,7 @@
           <div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-[var(--tp)]"></div>
           <div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-[var(--tp)]"></div>
           <div class="flex items-center justify-between mb-3">
-            <span class="text-[var(--tp)] font-display text-[10px]">SYS.MONITOR</span>
+            <span class="text-[var(--color-label)] font-display text-[10px]">SYS.MONITOR</span>
             <div class="flex gap-1">
               <span class="pixel-deco"></span><span class="pixel-deco"></span><span class="pixel-deco"></span>
             </div>
@@ -469,8 +501,8 @@
             <rect x="5" y="3" width="2" height="2" fill="#fff6cf"/>
           </svg>
           <div>
-            <p class="text-white text-xs font-semibold font-display">Cloud Infra</p>
-            <p class="text-white/50 text-[10px]">99.9% Uptime</p>
+            <p class="text-[var(--color-title-primary)] text-xs font-semibold font-display">Cloud Infra</p>
+            <p class="text-[var(--color-muted)] text-[10px]">99.9% Uptime</p>
             <div class="hp-bar w-full mt-1"><div class="hp-bar-fill" style="width:99%"></div></div>
           </div>
         </div>
@@ -490,8 +522,8 @@
             <rect x="4" y="9" width="2" height="2" fill="#fff6cf"/>
           </svg>
           <div>
-            <p class="text-white text-xs font-semibold font-display">Keamanan Data</p>
-            <p class="text-white/50 text-[10px]">Terenkripsi</p>
+            <p class="text-[var(--color-title-primary)] text-xs font-semibold font-display">Keamanan Data</p>
+            <p class="text-[var(--color-muted)] text-[10px]">Terenkripsi</p>
             <div class="hp-bar w-full mt-1"><div class="hp-bar-fill" style="width:100%"></div></div>
           </div>
         </div>
@@ -502,9 +534,9 @@
   <!-- ABOUT -->
   <section id="about" class="bg-[var(--ts)] px-6 md:px-16 py-16 md:py-20 section-pad-mobile">
     <div class="max-w-3xl mx-auto text-center reveal-on-scroll">
-      <h2 class="font-script text-xl text-[var(--tp)] mb-6">★ About Us ★</h2>
+      <h2 class="font-script text-xl text-[var(--color-subtitle)] mb-6">★ About Us ★</h2>
       <div class="pixel-deco inline-block mb-6"></div>
-      <p class="text-[var(--tp)]/90 text-justify leading-loose text-xs">
+          <p class="text-[var(--color-body)] text-justify leading-loose text-xs">
         "Kami adalah mitra digital yang mengubah tantangan teknologi menjadi solusi nyata.
         Dengan semangat inovasi dan dedikasi tinggi, kami menghadirkan layanan information
         technology yang cepat, andal, dan tepat guna mulai dari pengembangan sistem,
@@ -522,24 +554,24 @@
   <!-- LATEST PROJECT -->
   <section id="projects" class="px-6 md:px-16 py-16 section-pad-mobile">
     <div class="max-w-6xl mx-auto reveal-on-scroll">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--tt)] text-center mb-2">★ Our Latest Project ★</h2>
-      <p class="text-[var(--tt)]/60 text-center font-display text-[10px] mb-10">SELECT YOUR MISSION →</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--projects-title)] text-center mb-2">★ Our Latest Project ★</h2>
+      <p class="text-[var(--projects-subtitle)] text-center font-display text-[10px] mb-10">SELECT YOUR MISSION →</p>
 
       <div class="relative rounded-none overflow-hidden pixel-border">
         <div id="carouselTrack" class="carousel-track w-full flex">
           {% for item in carousel %}
           <div class="min-w-full relative aspect-[16/9]">
             {% if item.mode == "image" and item.image %}
-            <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
+        <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
               <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-full w-full">
-                <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
-                {% if item.desc %}<span class="text-white/80 max-w-md text-xs">{{ item.desc }}</span>{% endif %}
+                <span class="project-title font-display text-xs md:text-sm font-semibold" style="color:{{ site_palette.projects_title }}">{{ item.title }}</span>
+                {% if item.desc %}<span class="project-desc max-w-md text-xs" style="color:{{ site_palette.projects_body }}">{{ item.desc }}</span>{% endif %}
               </div>
             </div>
             {% else %}
             <div class="project-card absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
-              <span class="project-desc max-w-md text-xs">{{ item.desc }}</span>
+              <span class="project-title font-display text-xs md:text-sm font-semibold" style="color:{{ site_palette.projects_title }}">{{ item.title }}</span>
+              <span class="project-desc max-w-md text-xs" style="color:{{ site_palette.projects_body }}">{{ item.desc }}</span>
               <div class="hp-bar project-hp w-32 mt-2"><div class="hp-bar-fill project-hp-fill" style="width:{{ item.hp }}%"></div></div>
             </div>
             {% endif %}
@@ -557,7 +589,7 @@
         </div>
       </div>
 
-      <p class="text-[var(--ts)]/80 text-justify leading-loose mt-10 text-xs">
+      <p class="project-desc text-justify leading-loose mt-10 text-xs" style="color:{{ site_palette.projects_body }}">
         Proyek Unggulan Kami — Sebagai bukti komitmen kami dalam dunia information technology,
         kami telah berhasil menghadirkan berbagai proyek unggulan yang memberikan dampak nyata
         bagi klien kami. Mulai dari pengembangan sistem manajemen bisnis, aplikasi berbasis web
@@ -572,8 +604,8 @@
   <!-- CONTACT TERMINAL -->
   <section id="contact" class="bg-[var(--ts)] px-6 md:px-16 py-16 md:py-20 section-pad-mobile">
     <div class="max-w-4xl mx-auto reveal-on-scroll">
-      <h2 class="font-display text-sm md:text-base font-bold text-[var(--tp)] text-center mb-2">★ Open A Channel ★</h2>
-      <p class="text-[var(--tp)]/60 text-center font-display text-[10px] mb-8">TYPE A COMMAND →</p>
+      <h2 class="font-display text-sm md:text-base font-bold text-[var(--color-title-primary)] text-center mb-2">★ Open A Channel ★</h2>
+      <p class="text-[var(--color-subtitle)] text-center font-display text-[10px] mb-8">TYPE A COMMAND →</p>
 
       <!-- Direct contact (for clients who would rather not type a command) -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
@@ -736,12 +768,32 @@
     let idx = 0;
     const total = {{ carousel | length }};
     const dots = document.querySelectorAll('.dot');
-    const SLIDE_PRIMARY = {{ carousel | map(attribute='primary') | list | tojson }};
-    const SLIDE_SECONDARY = {{ carousel | map(attribute='secondary') | list | tojson }};
-    const SLIDE_TEXT = {{ carousel | map(attribute='text') | list | tojson }};
-    const CAROUSEL_INTERVAL_MS = 15000;
+    const sitePalette = {{ site_palette | tojson }};
+    const SLIDE_PALETTES = {{ carousel | map(attribute='color_palette') | list | tojson }};
+    const CAROUSEL_INTERVAL_MS = {{ carousel_interval * 60 * 1000 }};
     const rootEl = document.documentElement;
-
+    const projectsPalette = {
+      projects_background: sitePalette.projects_background,
+      projects_title: sitePalette.projects_title,
+      projects_subtitle: sitePalette.projects_subtitle,
+      projects_body: sitePalette.projects_body
+    };
+    function applyProjectsPalette(){
+      var projectsVars = {
+        projects_background: '--projects-bg',
+        projects_title: '--projects-title',
+        projects_subtitle: '--projects-subtitle',
+        projects_body: '--projects-body'
+      };
+      Object.keys(projectsVars).forEach(function(role){
+        var value = sitePalette[role];
+        if(value) {
+          projectsPalette[role] = value;
+          rootEl.style.setProperty(projectsVars[role], value);
+        }
+      });
+    }
+    applyProjectsPalette();
     function toRgbTriplet(hex){
       var v = (hex || '').replace('#', '');
       if(v.length === 3) v = v[0]+v[0]+v[1]+v[1]+v[2]+v[2];
@@ -750,15 +802,25 @@
       if(isNaN(n)) return null;
       return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
     }
+    function applyPalette(palette){
+      palette = palette || sitePalette;
+      [['primary', '--tp'], ['secondary', '--ts'], ['title_primary', '--color-title-primary'],
+       ['title_secondary', '--color-title-secondary'], ['subtitle', '--color-subtitle'],
+       ['body', '--color-body'], ['muted', '--color-muted'], ['label', '--color-label'],
+       ['inverse', '--color-inverse']].forEach(function(pair){
+        if(palette[pair[0]]) rootEl.style.setProperty(pair[1], palette[pair[0]]);
+      });
+      applyProjectsPalette();
+      rootEl.style.setProperty('--tt', palette.body || sitePalette.body);
+      var pr = toRgbTriplet(palette.primary || sitePalette.primary);
+      var sr = toRgbTriplet(palette.secondary || sitePalette.secondary);
+      if(pr) rootEl.style.setProperty('--tp-rgb', pr);
+      if(sr) rootEl.style.setProperty('--ts-rgb', sr);
+    }
+    applyPalette(sitePalette);
     function applyTheme(i){
-      var p = SLIDE_PRIMARY[i] || '#f2c94c';
-      var s = SLIDE_SECONDARY[i] || '#0d1b4c';
-      var t = SLIDE_TEXT[i] || '#0d1b4c';
-      rootEl.style.setProperty('--tp', p);
-      rootEl.style.setProperty('--ts', s);
-      rootEl.style.setProperty('--tt', t);
-      var pr = toRgbTriplet(p); if(pr) rootEl.style.setProperty('--tp-rgb', pr);
-      var sr = toRgbTriplet(s); if(sr) rootEl.style.setProperty('--ts-rgb', sr);
+      var slidePalette = SLIDE_PALETTES[i] || {};
+      applyPalette(Object.assign({}, sitePalette, slidePalette));
     }
 
     /* Theme transition: rebuilds the pixel columns each time so the sweep
@@ -770,8 +832,8 @@
         applyTheme(target);
         return;
       }
-      layer.style.setProperty('--tp', SLIDE_PRIMARY[target] || '#f2c94c');
-      layer.style.setProperty('--ts', SLIDE_SECONDARY[target] || '#0d1b4c');
+      layer.style.setProperty('--tp', (SLIDE_PALETTES[target] || {}).primary || '#f2c94c');
+      layer.style.setProperty('--ts', (SLIDE_PALETTES[target] || {}).secondary || '#0d1b4c');
       layer.innerHTML = '';
       for(var c = 0; c < 8; c++){
         var col = document.createElement('span');
