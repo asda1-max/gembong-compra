@@ -24,9 +24,6 @@
       <li><a href="/" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">HOME</a></li>
     </ul>
     <div class="flex items-center gap-2">
-      <select data-theme-select class="theme-select" aria-label="Pilih tema situs">
-        <option value="retro">Retro</option><option value="modern">Modern</option><option value="professional">Profesional</option>
-      </select>
       {% if page_id == 'home' %}<button id="sfxBtn" type="button" aria-pressed="true" class="hidden sm:inline-block px-2 py-1.5 font-display text-[8px] border border-[var(--tp)]/30 text-[var(--tp)]/70 tracking-wide">SFX ON</button>{% endif %}
       <button id="menuBtn" type="button" class="sm:hidden flex flex-col gap-1.5 p-2 border border-[var(--tp)]/30" aria-label="Buka menu navigasi" aria-controls="mobileMenu" aria-expanded="false">
         <span class="block w-5 h-0.5 bg-[var(--tp)]"></span><span class="block w-5 h-0.5 bg-[var(--tp)]"></span><span class="block w-5 h-0.5 bg-[var(--tp)]"></span>

@@ -132,7 +132,7 @@
               <span class="theme-choice-desc">Korporat, tegas, serif</span>
             </label>
           </div>
-          <p class="hint mt-4">// Tema mengubah gaya situs. Pengunjung tetap dapat memilih tema sendiri.</p>
+          <p class="hint mt-4">// Tema ini menjadi tema default seluruh pengunjung situs.</p>
         </div>
 
         <h2 class="font-display text-[10px] text-[var(--gold-light)] mb-4">HERO &amp; ABOUT US</h2>
@@ -294,6 +294,11 @@
               <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">NAME</label>
               <input type="text" name="repos[{{ loop.index0 }}][name]" value="{{ repo.name }}" class="pixel-input" required placeholder="Nama project...">
             </div>
+            <label class="flex items-center gap-3 border border-[var(--gold-light)]/30 bg-white/[.03] p-3 cursor-pointer">
+              <input type="checkbox" name="repos[{{ loop.index0 }}][featured]" value="1" class="accent-yellow-300" {{ 'checked' if repo.featured else '' }}>
+              <span class="text-[10px] text-[var(--gold-light)]">FEATURED PROJECT</span>
+              <span class="text-[9px] text-white/35">Tampilkan di bagian unggulan atas Repository.</span>
+            </label>
             <div>
               <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
               <textarea name="repos[{{ loop.index0 }}][description]" class="pixel-input" placeholder="Deskripsi singkat...">{{ repo.description }}</textarea>
@@ -734,6 +739,11 @@ function addRepo(){
         <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">NAME</label>
         <input type="text" name="repos[${id}][name]" class="pixel-input" required placeholder="Nama project...">
       </div>
+      <label class="flex items-center gap-3 border border-[var(--gold-light)]/30 bg-white/[.03] p-3 cursor-pointer">
+        <input type="checkbox" name="repos[${id}][featured]" value="1" class="accent-yellow-300">
+        <span class="text-[10px] text-[var(--gold-light)]">FEATURED PROJECT</span>
+        <span class="text-[9px] text-white/35">Tampilkan di bagian unggulan atas Repository.</span>
+      </label>
       <div>
         <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
         <textarea name="repos[${id}][description]" class="pixel-input" placeholder="Deskripsi singkat..."></textarea>

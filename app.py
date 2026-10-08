@@ -51,8 +51,7 @@ def _clean_interval(value):
     return max(INTERVAL_MIN, min(INTERVAL_MAX, seconds))
 
 
-# Site theme presets. The visitor can override per-browser; this value is the
-# admin-controlled default.
+# Site theme presets. The active public theme is the admin-controlled default.
 THEMES = ("retro", "modern", "professional")
 THEME_DEFAULT = "retro"
 
@@ -235,6 +234,7 @@ def _normalize_project(project):
     normalized["type"] = str(normalized.get("type") or "Software").strip()
     normalized["detail_markdown"] = str(normalized.get("detail_markdown") or "").strip()
     normalized["banner"] = str(normalized.get("banner") or "")
+    normalized["featured"] = bool(normalized.get("featured", False))
     normalized["repo_url"] = str(normalized.get("repo_url") or "")
     normalized["demo_url"] = str(normalized.get("demo_url") or "")
     normalized["status"] = normalized.get("status") if normalized.get("status") in REPO_STATUS else "active"
@@ -244,6 +244,11 @@ def _normalize_project(project):
         stack = [item.strip() for item in stack.split(",") if item.strip()]
     normalized["tech_stack"] = stack if isinstance(stack, list) else []
     return normalized
+
+
+def _order_projects(projects):
+    """Put every admin-selected featured project first, preserving order."""
+    return sorted(projects, key=lambda project: not project.get("featured", False))
 
 
 def _get_projects():
@@ -316,6 +321,13 @@ def load_data():
     data["theme"] = _clean_theme(data.get("theme"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
+    if data["projects"]:
+        selected_ids = {id(project) for project in data["projects"]
+                        if isinstance(project, dict) and project.get("featured")}
+        if not selected_ids and isinstance(data["projects"][0], dict):
+            selected_ids.add(id(data["projects"][0]))
+        data["projects"] = [dict(project, featured=(id(project) in selected_ids))
+                            if isinstance(project, dict) else project for project in data["projects"]]
     for project in data["projects"]:
         if isinstance(project, dict):
             project["type"] = str(project.get("type") or "Software").strip()
@@ -434,7 +446,7 @@ def collect_slides(form, files=None):
     return carousel
 
 
-REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|type|repo_url|demo_url|tags|tech_stack|detail_markdown|banner|status)\]$")
+REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|type|repo_url|demo_url|tags|tech_stack|detail_markdown|banner|featured|status)\]$")
 
 
 def collect_projects(form, files=None, existing_projects=None):
@@ -467,6 +479,7 @@ def collect_projects(form, files=None, existing_projects=None):
         tags = [t.strip() for t in (card.get("tags") or "").split(",") if t.strip()][:8]
         tech_stack = [t.strip() for t in (card.get("tech_stack") or "").split(",") if t.strip()][:12]
         banner = (card.get("banner") or "").strip()
+        featured = (card.get("featured") or "").strip().lower() in ("1", "true", "on", "yes")
         try:
             original_position = int(token)
         except ValueError:
@@ -505,6 +518,7 @@ def collect_projects(form, files=None, existing_projects=None):
             "type": project_type[:60],
             "detail_markdown": detail_markdown[:12000],
             "banner": banner,
+            "featured": featured,
             "repo_url": repo_url,
             "demo_url": demo_url,
             "tags": tags,
@@ -545,12 +559,19 @@ def index():
 
 @app.route("/projects")
 def projects():
-    return render_template("projects.html", projects=_get_projects())
+    raw_projects = _get_projects()
+    selected = [project for project in raw_projects if project.get("featured")]
+    if not selected and raw_projects:
+        selected = [raw_projects[0]]
+    featured = _order_projects(selected)
+    other = [project for project in raw_projects if project not in featured]
+    ordered = featured + other
+    return render_template("projects.html", projects=ordered, featured_projects=featured, other_projects=other)
 
 
 @app.route("/projects/<int:project_index>")
 def project_detail(project_index):
-    projects = _get_projects()
+    projects = _order_projects(_get_projects())
     if project_index < 0 or project_index >= len(projects):
         return render_template("project_detail.html", project=None, project_index=project_index, projects=projects), 404
     return render_template("project_detail.html", project=projects[project_index], project_index=project_index, projects=projects)

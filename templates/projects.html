@@ -13,7 +13,7 @@
     var def = {{ site_theme | tojson }};
     window.__GEMBONG_DEFAULT_THEME = def;
     var t = def;
-    try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
+    t = def;
     document.documentElement.setAttribute('data-theme', t);
   })();
   (function () {
@@ -179,7 +179,7 @@
         <li><a href="/projects" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)] bg-[var(--gold-light)]/10 border border-[var(--gold-light)]/30 tracking-wide">PROJECTS</a></li>
         <li><a href="/#contact" class="px-3 sm:px-4 py-2 font-display text-[10px] text-[var(--gold-light)]/60 hover:text-[var(--gold-light)] transition border border-transparent hover:border-[var(--gold-light)]/30 hover:bg-[var(--gold-light)]/5 tracking-wide">CONTACT</a></li>
         <li>
-          <select data-theme-select class="theme-select ml-1" aria-label="Pilih tema situs">
+          <select data-theme-select class="theme-select ml-1 hidden" aria-label="Pilih tema situs">
             <option value="retro">Retro</option>
             <option value="modern">Modern</option>
             <option value="professional">Profesional</option>
@@ -197,7 +197,7 @@
         <li><a href="/" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 border border-[var(--gold-light)]/20 text-center tracking-wide">HOME</a></li>
         <li><a href="/projects" aria-current="page" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)] border border-[var(--gold-light)]/30 bg-[var(--gold-light)]/10 text-center tracking-wide">PROJECTS</a></li>
         <li><a href="/#contact" class="block px-4 py-3 font-display text-[10px] text-[var(--gold-light)]/70 border border-[var(--gold-light)]/20 text-center tracking-wide">CONTACT</a></li>
-        <li class="text-center"><select data-theme-select class="theme-select" aria-label="Pilih tema situs">
+        <li class="text-center hidden"><select data-theme-select class="theme-select" aria-label="Pilih tema situs">
           <option value="retro">Retro</option>
           <option value="modern">Modern</option>
           <option value="professional">Profesional</option>
@@ -256,28 +256,23 @@
         <div class="service-card p-5"><p class="font-display text-[9px] text-[var(--gold-light)] mb-4">03 / APPLICATION</p><p class="text-[10px] text-white/65 leading-loose">Aplikasi web dan mobile yang nyaman digunakan oleh tim maupun pelanggan.</p></div>
       </section>
       {% if projects %}
-      {% set featured = projects[0] %}
-      <section id="featuredProject" class="project-feature p-7 md:p-12 mb-16" data-status="{{ featured.status }}" data-search="{{ (featured.name ~ ' ' ~ featured.description ~ ' ' ~ featured.type ~ ' ' ~ featured.tags|join(' ') ~ ' ' ~ featured.tech_stack|join(' '))|lower }}" aria-labelledby="featuredTitle">
-        <div class="feature-orbit" aria-hidden="true"></div>
-        <div class="relative z-10 max-w-2xl">
-          <div class="flex items-center gap-3 mb-8">
-            <span class="pixel-deco"></span><span class="font-display text-[8px] text-[var(--gold-light)]/70 tracking-[.25em]">FEATURED BUILD / 001</span>
-            <span class="status status-{{ featured.status }}">{{ featured.status|upper }}</span>
-          </div>
-           <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">01</span>
-           <p class="font-display text-[9px] text-[var(--gold-light)]/75 mb-4">{{ featured.type or 'SOFTWARE SOLUTION' }}</p>
-           <h2 id="featuredTitle" class="font-display text-sm md:text-xl leading-loose text-white mb-5">{{ featured.name }}</h2>
-           <p class="text-white/70 text-[10px] leading-loose max-w-lg mb-7">{{ featured.description or 'Sebuah karya dari Gembong IT.' }}</p>
-           {% if featured.tags %}
-           <div class="flex flex-wrap gap-2 mb-8">{% for tag in featured.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>
-           {% endif %}
-           {% if featured.tech_stack %}<div class="flex flex-wrap gap-2 mb-8" aria-label="Tech stack project">{% for tech in featured.tech_stack %}{% set b = tech|tech_badge %}<span class="stack-badge" style="--badge-color:{{ b.color }}">{% if b.icon %}<img class="stack-logo" src="{{ b.icon }}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">{% endif %}<span class="stack-mark" {{ 'hidden' if b.icon else '' }} aria-hidden="true">{{ b.mark }}</span>{{ b.label }}</span>{% endfor %}</div>{% endif %}
-          <div class="flex flex-wrap gap-3">
-            {% if featured.repo_url %}<a href="{{ featured.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px] px-5 py-3">EXPLORE SOURCE ↗</a>{% endif %}
-             <a href="{{ url_for('project_detail', project_index=0) }}" class="pixel-btn pixel-btn-glass font-display text-[9px] px-5 py-3">LIHAT DETAIL →</a>
-          </div>
-        </div>
-      </section>
+       {% set featured = featured_projects or [projects[0]] %}
+       <div id="featuredProjects" class="grid grid-cols-1 gap-6 mb-16">
+         {% for item in featured %}
+         <article class="project-feature p-7 md:p-8" data-featured-item data-status="{{ item.status }}" data-search="{{ (item.name ~ ' ' ~ item.description ~ ' ' ~ item.type ~ ' ' ~ item.tags|join(' ') ~ ' ' ~ item.tech_stack|join(' '))|lower }}">
+           <div class="feature-orbit" aria-hidden="true"></div>
+           <div class="relative z-10">
+             <div class="flex items-center gap-3 mb-7"><span class="pixel-deco"></span><span class="font-display text-[8px] text-[var(--gold-light)]/70 tracking-[.2em]">FEATURED / {{ '%03d'|format(loop.index) }}</span></div>
+             <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">{{ '%02d'|format(loop.index) }}</span>
+             <p class="font-display text-[9px] text-[var(--gold-light)]/75 mb-3">{{ item.type or 'SOFTWARE SOLUTION' }} <span class="status status-{{ item.status }} ml-2">{{ item.status|upper }}</span></p>
+             <h2 class="font-display text-sm md:text-lg leading-loose text-white mb-4">{{ item.name }}</h2>
+             <p class="text-white/70 text-[10px] leading-loose mb-6">{{ item.description or 'Sebuah karya dari Gembong IT.' }}</p>
+             {% if item.tags %}<div class="flex flex-wrap gap-2 mb-6">{% for tag in item.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>{% endif %}
+             <div class="flex flex-wrap gap-3">{% if item.repo_url %}<a href="{{ item.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[8px] px-4 py-3">EXPLORE SOURCE ↗</a>{% endif %}<a href="{{ url_for('project_detail', project_index=loop.index0) }}" class="pixel-btn pixel-btn-glass font-display text-[8px] px-4 py-3">LIHAT DETAIL →</a></div>
+           </div>
+         </article>
+         {% endfor %}
+       </div>
 
       <section id="portfolio" class="scroll-mt-24">
        <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-7">
@@ -300,7 +295,7 @@
       </div>
 
       <div id="repoGrid" class="project-list">
-        {% for repo in projects[1:] %}
+         {% for repo in other_projects %}
         <details class="project-entry" data-status="{{ repo.status }}" data-search="{{ (repo.name ~ ' ' ~ repo.description ~ ' ' ~ repo.type ~ ' ' ~ repo.tags|join(' ') ~ ' ' ~ repo.tech_stack|join(' '))|lower }}">
           <summary>
             <span class="entry-number font-display">{{ '%02d'|format(loop.index + 1) }}</span>
@@ -314,7 +309,7 @@
             {% if repo.tags %}<div class="flex flex-wrap gap-2 mb-5">{% for tag in repo.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>{% endif %}
             <div class="flex flex-wrap gap-3">
               {% if repo.repo_url %}<a href="{{ repo.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[8px] px-4 py-2">SOURCE ↗</a>{% endif %}
-               <a href="{{ url_for('project_detail', project_index=loop.index) }}" class="pixel-btn pixel-btn-glass font-display text-[8px] px-4 py-2">LIHAT DETAIL →</a>
+                <a href="{{ url_for('project_detail', project_index=featured_projects|length + loop.index0) }}" class="pixel-btn pixel-btn-glass font-display text-[8px] px-4 py-2">LIHAT DETAIL →</a>
             </div>
           </div>
         </details>
@@ -326,8 +321,8 @@
         // NO MISSIONS MATCH YOUR QUERY
       </p>
 
-      <div id="noOtherProjects" class="{{ '' if projects|length > 1 else 'hidden' }} text-center font-display text-[9px] text-[var(--gold-light)]/35 py-8">
-        // THE FEATURED PROJECT IS THE ONLY MATCHING ENTRY
+        <div id="noOtherProjects" class="hidden text-center font-display text-[9px] text-[var(--gold-light)]/35 py-8">
+        // ALL MATCHING PROJECTS ARE FEATURED ABOVE
       </div>
 
       {% else %}
@@ -373,7 +368,8 @@
       const grid = document.getElementById('repoGrid');
       if(!search || !grid) return;
       const cards = Array.prototype.slice.call(grid.querySelectorAll('.project-entry'));
-      const featured = document.getElementById('featuredProject');
+      const featured = document.getElementById('featuredProjects');
+      const featuredItems = Array.prototype.slice.call(featured.querySelectorAll('[data-featured-item]'));
       const noResults = document.getElementById('noResults');
       const noOtherProjects = document.getElementById('noOtherProjects');
       const resultCount = document.getElementById('resultCount');
@@ -382,9 +378,14 @@
 
       function apply(){
         const q = search.value.trim().toLowerCase();
-        const featureMatches = (status === 'all' || featured.dataset.status === status) && (!q || (featured.dataset.search || '').indexOf(q) !== -1);
-        featured.hidden = !featureMatches;
-        let visible = featureMatches ? 1 : 0;
+        const featureMatches = featuredItems.filter(function(item){
+          const matchStatus = status === 'all' || item.dataset.status === status;
+          const matchQuery = !q || (item.dataset.search || '').indexOf(q) !== -1;
+          item.hidden = !(matchStatus && matchQuery);
+          return matchStatus && matchQuery;
+        });
+        featured.hidden = featureMatches.length === 0;
+        let visible = featureMatches.length;
         cards.forEach(function(card){
           const matchStatus = status === 'all' || card.dataset.status === status;
           const matchQuery = !q || (card.dataset.search || '').indexOf(q) !== -1;
@@ -400,7 +401,7 @@
           if(show) visible++;
         });
         noResults.classList.toggle('hidden', visible !== 0);
-        noOtherProjects.classList.toggle('hidden', visible !== 1 || !featureMatches);
+        noOtherProjects.classList.toggle('hidden', cards.some(function(card){ return card.style.display !== 'none'; }) || featureMatches.length === 0);
         resultCount.textContent = visible + (visible === 1 ? ' ENTRY' : ' ENTRIES');
       }
 

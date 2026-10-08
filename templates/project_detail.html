@@ -13,7 +13,6 @@
       var def = {{ site_theme | tojson }};
       window.__GEMBONG_DEFAULT_THEME = def;
       var t = def;
-      try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>

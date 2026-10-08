@@ -96,6 +96,21 @@ class ProjectDetailTests(unittest.TestCase):
                         {"repos[0][banner_file]": image_file(1000, 1000)},
                     )
 
+    def test_collect_projects_supports_multiple_featured_projects(self):
+        from werkzeug.datastructures import MultiDict
+
+        form = MultiDict([
+            ("repos[0][name]", "First"), ("repos[0][featured]", "1"),
+            ("repos[1][name]", "Second"),
+            ("repos[2][name]", "Third"), ("repos[2][featured]", "1"),
+        ])
+        projects = site.collect_projects(form)
+        self.assertEqual([p["featured"] for p in projects], [True, False, True])
+        self.assertEqual(
+            [p["name"] for p in site._order_projects(projects)],
+            ["First", "Third", "Second"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
