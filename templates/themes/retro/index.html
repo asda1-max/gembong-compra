@@ -1,4 +1,6 @@
+<!-- Theme layout: retro arcade composition -->
 <!DOCTYPE html>
+<!-- layout: {{ theme_layout|default('retro-arcade') }} -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -265,7 +267,7 @@
 </style>
 <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
-<body class="text-white">
+<body class="text-white" data-page-layout="{{ theme_layout|default('retro-arcade') }}">
 
   <!-- GLOBAL THEME SWEEP (played on carousel change) -->
   <div id="themeSweep" aria-hidden="true"></div>

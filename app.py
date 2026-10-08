@@ -4,7 +4,7 @@ import json
 import secrets
 from datetime import datetime
 from urllib.parse import urlsplit
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, make_response, render_template, request, session, redirect, url_for
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -344,23 +344,44 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
 # --------------------------------------------------------------------------
 # Public routes
 # --------------------------------------------------------------------------
+def _visitor_theme(data):
+    visitor_theme = request.cookies.get("gembong_theme", "").strip().lower()
+    if visitor_theme in THEMES:
+        return visitor_theme
+    return _clean_theme(data.get("theme"))
+
+
 @app.route("/")
 def index():
     data = load_data()
-    return render_template("index.html", carousel=data["carousel"], contact=data["contact"], content=data["content"],
+    theme = _visitor_theme(data)
+    template = f"themes/{theme}/index.html"
+    return render_template(template, carousel=data["carousel"], contact=data["contact"], content=data["content"],
                            carousel_interval=data["carousel_interval"])
 
 
 @app.route("/projects")
 def projects():
     data = load_data()
-    return render_template("projects.html", projects=data["projects"])
+    theme = _visitor_theme(data)
+    return render_template(f"themes/{theme}/projects.html", projects=data["projects"])
 
 
 @app.route("/info")
 def info():
     data = load_data()
-    return render_template("info.html", contact=data["contact"])
+    theme = _visitor_theme(data)
+    return render_template(f"themes/{theme}/info.html", contact=data["contact"])
+
+
+@app.route("/theme", methods=["POST"])
+def set_visitor_theme():
+    payload = request.get_json(silent=True) or request.form
+    theme = _clean_theme(payload.get("theme"))
+    response = make_response("", 204)
+    response.set_cookie("gembong_theme", theme, max_age=60 * 60 * 24 * 365,
+                        httponly=True, samesite="Lax", secure=request.is_secure)
+    return response
 
 
 @app.route("/contact", methods=["POST"])

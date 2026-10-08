@@ -32,6 +32,16 @@
         apply(theme);
         try { localStorage.setItem(KEY, theme); } catch (e) {}
         window.dispatchEvent(new CustomEvent('gembong:theme', { detail: theme }));
+        fetch('/theme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ theme: theme }),
+          credentials: 'same-origin'
+        }).then(function () {
+          window.location.reload();
+        }).catch(function () {
+          window.location.reload();
+        });
       });
     }
     wirePageTransitions();

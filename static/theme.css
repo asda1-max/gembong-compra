@@ -41,6 +41,23 @@ html[data-theme="modern"] body{
   background:radial-gradient(1200px 700px at 15% -10%,rgba(var(--tp-rgb),.16),transparent 60%),var(--ts) !important;
 }
 
+/* Modern pages use an editorial, roomy information rhythm. */
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .hero-bg{min-height:clamp(360px,48vw,620px) !important;display:flex;align-items:center;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #home{min-height:78vh !important;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #projects,
+html[data-theme="modern"] [data-page-layout="modern-editorial"] main{padding-top:clamp(64px,9vw,120px) !important;padding-bottom:clamp(64px,9vw,120px) !important;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .project-feature{border-radius:32px !important;min-height:400px;padding:clamp(32px,7vw,88px) !important;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .svc-card{padding:clamp(28px,4vw,52px) !important;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #home .hero-bg{border-radius:0 0 56px 56px;overflow:hidden;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #about{max-width:1240px;margin:0 auto;border-radius:36px;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #projects{border-radius:48px 48px 0 0;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #contact .term-window{max-width:880px;margin-inline:auto;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .project-entry{border-radius:18px;margin-block:10px;padding-inline:14px;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .project-entry:last-child{border-bottom:1px solid rgba(var(--tp-rgb),.2);}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] .faq-item{padding:4px 10px;}
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #contactForm input,
+html[data-theme="modern"] [data-page-layout="modern-editorial"] #contactForm textarea{border-radius:16px !important;padding:15px 18px !important;}
+
 /* strip arcade decor */
 html[data-theme="modern"] .scanlines,
 html[data-theme="modern"] .grid-overlay,
@@ -184,6 +201,37 @@ html[data-theme="professional"] .stat-box p:first-child{
   font-family:'Merriweather',Georgia,'Times New Roman',serif !important;
 }
 html[data-theme="professional"] body{background:var(--ts) !important;}
+
+/* Professional pages follow a formal corporate grid. */
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .hero-bg{min-height:420px !important;display:flex;align-items:center;border-bottom:1px solid rgba(var(--tp-rgb),.22);}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #home{min-height:68vh !important;border-bottom:1px solid rgba(var(--tp-rgb),.2);}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #projects,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] main{padding-top:80px !important;padding-bottom:88px !important;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .project-feature{min-height:320px !important;padding:clamp(32px,6vw,72px) !important;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #home .hero-bg{border-bottom:3px solid var(--tp);}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #about,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #projects,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contact{position:relative;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #about > div,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #projects > div,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contact > div{max-width:1180px !important;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .project-entry{display:grid;border-color:rgba(var(--tp-rgb),.24);}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .project-entry summary{padding:24px 18px;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .entry-number{font-family:'Inter',sans-serif;font-size:12px;letter-spacing:.12em;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-item{display:grid;grid-template-columns:minmax(220px,.7fr) 1.3fr;column-gap:32px;border-left:0 !important;border-bottom:1px solid var(--skin-line);}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-q{align-self:start;padding-inline:0;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-a{max-height:none;padding:16px 0 !important;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contactForm{border-top:1px solid var(--skin-line);padding-top:28px;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contactForm input,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contactForm textarea{border-width:0 0 1px !important;border-radius:0 !important;background:transparent !important;padding:14px 2px !important;}
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contactForm input:focus,
+html[data-theme="professional"] [data-page-layout="professional-corporate"] #contactForm textarea:focus{box-shadow:0 1px 0 var(--tp) !important;}
+@media(max-width:767px){
+  html[data-theme="modern"] [data-page-layout="modern-editorial"] #home .hero-bg{border-radius:0 0 30px 30px;}
+  html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-item{display:block;}
+  html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-a{max-height:0;padding:0 12px !important;}
+  html[data-theme="professional"] [data-page-layout="professional-corporate"] .faq-item.open .faq-a{max-height:340px;padding-bottom:16px !important;}
+}
 
 /* keep interactive bits sans-serif; serif is reserved for headings */
 html[data-theme="professional"] nav .font-display,
