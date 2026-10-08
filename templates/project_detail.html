@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ project.name if project else 'Project Tidak Ditemukan' }} — Gembong IT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      var def = {{ site_theme | tojson }};
+      window.__GEMBONG_DEFAULT_THEME = def;
+      var t = def;
+      try { t = localStorage.getItem('gembong_theme') || def; } catch (e) {}
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--navy:#0d1b4c;--gold-light:#f2c94c;--tp:#f2c94c;--ts:#0d1b4c;--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
+    html,body{min-height:100%;box-sizing:border-box;} html{scroll-behavior:smooth;}
+    body{background:var(--ts);font-family:'Press Start 2P',monospace;} *{image-rendering:pixelated;}
+    .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+    .pixel-border{border:3px solid var(--gold-light);box-shadow:6px 6px 0 rgba(0,0,0,.55);}
+    .pixel-btn{border:3px solid var(--tp);padding:12px 18px;display:inline-block;transition:transform .1s,background-color .1s;}
+    .pixel-btn:hover{transform:translate(2px,2px);}
+    .pixel-btn-gold{background:var(--gold-light);color:var(--navy);}
+    .pixel-btn-glass{background:rgba(255,255,255,.06);color:var(--tp);}
+    .detail-card{background:linear-gradient(160deg,#12245e 0%,#0d1b4c 100%);}
+    .story-content{font:400 14px/1.9 Inter,system-ui,sans-serif;color:rgba(255,255,255,.78);}
+    .story-content h3,.story-content h4,.story-content h5{font-family:'Press Start 2P',monospace;color:var(--tp);line-height:1.9;margin:2rem 0 .8rem;font-size:12px;}
+    .story-content p{margin:.8rem 0;}
+    .story-content ul{list-style:disc;padding-left:1.4rem;margin:1rem 0;}
+    .story-content li{padding:.2rem 0;}
+    .story-content a{color:var(--tp);text-decoration:underline;text-underline-offset:3px;}
+    .story-content code{font-family:ui-monospace,monospace;background:rgba(255,255,255,.08);padding:.15rem .35rem;border-radius:3px;color:#fff;}
+    .story-image{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;margin:1.25rem auto;border:1px solid rgba(var(--tp-rgb),.25);background:rgba(0,0,0,.18);}
+    .stack-badge{display:inline-flex;align-items:center;gap:9px;min-height:40px;padding:8px 12px;border:1px solid rgba(255,255,255,.14);border-radius:5px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.035));color:rgba(255,255,255,.88);font:600 12px/1.2 Inter,system-ui,sans-serif;letter-spacing:.01em;}
+    .stack-mark{display:grid;place-items:center;width:23px;height:23px;border-radius:4px;background:var(--badge-color,#64748b);color:#fff;font:700 10px/1 Inter,system-ui,sans-serif;flex:0 0 auto;text-align:center;}
+    .stack-mark[hidden]{display:none;}
+    .stack-logo{width:23px;height:23px;object-fit:contain;flex:0 0 auto;image-rendering:auto;}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.pixel-btn{transition:none;}}
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+</head>
+<body class="text-white">
+  {% include 'hud_navbar.html' %}
+  <header class="hero-bg px-6 md:px-16 pt-16 pb-14">
+    <div class="max-w-5xl mx-auto">
+      <a href="{{ url_for('projects') }}" class="font-display text-[9px] text-[var(--tp)]/60 hover:text-[var(--tp)]">← BACK TO REPOSITORY</a>
+      {% if project %}
+      <div class="mt-12 flex flex-wrap items-center gap-3">
+        <span class="font-display text-[9px] text-[var(--tp)]/70 tracking-[.2em]">PROJECT DETAIL / {{ '%02d'|format(project_index + 1) }}</span>
+        <span class="font-display text-[9px] border border-[var(--tp)]/40 px-3 py-2 text-[var(--tp)]">{{ project.status|upper }}</span>
+      </div>
+      <h1 class="font-display text-lg md:text-2xl leading-loose mt-6">{{ project.name }}</h1>
+      <p class="mt-4 text-[var(--tp)] text-xs">{{ project.type or 'Software' }}</p>
+      {% endif %}
+    </div>
+  </header>
+  <main class="px-6 md:px-16 py-12 bg-[var(--ts)]">
+    <div class="max-w-5xl mx-auto">
+      {% if project %}
+      {% if project.banner %}<div class="mb-9 overflow-hidden border border-[var(--tp)]/25 shadow-[8px_8px_0_rgba(0,0,0,.3)]"><img src="{{ project.banner }}" alt="Banner {{ project.name }}" class="w-full aspect-video object-cover" fetchpriority="high"></div>{% endif %}
+      <div class="grid grid-cols-1 lg:grid-cols-[1.4fr_.8fr] gap-8">
+        <section class="detail-card pixel-border p-7 md:p-10">
+          <p class="font-display text-[9px] text-[var(--tp)] mb-5">// ABOUT THIS PROJECT</p>
+          <p class="text-white/70 text-[11px] leading-loose">{{ project.description or 'Detail project belum ditambahkan.' }}</p>
+          {% if project.tags %}
+          <div class="mt-9"><p class="font-display text-[9px] text-[var(--tp)]/70 mb-3">TAGS</p><div class="flex flex-wrap gap-2">{% for tag in project.tags %}<span class="border border-[var(--tp)]/35 px-3 py-2 text-[9px] text-[var(--tp)]">{{ tag }}</span>{% endfor %}</div></div>
+          {% endif %}
+        </section>
+        <aside class="detail-card pixel-border p-7 md:p-8">
+          <p class="font-display text-[9px] text-[var(--tp)] mb-5">TECH STACK</p>
+          {% if project.tech_stack %}<div class="flex flex-wrap gap-2">{% for tech in project.tech_stack %}{% set b = tech|tech_badge %}<span class="stack-badge" style="--badge-color:{{ b.color }}">{% if b.icon %}<img class="stack-logo" src="{{ b.icon }}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">{% endif %}<span class="stack-mark" {{ 'hidden' if b.icon else '' }} aria-hidden="true">{{ b.mark }}</span>{{ b.label }}</span>{% endfor %}</div>{% else %}<p class="text-[10px] text-white/40 leading-loose">Tech stack belum ditambahkan.</p>{% endif %}
+        </aside>
+      </div>
+      {% if project.detail_markdown %}
+      <section class="detail-card pixel-border p-7 md:p-10 mt-8">
+        <p class="font-display text-[9px] text-[var(--tp)] mb-5">PROJECT STORY</p>
+        <article class="story-content">{{ project.detail_markdown|safe_markdown }}</article>
+      </section>
+      {% endif %}
+      <div class="flex flex-wrap gap-3 mt-8">
+        {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px]">SOURCE CODE ↗</a>{% endif %}
+        {% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px]">LIVE DEMO ↗</a>{% endif %}
+      </div>
+      {% else %}
+      <section class="pixel-border max-w-xl mx-auto text-center p-10"><p class="font-display text-sm text-[var(--tp)] mb-5">// PROJECT NOT FOUND</p><a href="{{ url_for('projects') }}" class="pixel-btn pixel-btn-gold font-display text-[9px]">BACK TO REPOSITORY</a></section>
+      {% endif %}
+    </div>
+  </main>
+  <footer class="px-6 py-8 text-center border-t-4 border-[var(--tp)]"><p class="font-display text-[9px] text-[var(--tp)]/50">&copy; <span id="year"></span> Gembong IT</p></footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>

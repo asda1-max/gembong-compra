@@ -99,6 +99,19 @@
   @keyframes repoAppear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   :where(a,button,input,summary):focus-visible{outline:2px dashed var(--gold-light);outline-offset:4px;}
 
+  /* Sales-focused portfolio sections */
+  .proof-strip{border:1px solid rgba(242,201,76,.22);background:linear-gradient(90deg,rgba(242,201,76,.08),rgba(255,255,255,.025));}
+  .proof-item{border-right:1px solid rgba(242,201,76,.18);}
+  .proof-item:last-child{border-right:0;}
+  .service-card{border:1px solid rgba(242,201,76,.2);background:rgba(255,255,255,.035);min-height:150px;}
+  .service-card:hover{border-color:rgba(242,201,76,.6);background:rgba(242,201,76,.07);}
+  .project-feature{background:linear-gradient(110deg,rgba(242,201,76,.16),rgba(13,27,76,.25) 58%),linear-gradient(145deg,#14265e,#091333);}
+  .result-note{color:rgba(217,209,168,.62);font-size:9px;line-height:1.9;}
+  .stack-badge{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:5px 9px;border:1px solid rgba(255,255,255,.13);border-radius:4px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.035));color:rgba(255,255,255,.82);font:600 10px/1.2 Inter,system-ui,sans-serif;letter-spacing:.01em;}
+  .stack-mark{display:grid;place-items:center;width:18px;height:18px;border-radius:3px;background:var(--badge-color,#64748b);color:#fff;font:700 9px/1 Inter,system-ui,sans-serif;flex:0 0 auto;text-align:center;}
+  .stack-mark[hidden]{display:none;}
+  .stack-logo{width:18px;height:18px;object-fit:contain;flex:0 0 auto;image-rendering:auto;}
+
   .cursor-blink{border-right:2px solid var(--gold-light);animation:cursor-blink .8s step-end infinite;padding-right:2px;}
   @keyframes cursor-blink{0%,100%{border-right-color:var(--gold-light)}50%{border-right-color:transparent}}
   ::selection{background:var(--gold-light);color:var(--navy);}
@@ -195,7 +208,7 @@
 
   #}
   <!-- HEADER -->
-  <header class="hero-bg relative overflow-hidden px-6 md:px-16 pt-16 pb-12">
+  <header class="hero-bg relative overflow-hidden px-6 md:px-16 pt-16 pb-14">
     <div class="grid-overlay absolute inset-0"></div>
     <div class="scanlines absolute inset-0"></div>
     <div class="critter rise" style="left:12%;top:60%;animation-duration:6s;"></div>
@@ -203,47 +216,74 @@
     <div class="critter rise" style="left:70%;top:55%;animation-duration:5.5s;animation-delay:.6s;"></div>
     <div class="critter rise" style="left:88%;top:35%;animation-duration:6.5s;animation-delay:1.4s;"></div>
 
-    <div class="relative max-w-6xl mx-auto text-center">
-      <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ MISSION ARCHIVE ★</span>
-      <h1 class="font-display text-lg md:text-xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
-        Project <span class="text-[var(--gold-light)]">Repository</span><span class="cursor-blink"></span>
-      </h1>
-      <p class="text-white/60 mt-5 max-w-2xl mx-auto leading-loose text-xs">
-        Eksplorasi karya digital kami — dari eksperimen pertama hingga solusi yang siap digunakan.
-      </p>
+    <div class="relative max-w-6xl mx-auto grid lg:grid-cols-[1.25fr_.75fr] gap-12 items-center">
+      <div>
+        <span class="inline-flex items-center gap-2 tag-pill text-xs tracking-wide text-[var(--gold-light)] font-display mb-6" style="border:2px solid var(--gold-light);padding:6px 12px;background:rgba(242,201,76,.08);">★ DIGITAL SOLUTIONS THAT MOVE BUSINESS ★</span>
+        <h1 class="font-display text-lg md:text-2xl font-bold text-white leading-loose" style="text-shadow:0 0 20px rgba(242,201,76,.3);">
+          Kami bangun <span class="text-[var(--gold-light)]">produk digital</span> yang siap dipakai dan siap berkembang<span class="cursor-blink"></span>
+        </h1>
+        <p class="text-white/65 mt-5 max-w-2xl leading-loose text-[11px]">
+          Lihat bagaimana kami mengubah kebutuhan bisnis menjadi website, aplikasi, dan sistem yang lebih cepat, rapi, dan menghasilkan.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <a href="/#contact" class="pixel-btn pixel-btn-gold font-display text-[9px] px-5 py-3">DISKUSIKAN PROJECT →</a>
+          <a href="#portfolio" class="pixel-btn pixel-btn-glass font-display text-[9px] px-5 py-3">LIHAT PORTOFOLIO ↓</a>
+        </div>
+      </div>
+      <div class="hidden lg:block border border-[var(--gold-light)]/25 bg-[rgba(13,27,76,.6)] p-6 shadow-[8px_8px_0_rgba(0,0,0,.25)]">
+        <p class="font-display text-[9px] text-[var(--gold-light)] mb-5">KENAPA MEMILIH KAMI?</p>
+        <ul class="space-y-5 text-[10px] text-white/70 leading-loose">
+          <li><span class="text-[var(--gold-light)]">01 //</span> Solusi dibuat sesuai alur kerja bisnis Anda</li>
+          <li><span class="text-[var(--gold-light)]">02 //</span> Komunikasi jelas dari ide sampai rilis</li>
+          <li><span class="text-[var(--gold-light)]">03 //</span> Teknologi modern, mudah dikembangkan</li>
+        </ul>
+      </div>
     </div>
   </header>
 
   <!-- PROJECT EXPLORER -->
   <main class="bg-[var(--navy)] px-6 md:px-16 py-12">
     <div class="max-w-6xl mx-auto">
+      <section class="proof-strip grid grid-cols-2 md:grid-cols-4 mb-14">
+        <div class="proof-item p-5 md:p-6"><p class="font-display text-xl text-[var(--gold-light)]">{{ projects|length }}+</p><p class="text-[9px] text-white/45 mt-3">PROJECT TERARSIP</p></div>
+        <div class="proof-item p-5 md:p-6"><p class="font-display text-xl text-[var(--gold-light)]">01</p><p class="text-[9px] text-white/45 mt-3">PARTNER TEKNOLOGI</p></div>
+        <div class="proof-item p-5 md:p-6"><p class="font-display text-xl text-[var(--gold-light)]">24/7</p><p class="text-[9px] text-white/45 mt-3">SIAP BERKEMBANG</p></div>
+        <div class="proof-item p-5 md:p-6"><p class="font-display text-xl text-[var(--gold-light)]">∞</p><p class="text-[9px] text-white/45 mt-3">IDE UNTUK DIBUAT NYATA</p></div>
+      </section>
+      <section class="mb-14 grid md:grid-cols-3 gap-4">
+        <div class="service-card p-5"><p class="font-display text-[9px] text-[var(--gold-light)] mb-4">01 / WEBSITE</p><p class="text-[10px] text-white/65 leading-loose">Website profesional yang membangun kepercayaan dan mendatangkan calon pelanggan.</p></div>
+        <div class="service-card p-5"><p class="font-display text-[9px] text-[var(--gold-light)] mb-4">02 / SYSTEM</p><p class="text-[10px] text-white/65 leading-loose">Sistem internal yang merapikan proses kerja, data, dan keputusan bisnis.</p></div>
+        <div class="service-card p-5"><p class="font-display text-[9px] text-[var(--gold-light)] mb-4">03 / APPLICATION</p><p class="text-[10px] text-white/65 leading-loose">Aplikasi web dan mobile yang nyaman digunakan oleh tim maupun pelanggan.</p></div>
+      </section>
       {% if projects %}
       {% set featured = projects[0] %}
-      <section id="featuredProject" class="project-feature p-7 md:p-12 mb-16" data-status="{{ featured.status }}" data-search="{{ (featured.name ~ ' ' ~ featured.description ~ ' ' ~ featured.tags|join(' '))|lower }}" aria-labelledby="featuredTitle">
+      <section id="featuredProject" class="project-feature p-7 md:p-12 mb-16" data-status="{{ featured.status }}" data-search="{{ (featured.name ~ ' ' ~ featured.description ~ ' ' ~ featured.type ~ ' ' ~ featured.tags|join(' ') ~ ' ' ~ featured.tech_stack|join(' '))|lower }}" aria-labelledby="featuredTitle">
         <div class="feature-orbit" aria-hidden="true"></div>
         <div class="relative z-10 max-w-2xl">
           <div class="flex items-center gap-3 mb-8">
             <span class="pixel-deco"></span><span class="font-display text-[8px] text-[var(--gold-light)]/70 tracking-[.25em]">FEATURED BUILD / 001</span>
             <span class="status status-{{ featured.status }}">{{ featured.status|upper }}</span>
           </div>
-          <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">01</span>
-          <h2 id="featuredTitle" class="font-display text-sm md:text-xl leading-loose text-white mb-5">{{ featured.name }}</h2>
-          <p class="text-white/60 text-[10px] leading-loose max-w-lg mb-7">{{ featured.description or 'Sebuah karya dari Gembong IT.' }}</p>
-          {% if featured.tags %}
-          <div class="flex flex-wrap gap-2 mb-8">{% for tag in featured.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>
-          {% endif %}
+           <span class="feature-index absolute right-0 top-8 -z-10 font-display" aria-hidden="true">01</span>
+           <p class="font-display text-[9px] text-[var(--gold-light)]/75 mb-4">{{ featured.type or 'SOFTWARE SOLUTION' }}</p>
+           <h2 id="featuredTitle" class="font-display text-sm md:text-xl leading-loose text-white mb-5">{{ featured.name }}</h2>
+           <p class="text-white/70 text-[10px] leading-loose max-w-lg mb-7">{{ featured.description or 'Sebuah karya dari Gembong IT.' }}</p>
+           {% if featured.tags %}
+           <div class="flex flex-wrap gap-2 mb-8">{% for tag in featured.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>
+           {% endif %}
+           {% if featured.tech_stack %}<div class="flex flex-wrap gap-2 mb-8" aria-label="Tech stack project">{% for tech in featured.tech_stack %}{% set b = tech|tech_badge %}<span class="stack-badge" style="--badge-color:{{ b.color }}">{% if b.icon %}<img class="stack-logo" src="{{ b.icon }}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">{% endif %}<span class="stack-mark" {{ 'hidden' if b.icon else '' }} aria-hidden="true">{{ b.mark }}</span>{{ b.label }}</span>{% endfor %}</div>{% endif %}
           <div class="flex flex-wrap gap-3">
             {% if featured.repo_url %}<a href="{{ featured.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px] px-5 py-3">EXPLORE SOURCE ↗</a>{% endif %}
-            {% if featured.demo_url %}<a href="{{ featured.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px] px-5 py-3">OPEN LIVE DEMO ↗</a>{% endif %}
-            {% if not featured.repo_url and not featured.demo_url %}<span class="font-display text-[8px] text-[var(--gold-light)]/40">// LINKS COMING SOON</span>{% endif %}
+             <a href="{{ url_for('project_detail', project_index=0) }}" class="pixel-btn pixel-btn-glass font-display text-[9px] px-5 py-3">LIHAT DETAIL →</a>
           </div>
         </div>
       </section>
 
-      <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-7">
+      <section id="portfolio" class="scroll-mt-24">
+       <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-7">
         <div class="w-full md:max-w-sm">
           <label for="repoSearch" class="sr-only">Cari proyek</label>
-          <input id="repoSearch" class="search-input" type="search" placeholder="> cari project..." autocomplete="off">
+           <input id="repoSearch" class="search-input" type="search" placeholder="> cari solusi, teknologi, atau project..." autocomplete="off">
         </div>
         <div class="flex items-center flex-wrap gap-2" id="statusFilters" aria-label="Filter status proyek">
           <button type="button" class="filter-chip active" data-status="all" aria-pressed="true">ALL</button>
@@ -255,31 +295,32 @@
       </div>
 
       <div class="flex items-center justify-between mb-3">
-        <p class="font-display text-[9px] text-[var(--gold-light)]">ALL PROJECTS <span class="text-[var(--gold-light)]/40">/ INDEX</span></p>
+         <div><p class="font-display text-[9px] text-[var(--gold-light)]">PORTFOLIO / SOLUTIONS</p><p class="result-note mt-2">Klik project untuk melihat pendekatan, teknologi, dan kemungkinan solusi untuk bisnis Anda.</p></div>
         <p class="filter-count" id="resultCount" aria-live="polite">{{ projects|length }} ENTRIES</p>
       </div>
 
       <div id="repoGrid" class="project-list">
         {% for repo in projects[1:] %}
-        <details class="project-entry" data-status="{{ repo.status }}" data-search="{{ (repo.name ~ ' ' ~ repo.description ~ ' ' ~ repo.tags|join(' '))|lower }}">
+        <details class="project-entry" data-status="{{ repo.status }}" data-search="{{ (repo.name ~ ' ' ~ repo.description ~ ' ' ~ repo.type ~ ' ' ~ repo.tags|join(' ') ~ ' ' ~ repo.tech_stack|join(' '))|lower }}">
           <summary>
             <span class="entry-number font-display">{{ '%02d'|format(loop.index + 1) }}</span>
-            <span class="repo-name font-display text-[10px] md:text-xs leading-loose">{{ repo.name }}</span>
+             <span><span class="repo-name font-display text-[10px] md:text-xs leading-loose">{{ repo.name }}</span><span class="block text-[8px] text-[var(--gold-light)]/45 mt-2">{{ repo.type or 'DIGITAL SOLUTION' }}</span></span>
             <span class="status status-{{ repo.status }}">{{ repo.status|upper }}</span>
             <span class="entry-toggle" aria-hidden="true">+</span>
           </summary>
           <div class="entry-details">
-            <p class="repo-desc mb-5">{{ repo.description or '// no description provided' }}</p>
+           <p class="repo-desc mb-5">{{ repo.description or '// no description provided' }}</p>
+              {% if repo.tech_stack %}<div class="flex flex-wrap gap-2 mb-5" aria-label="Tech stack project">{% for tech in repo.tech_stack %}{% set b = tech|tech_badge %}<span class="stack-badge" style="--badge-color:{{ b.color }}">{% if b.icon %}<img class="stack-logo" src="{{ b.icon }}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">{% endif %}<span class="stack-mark" {{ 'hidden' if b.icon else '' }} aria-hidden="true">{{ b.mark }}</span>{{ b.label }}</span>{% endfor %}</div>{% endif %}
             {% if repo.tags %}<div class="flex flex-wrap gap-2 mb-5">{% for tag in repo.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div>{% endif %}
             <div class="flex flex-wrap gap-3">
               {% if repo.repo_url %}<a href="{{ repo.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[8px] px-4 py-2">SOURCE ↗</a>{% endif %}
-              {% if repo.demo_url %}<a href="{{ repo.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[8px] px-4 py-2">LIVE DEMO ↗</a>{% endif %}
-              {% if not repo.repo_url and not repo.demo_url %}<span class="font-display text-[8px] text-[var(--gold-light)]/30">// no links yet</span>{% endif %}
+               <a href="{{ url_for('project_detail', project_index=loop.index) }}" class="pixel-btn pixel-btn-glass font-display text-[8px] px-4 py-2">LIHAT DETAIL →</a>
             </div>
           </div>
         </details>
         {% endfor %}
       </div>
+      </section>
 
       <p id="noResults" class="hidden text-center font-display text-[10px] text-[var(--gold-light)]/50 mt-16">
         // NO MISSIONS MATCH YOUR QUERY
@@ -298,6 +339,13 @@
         <a href="/" class="pixel-btn pixel-btn-gold font-display text-xs px-6 py-3 inline-block">BACK TO HOME</a>
       </div>
       {% endif %}
+
+      <section class="mt-20 pixel-border p-7 md:p-10 text-center bg-gradient-to-r from-[rgba(242,201,76,.1)] to-transparent">
+        <p class="font-display text-[9px] text-[var(--gold-light)] mb-5">PUNYA IDE YANG INGIN DIWUJUDKAN?</p>
+        <h2 class="font-display text-sm md:text-lg leading-loose text-white">Mari ubah tantangan bisnis menjadi solusi digital.</h2>
+        <p class="text-[10px] text-white/55 leading-loose max-w-2xl mx-auto mt-4">Ceritakan kebutuhan Anda. Kami bantu memetakan fitur, teknologi, dan langkah paling realistis untuk memulainya.</p>
+        <a href="/#contact" class="pixel-btn pixel-btn-gold font-display text-[9px] px-6 py-3 mt-7">MULAI KONSULTASI GRATIS →</a>
+      </section>
 
       <div class="text-center mt-16">
         <a href="/" class="font-display text-[10px] text-[var(--gold-light)]/50 hover:text-[var(--gold-light)] transition">&larr; Back to Site</a>

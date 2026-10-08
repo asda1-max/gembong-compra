@@ -1,6 +1,6 @@
 # Gembong IT
 
-Website company profile Gembong Information Technology, dibangun dengan Flask, Jinja, CSS, dan JavaScript. Konten situs disimpan dalam `data.json`; gambar unggahan ada di `static/uploads/`. Berkas data, autentikasi, secret key, dan uploads adalah data runtime lokal/server dan tidak dilacak oleh Git.
+Website company profile Gembong Information Technology, dibangun dengan Flask, Jinja, CSS, dan JavaScript. Data situs, repository, dan autentikasi disimpan dalam SQLite (`projects.sqlite3`); gambar unggahan ada di `static/uploads/`. Data lama dari `data.json` dan `auth.json` dimigrasikan otomatis ke SQLite saat pertama kali dibaca. Berkas JSON asli tidak dihapus dan tetap menjadi cadangan. Berkas data, database, autentikasi, secret key, dan uploads adalah data runtime lokal/server dan tidak dilacak oleh Git.
 
 ## Prasyarat
 
@@ -51,6 +51,14 @@ Website company profile Gembong Information Technology, dibangun dengan Flask, J
 
 5. Buka alamat lokal yang ditampilkan Flask (umumnya `http://127.0.0.1:5000`).
 
+Untuk migrasi manual sebelum menjalankan server, gunakan:
+
+```bash
+python migrate_data_to_sqlite.py --directory /path/ke/folder/aplikasi
+```
+
+Di server Linux, jalankan dari folder aplikasi. Skrip membuat atau memperbarui `projects.sqlite3`, mengimpor `data.json`, `auth.json`, dan project lama, lalu membiarkan file JSON tetap utuh sebagai backup. Setelah skrip selesai, restart aplikasi Flask.
+
 Pada proses pertama, aplikasi menyiapkan `data.json`, `auth.json`, dan `.flask_secret` jika belum tersedia. Interval carousel diatur dalam detik (default 15, rentang 15–86.400 detik) dan autoplay baru berjalan setelah pengunjung mencapai area carousel. Jangan hapus atau bagikan berkas rahasia dan data admin. Saat memperbarui instalasi server yang sudah berjalan, jalankan `git pull` di working tree yang sama; file yang diabaikan Git akan tetap berada di sana. Git menghapus berkas yang dilacak pada update pertama setelah berkas runtime dikeluarkan dari repository, sehingga salinan lokal/server yang sebelumnya dilacak perlu dipertahankan/di-restore sekali jika update tersebut menghapusnya.
 
 ## Akun admin
@@ -64,9 +72,10 @@ Untuk deployment, set `FLASK_SECRET_KEY` ke nilai acak yang kuat serta set krede
 - `app.py` — aplikasi Flask dan route
 - `templates/` — halaman Jinja
 - `static/theme.css`, `static/theme.js` — tema dan interaksi frontend
-- `data.json` — konten situs dan konfigurasi
+- `data.json` — backup konten situs lama; data aktif dibaca dari SQLite setelah migrasi
+- `projects.sqlite3` — data situs, repository/project, dan autentikasi (dibuat otomatis)
 - `static/uploads/` — gambar yang diunggah melalui admin
-- `auth.json` — data autentikasi admin; jangan dipublikasikan
+- `auth.json` — backup data autentikasi admin lama; jangan dipublikasikan
 
 ## Catatan
 

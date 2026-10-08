@@ -39,9 +39,26 @@
 
   function wirePageTransitions() {
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
+    function clearPageStrip() {
+      document.documentElement.classList.remove('page-strip-pending');
+      var strips = document.querySelectorAll('.page-strip');
+      for (var i = 0; i < strips.length; i++) strips[i].remove();
+    }
 
     var busy = false;
+
+    // A page restored from the back/forward cache keeps its DOM and animation
+    // state. Always remove any transition overlay when it becomes active again.
+    window.addEventListener('pageshow', function (event) {
+      busy = false;
+      if (event.persisted) clearPageStrip();
+    });
+    if (reducedMotion) return;
+
+    if (document.documentElement.classList.contains('page-strip-pending')) {
+      window.setTimeout(clearPageStrip, 550);
+    }
+
     document.addEventListener('click', function (event) {
       var link = event.target.closest('a[href]');
       if (!link || busy || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

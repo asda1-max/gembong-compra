@@ -1,4 +1,4 @@
-{% set page_id = 'home' if request.path == '/' else ('projects' if request.path == '/projects' else 'info') %}
+{% set page_id = 'home' if request.path == '/' else ('projects' if request.path.startswith('/projects') else 'info') %}
 <style>@media(max-width:639px){.hud-mobile-hide{display:none!important;}nav{top:0!important;margin-top:0!important;}}</style>
 {% if page_id == 'home' %}{% set hud_label = 'EXP' %}{% set hud_value = 'LVL 1' %}{% set hud_width = 0 %}
 {% elif page_id == 'projects' %}{% set hud_label = 'MISSIONS' %}{% set hud_value = projects|length ~ ' TOTAL' %}{% set hud_width = [projects|length * 8, 100]|min %}

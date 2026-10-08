@@ -218,11 +218,11 @@
             <div class="grid grid-cols-1 gap-4">
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE</label>
-                <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input" required>
+                <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input">
               </div>
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
-                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input" required>{{ slide.desc }}</textarea>
+                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input">{{ slide.desc }}</textarea>
               </div>
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HP BAR (%)</label>
@@ -280,7 +280,7 @@
         <p class="text-[10px] text-white/40">Kelola Repository / Project</p>
         <span class="text-[10px] text-white/30">{{ projects | length }} total</span>
       </div>
-      <form method="POST" action="/admin/projects/save" id="repoForm">
+      <form method="POST" action="/admin/projects/save" id="repoForm" enctype="multipart/form-data">
         {% for repo in projects %}
         <div class="slide-card repo-edit-card">
           <div class="flex items-center gap-3 mb-4">
@@ -298,14 +298,31 @@
               <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
               <textarea name="repos[{{ loop.index0 }}][description]" class="pixel-input" placeholder="Deskripsi singkat...">{{ repo.description }}</textarea>
             </div>
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PROJECT STORY (MARKDOWN, OPSIONAL)</label>
+              <textarea name="repos[{{ loop.index0 }}][detail_markdown]" class="pixel-input" rows="8" placeholder="## Tantangan&#10;Masalah yang ingin diselesaikan...&#10;&#10;## Solusi&#10;- Fitur utama&#10;- Dampak untuk pengguna&#10;&#10;![Screenshot project](https://example.com/screenshot.png)">{{ repo.detail_markdown }}</textarea>
+              <p class="text-[9px] text-white/30 mt-2">Mendukung heading (##), list (-), bold (**teks**), link [teks](URL), gambar ![deskripsi](URL), dan inline code.</p>
+            </div>
+            <div>
+              <input type="hidden" name="repos[{{ loop.index0 }}][banner]" value="{{ repo.banner or '' }}">
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">BANNER 16:9 (OPSIONAL)</label>
+              <input type="file" name="repos[{{ loop.index0 }}][banner_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewProjectBanner(this)">
+              <p class="text-[9px] text-white/30 mt-2">Pilih gambar rasio 16:9, maksimal 8 MB. Kosongkan untuk mempertahankan banner saat ini.</p>
+              <img src="{{ repo.banner or '' }}" class="project-banner-preview mt-3 max-w-md w-full border border-[var(--gold-light)]/20" style="aspect-ratio:16/9;object-fit:cover;{{ '' if repo.banner else 'display:none;' }}" alt="Preview banner">
+            </div>
+            <div>
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PROJECT TYPE</label>
+              <input type="text" name="repos[{{ loop.index0 }}][type]" value="{{ repo.type or 'Software' }}" class="pixel-input" placeholder="Software, Web App, Mobile App, dll.">
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">REPOSITORY URL</label>
                 <input type="url" name="repos[{{ loop.index0 }}][repo_url]" value="{{ repo.repo_url }}" class="pixel-input" placeholder="https://github.com/...">
               </div>
               <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DEMO URL</label>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">LIVE DEMO URL (OPSIONAL)</label>
                 <input type="url" name="repos[{{ loop.index0 }}][demo_url]" value="{{ repo.demo_url }}" class="pixel-input" placeholder="https://demo.example.com">
+                <p class="text-[9px] text-white/30 mt-2">Biarkan kosong jika project tidak memiliki demo; tombol Live Demo akan disembunyikan.</p>
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -313,6 +330,12 @@
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TAGS (pisahkan dengan koma)</label>
                 <input type="text" name="repos[{{ loop.index0 }}][tags]" value="{{ repo.tags | join(', ') }}" class="pixel-input" placeholder="python, flask, web">
               </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TECH STACK (pisahkan dengan koma)</label>
+                <input type="text" name="repos[{{ loop.index0 }}][tech_stack]" value="{{ repo.tech_stack | join(', ') }}" class="pixel-input" placeholder="Python, Flask, PostgreSQL">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">STATUS</label>
                 <select name="repos[{{ loop.index0 }}][status]" class="pixel-input">
@@ -574,11 +597,11 @@ function addSlide(){
       <div class="grid grid-cols-1 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TITLE</label>
-          <input type="text" name="slides[${id}][title]" class="pixel-input" required placeholder="Slide title...">
+           <input type="text" name="slides[${id}][title]" class="pixel-input" placeholder="Slide title...">
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
-          <textarea name="slides[${id}][desc]" class="pixel-input" required placeholder="Slide description..."></textarea>
+           <textarea name="slides[${id}][desc]" class="pixel-input" placeholder="Slide description..."></textarea>
         </div>
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HP BAR (%)</label>
@@ -668,6 +691,29 @@ function initColorPairs(root){
 }
 initColorPairs(document);
 
+function previewProjectBanner(input){
+  const img = input.parentElement.querySelector('.project-banner-preview');
+  if(!img || !input.files || !input.files[0]) return;
+  const previewUrl = URL.createObjectURL(input.files[0]);
+  const previewImage = new Image();
+  previewImage.onload = function(){
+    if(Math.abs(previewImage.width / previewImage.height - 16 / 9) > 0.01){
+      alert('Banner harus memiliki rasio 16:9.');
+      input.value = '';
+      URL.revokeObjectURL(previewUrl);
+      return;
+    }
+    img.src = previewUrl;
+    img.style.display = 'block';
+  };
+  previewImage.onerror = function(){
+    alert('File tidak dapat dibaca sebagai gambar.');
+    input.value = '';
+    URL.revokeObjectURL(previewUrl);
+  };
+  previewImage.src = previewUrl;
+}
+
 /* ---------------- Projects editor ---------------- */
 let repoNextId = {{ projects | length }};
 
@@ -692,14 +738,31 @@ function addRepo(){
         <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
         <textarea name="repos[${id}][description]" class="pixel-input" placeholder="Deskripsi singkat..."></textarea>
       </div>
+      <div>
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PROJECT STORY (MARKDOWN, OPSIONAL)</label>
+        <textarea name="repos[${id}][detail_markdown]" class="pixel-input" rows="8" placeholder="## Tantangan&#10;Masalah yang ingin diselesaikan...&#10;&#10;## Solusi&#10;- Fitur utama&#10;- Dampak untuk pengguna&#10;&#10;![Screenshot project](https://example.com/screenshot.png)"></textarea>
+        <p class="text-[9px] text-white/30 mt-2">Mendukung heading (##), list (-), bold (**teks**), link [teks](URL), gambar ![deskripsi](URL), dan inline code.</p>
+      </div>
+      <div>
+        <input type="hidden" name="repos[${id}][banner]" value="">
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">BANNER 16:9 (OPSIONAL)</label>
+        <input type="file" name="repos[${id}][banner_file]" class="pixel-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewProjectBanner(this)">
+        <p class="text-[9px] text-white/30 mt-2">Pilih gambar rasio 16:9, maksimal 8 MB.</p>
+        <img class="project-banner-preview mt-3 max-w-md w-full border border-[var(--gold-light)]/20" style="aspect-ratio:16/9;object-fit:cover;display:none;" alt="Preview banner">
+      </div>
+      <div>
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PROJECT TYPE</label>
+        <input type="text" name="repos[${id}][type]" class="pixel-input" placeholder="Software, Web App, Mobile App, dll.">
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">REPOSITORY URL</label>
           <input type="url" name="repos[${id}][repo_url]" class="pixel-input" placeholder="https://github.com/...">
         </div>
         <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DEMO URL</label>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">LIVE DEMO URL (OPSIONAL)</label>
           <input type="url" name="repos[${id}][demo_url]" class="pixel-input" placeholder="https://demo.example.com">
+          <p class="text-[9px] text-white/30 mt-2">Biarkan kosong jika project tidak memiliki demo; tombol Live Demo akan disembunyikan.</p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -707,6 +770,12 @@ function addRepo(){
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TAGS (pisahkan dengan koma)</label>
           <input type="text" name="repos[${id}][tags]" class="pixel-input" placeholder="python, flask, web">
         </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">TECH STACK (pisahkan dengan koma)</label>
+          <input type="text" name="repos[${id}][tech_stack]" class="pixel-input" placeholder="Python, Flask, PostgreSQL">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">STATUS</label>
           <select name="repos[${id}][status]" class="pixel-input">

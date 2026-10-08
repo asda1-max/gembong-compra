@@ -2,9 +2,13 @@ import os
 import re
 import json
 import secrets
+import sqlite3
 from datetime import datetime
+from html import unescape
 from urllib.parse import urlsplit
 from flask import Flask, render_template, request, session, redirect, url_for
+from markupsafe import Markup, escape
+from PIL import Image, UnidentifiedImageError
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,7 +23,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 AUTH_FILE = os.path.join(BASE_DIR, 'auth.json')
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+PROJECT_DB_FILE = os.path.join(BASE_DIR, 'projects.sqlite3')
 ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+PROJECT_BANNER_MAX_BYTES = 8 * 1024 * 1024
 
 CAROUSEL = [
     {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "link": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
@@ -144,18 +150,157 @@ def _write_json(path, obj):
     os.replace(tmp, path)
 
 
+def _connect_projects_db():
+    connection = sqlite3.connect(PROJECT_DB_FILE)
+    connection.row_factory = sqlite3.Row
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            position INTEGER PRIMARY KEY,
+            project_json TEXT NOT NULL
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS app_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+    """)
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+    """)
+    return connection
+
+
+def migrate_json_to_sqlite():
+    """Import existing site and authentication JSON once, without deleting it."""
+    connection = _connect_projects_db()
+    try:
+        with connection:
+            for key, path in (("site_data", DATA_FILE), ("admin_auth", AUTH_FILE)):
+                marker = f"{key}_migrated"
+                done = connection.execute(
+                    "SELECT value FROM app_meta WHERE key = ?", (marker,)
+                ).fetchone()
+                if done:
+                    continue
+                if os.path.isfile(path):
+                    with open(path, "r", encoding="utf-8") as source:
+                        imported = json.load(source)
+                    connection.execute(
+                        "INSERT OR IGNORE INTO app_data(key, value) VALUES (?, ?)",
+                        (key, json.dumps(imported, ensure_ascii=False)),
+                    )
+                connection.execute(
+                    "INSERT OR REPLACE INTO app_meta(key, value) VALUES (?, '1')",
+                    (marker,),
+                )
+    finally:
+        connection.close()
+
+
+def _load_app_value(key):
+    migrate_json_to_sqlite()
+    connection = _connect_projects_db()
+    try:
+        row = connection.execute(
+            "SELECT value FROM app_data WHERE key = ?", (key,)
+        ).fetchone()
+        return json.loads(row["value"]) if row else None
+    finally:
+        connection.close()
+
+
+def _save_app_value(key, value):
+    migrate_json_to_sqlite()
+    connection = _connect_projects_db()
+    try:
+        with connection:
+            connection.execute(
+                "INSERT OR REPLACE INTO app_data(key, value) VALUES (?, ?)",
+                (key, json.dumps(value, ensure_ascii=False)),
+            )
+    finally:
+        connection.close()
+
+
+def _normalize_project(project):
+    if not isinstance(project, dict):
+        project = {}
+    normalized = dict(project)
+    normalized["name"] = str(normalized.get("name") or "Untitled Project")
+    normalized["description"] = str(normalized.get("description") or "")
+    normalized["type"] = str(normalized.get("type") or "Software").strip()
+    normalized["detail_markdown"] = str(normalized.get("detail_markdown") or "").strip()
+    normalized["banner"] = str(normalized.get("banner") or "")
+    normalized["repo_url"] = str(normalized.get("repo_url") or "")
+    normalized["demo_url"] = str(normalized.get("demo_url") or "")
+    normalized["status"] = normalized.get("status") if normalized.get("status") in REPO_STATUS else "active"
+    normalized["tags"] = normalized.get("tags") if isinstance(normalized.get("tags"), list) else []
+    stack = normalized.get("tech_stack", [])
+    if isinstance(stack, str):
+        stack = [item.strip() for item in stack.split(",") if item.strip()]
+    normalized["tech_stack"] = stack if isinstance(stack, list) else []
+    return normalized
+
+
+def _get_projects():
+    data = load_data()
+    connection = _connect_projects_db()
+    try:
+        rows = connection.execute(
+            "SELECT project_json FROM projects ORDER BY position"
+        ).fetchall()
+        migrated = connection.execute(
+            "SELECT value FROM app_meta WHERE key = 'projects_migrated'"
+        ).fetchone()
+        if not migrated:
+            if not rows and data.get("projects"):
+                for position, project in enumerate(data["projects"]):
+                    connection.execute(
+                        "INSERT INTO projects(position, project_json) VALUES (?, ?)",
+                        (position, json.dumps(_normalize_project(project), ensure_ascii=False)),
+                    )
+                connection.commit()
+                rows = connection.execute(
+                    "SELECT project_json FROM projects ORDER BY position"
+                ).fetchall()
+            connection.execute(
+                "INSERT OR REPLACE INTO app_meta(key, value) VALUES ('projects_migrated', '1')"
+            )
+            connection.commit()
+        return [_normalize_project(json.loads(row["project_json"])) for row in rows]
+    finally:
+        connection.close()
+
+
+def _save_projects(projects):
+    connection = _connect_projects_db()
+    try:
+        with connection:
+            connection.execute("DELETE FROM projects")
+            connection.executemany(
+                "INSERT INTO projects(position, project_json) VALUES (?, ?)",
+                [(i, json.dumps(_normalize_project(project), ensure_ascii=False))
+                 for i, project in enumerate(projects)],
+            )
+            connection.execute(
+                "INSERT OR REPLACE INTO app_meta(key, value) VALUES ('projects_migrated', '1')"
+            )
+    finally:
+        connection.close()
+
+
 def load_data():
-    if not os.path.exists(DATA_FILE):
+    data = _load_app_value("site_data")
+    if data is None:
         data = {"carousel": json.loads(json.dumps(CAROUSEL)), "projects": [],
                 "messages": [], "contact": json.loads(json.dumps(CONTACT_DEFAULTS)),
                 "carousel_interval": INTERVAL_DEFAULT, "theme": THEME_DEFAULT}
         save_data(data)
         return data
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-        except ValueError:
-            data = {}
     if not isinstance(data, dict):
         data = {}
     if not isinstance(data.get("carousel"), list):
@@ -171,6 +316,14 @@ def load_data():
     data["theme"] = _clean_theme(data.get("theme"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
+    for project in data["projects"]:
+        if isinstance(project, dict):
+            project["type"] = str(project.get("type") or "Software").strip()
+            project["detail_markdown"] = str(project.get("detail_markdown") or "").strip()
+            stack = project.get("tech_stack", [])
+            if isinstance(stack, str):
+                stack = [item.strip() for item in stack.split(",") if item.strip()]
+            project["tech_stack"] = stack if isinstance(stack, list) else []
     if not isinstance(data.get("messages"), list):
         data["messages"] = []
     content = data.get("content")
@@ -192,19 +345,18 @@ def load_data():
 
 
 def save_data(data):
-    _write_json(DATA_FILE, data)
+    _save_app_value("site_data", data)
 
 
 def load_auth():
-    if not os.path.exists(AUTH_FILE):
+    auth = _load_app_value("admin_auth")
+    if auth is None:
         auth = {
             "username": os.environ.get('GEMBONG_ADMIN_USER', 'admin'),
             "password_hash": generate_password_hash(os.environ.get('GEMBONG_ADMIN_PASS', 'gembong2024')),
         }
-        _write_json(AUTH_FILE, auth)
+        save_auth(auth)
         return auth
-    with open(AUTH_FILE, 'r', encoding='utf-8') as f:
-        auth = json.load(f)
     # Migrate a legacy plaintext "password" field to a hash on first load.
     if "password" in auth and "password_hash" not in auth:
         auth["password_hash"] = generate_password_hash(str(auth.pop("password")))
@@ -213,7 +365,7 @@ def load_auth():
 
 
 def save_auth(auth):
-    _write_json(AUTH_FILE, auth)
+    _save_app_value("admin_auth", auth)
 
 
 def verify_login(username, password):
@@ -282,10 +434,10 @@ def collect_slides(form, files=None):
     return carousel
 
 
-REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|repo_url|demo_url|tags|status)\]$")
+REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|type|repo_url|demo_url|tags|tech_stack|detail_markdown|banner|status)\]$")
 
 
-def collect_projects(form):
+def collect_projects(form, files=None, existing_projects=None):
     cards = {}
     order = []
     for key, values in form.lists():
@@ -300,24 +452,63 @@ def collect_projects(form):
         cards[token][field] = picked
 
     projects = []
-    for token in order:
+    existing_projects = existing_projects or []
+    for position, token in enumerate(order):
         card = cards[token]
         name = (card.get("name") or "").strip()
         description = (card.get("description") or "").strip()
+        project_type = (card.get("type") or "Software").strip() or "Software"
+        detail_markdown = (card.get("detail_markdown") or "").strip()
         repo_url = (card.get("repo_url") or "").strip()
         demo_url = (card.get("demo_url") or "").strip()
         status = (card.get("status") or "").strip().lower()
         if status not in REPO_STATUS:
             status = "active"
         tags = [t.strip() for t in (card.get("tags") or "").split(",") if t.strip()][:8]
+        tech_stack = [t.strip() for t in (card.get("tech_stack") or "").split(",") if t.strip()][:12]
+        banner = (card.get("banner") or "").strip()
+        try:
+            original_position = int(token)
+        except ValueError:
+            original_position = position
+        if original_position < len(existing_projects) and not banner:
+            banner = existing_projects[original_position].get("banner", "")
+        uploaded = (files or {}).get(f"repos[{token}][banner_file]")
+        if uploaded and uploaded.filename:
+            extension = os.path.splitext(secure_filename(uploaded.filename))[1].lower()
+            if extension not in ALLOWED_IMAGE_EXTENSIONS:
+                raise ValueError("Banner harus berupa JPG, PNG, GIF, atau WEBP.")
+            uploaded.stream.seek(0, os.SEEK_END)
+            file_size = uploaded.stream.tell()
+            uploaded.stream.seek(0)
+            if file_size > PROJECT_BANNER_MAX_BYTES:
+                raise ValueError("Ukuran banner maksimal 8 MB.")
+            try:
+                image = Image.open(uploaded.stream)
+                image.verify()
+                width, height = image.size
+            except (UnidentifiedImageError, OSError, ValueError):
+                raise ValueError("File banner bukan gambar yang valid.")
+            finally:
+                uploaded.stream.seek(0)
+            if height == 0 or abs(width / height - 16 / 9) > 0.01:
+                raise ValueError("Rasio banner harus 16:9.")
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            stored_name = f"project-{secrets.token_hex(16)}{extension}"
+            uploaded.save(os.path.join(UPLOAD_FOLDER, stored_name))
+            banner = f"/static/uploads/{stored_name}"
         if not (name or description or repo_url):
             continue
         projects.append({
             "name": name or "Untitled Project",
             "description": description,
+            "type": project_type[:60],
+            "detail_markdown": detail_markdown[:12000],
+            "banner": banner,
             "repo_url": repo_url,
             "demo_url": demo_url,
             "tags": tags,
+            "tech_stack": tech_stack,
             "status": status,
         })
     return projects
@@ -325,10 +516,11 @@ def collect_projects(form):
 
 def _render_admin(message=None, error=None, active_tab="carousel"):
     data = load_data()
+    projects = _get_projects()
     return render_template(
         "admin.html",
         slides=data["carousel"],
-        projects=data["projects"],
+        projects=projects,
         messages=data.get("messages", []),
         contact=data["contact"],
         content=data["content"],
@@ -353,8 +545,15 @@ def index():
 
 @app.route("/projects")
 def projects():
-    data = load_data()
-    return render_template("projects.html", projects=data["projects"])
+    return render_template("projects.html", projects=_get_projects())
+
+
+@app.route("/projects/<int:project_index>")
+def project_detail(project_index):
+    projects = _get_projects()
+    if project_index < 0 or project_index >= len(projects):
+        return render_template("project_detail.html", project=None, project_index=project_index, projects=projects), 404
+    return render_template("project_detail.html", project=projects[project_index], project_index=project_index, projects=projects)
 
 
 @app.route("/info")
@@ -409,6 +608,140 @@ def _wa_digits(value):
 
 app.jinja_env.filters["wa_digits"] = _wa_digits
 app.jinja_env.filters["hexa"] = _hex_to_rgba
+
+# Tech-stack badge icons via Devicon CDN. Entries without a reliable icon
+# (Adobe suite, Flask, AMD, ...) fall back to an abbreviation mark instead.
+DEVICON_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/"
+
+TECH_BADGES = (
+    ("typescript", "typescript/typescript-original.svg", "#3178C6", "TS"),
+    ("javascript", "javascript/javascript-original.svg", "#F7DF1E", "JS"),
+    ("node", "nodejs/nodejs-original.svg", "#339933", "Node"),
+    ("express", "express/express-original.svg", "#000000", "Ex"),
+    ("python", "python/python-original.svg", "#3776AB", "Py"),
+    ("dart", "dart/dart-original.svg", "#0175C2", "Dart"),
+    ("flutter", "flutter/flutter-original.svg", "#02569B", "Fl"),
+    ("php", "php/php-original.svg", "#777BB4", "PHP"),
+    ("laravel", "laravel/laravel-original.svg", "#FF2D20", "Lv"),
+    ("c++", "cplusplus/cplusplus-original.svg", "#00599C", "C++"),
+    ("c#", "csharp/csharp-original.svg", "#239120", "C#"),
+    (".net", "dotnetcore/dotnetcore-original.svg", "#512BD4", ".NET"),
+    ("dotnet", "dotnetcore/dotnetcore-original.svg", "#512BD4", ".NET"),
+    ("html", "html5/html5-original.svg", "#E34F26", "HTML"),
+    ("css", "css3/css3-original.svg", "#1572B6", "CSS"),
+    ("react", "react/react-original.svg", "#61DAFB", "Re"),
+    ("vue", "vuejs/vuejs-original.svg", "#4FC08D", "Vue"),
+    ("angular", "angular/angular-original.svg", "#DD0031", "Ng"),
+    ("mysql", "mysql/mysql-original.svg", "#4479A1", "My"),
+    ("postgres", "postgresql/postgresql-original.svg", "#4169E1", "Pg"),
+    ("mongo", "mongodb/mongodb-original.svg", "#47A248", "Mg"),
+    ("firebase", "firebase/firebase-plain.svg", "#FFCA28", "Fb"),
+    ("blender", "blender/blender-original.svg", "#E87D0D", "Bl"),
+    ("git", "git/git-original.svg", "#F05032", "Git"),
+    ("godot", "godot/godot-original.svg", "#478CBF", "Gd"),
+    ("docker", "docker/docker-original.svg", "#2496ED", "Dk"),
+    ("tailwind", "tailwindcss/tailwindcss-original.svg", "#06B6D4", "TW"),
+    ("java", "java/java-original.svg", "#007396", "Ja"),
+    ("kotlin", "kotlin/kotlin-original.svg", "#7F52FF", "Kt"),
+    ("swift", "swift/swift-original.svg", "#F05138", "Sw"),
+    ("rust", "rust/rust-original.svg", "#131313", "Rs"),
+    ("golang", "go/go-original-wordmark.svg", "#00ADD8", "Go"),
+    ("figma", "figma/figma-original.svg", "#F24E1E", "Fi"),
+    ("after effect", "", "#9999FF", "Ae"),
+    ("illustrator", "", "#FF9A00", "Ai"),
+    ("lightroom", "", "#31A8FF", "Lr"),
+    ("photoshop", "", "#31A8FF", "Ps"),
+    ("premiere", "", "#9999FF", "Pr"),
+    ("adobe", "", "#FA0F00", "Ad"),
+    ("flask", "", "#10131A", "Fl"),
+    ("amd", "", "#ED1C24", "AMD"),
+)
+
+
+def _tech_badge(value):
+    label = str(value or "").strip()
+    key = label.lower()
+    for needle, icon, color, mark in TECH_BADGES:
+        if needle in key:
+            return {
+                "label": label,
+                "icon": DEVICON_BASE + icon if icon else "",
+                "color": color,
+                "mark": mark,
+            }
+    if key in ("c", "c language"):
+        return {"label": label, "icon": DEVICON_BASE + "c/c-original.svg",
+                "color": "#A8B9CC", "mark": "C"}
+    return {"label": label, "icon": "", "color": "#64748B",
+            "mark": (label[:2] or "?").upper()}
+
+
+app.jinja_env.filters["tech_badge"] = _tech_badge
+
+
+def _safe_markdown(value):
+    """Render a small, safe Markdown subset for optional project stories."""
+    text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text:
+        return Markup("")
+
+    def inline(raw):
+        rendered = str(escape(raw))
+
+        def image(match):
+            alt = escape(unescape(match.group(1).strip()))
+            target = unescape(match.group(2).strip())
+            if not (target.startswith("/static/uploads/") or _clean_slide_link(target).startswith(("http://", "https://"))):
+                return ""
+            return '<img class="story-image" src="%s" alt="%s" loading="lazy">' % (escape(target), alt)
+
+        def link(match):
+            label = unescape(match.group(1).strip())
+            target = unescape(match.group(2).strip())
+            clean = _clean_slide_link(target)
+            if not clean or not clean.startswith(("http://", "https://", "/", "#")):
+                return escape(label)
+            return '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>' % (escape(clean), escape(label))
+
+        rendered = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)", image, rendered)
+        rendered = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, rendered)
+        rendered = re.sub(r"`([^`]+)`", r"<code>\1</code>", rendered)
+        rendered = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", rendered)
+        return rendered
+
+    output = []
+    in_list = False
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if not stripped:
+            if in_list:
+                output.append("</ul>")
+                in_list = False
+            continue
+        heading = re.match(r"^(#{1,3})\s+(.+)$", stripped)
+        bullet = re.match(r"^[-*]\s+(.+)$", stripped)
+        if heading:
+            if in_list:
+                output.append("</ul>")
+                in_list = False
+            level = len(heading.group(1)) + 2
+            output.append("<h%d>%s</h%d>" % (level, inline(heading.group(2)), level))
+        elif bullet:
+            if not in_list:
+                output.append("<ul>")
+                in_list = True
+            output.append("<li>%s</li>" % inline(bullet.group(1)))
+        else:
+            if in_list:
+                output.append("</ul>")
+                in_list = False
+            output.append("<p>%s</p>" % inline(stripped))
+    if in_list:
+        output.append("</ul>")
+    return Markup("\n".join(output))
+
+
+app.jinja_env.filters["safe_markdown"] = _safe_markdown
 
 
 @app.context_processor
@@ -478,9 +811,12 @@ def admin_projects_save():
     if not session.get("logged_in"):
         return redirect(url_for("admin"))
 
-    data = load_data()
-    data["projects"] = collect_projects(request.form)
-    save_data(data)
+    existing_projects = _get_projects()
+    try:
+        projects = collect_projects(request.form, request.files, existing_projects)
+    except ValueError as exc:
+        return _render_admin(error=str(exc), active_tab="projects")
+    _save_projects(projects)
     return _render_admin(message="Projects updated successfully!", active_tab="projects")
 
 
