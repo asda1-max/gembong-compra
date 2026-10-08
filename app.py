@@ -26,7 +26,8 @@ CAROUSEL = [
     {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
 ]
 
-COLOR_DEFAULTS = {"primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"}
+COLOR_DEFAULTS = {"primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c",
+                  "hero_desc": "#ffffff", "about_desc": "#d4af0e"}
 HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
 # Carousel auto-rotate cooldown (minutes). Enforced floor so the full-page
@@ -87,6 +88,13 @@ CONTACT_DEFAULTS = {
     "linkedin": "https://linkedin.com/company/gembong-it",
 }
 
+CONTENT_DEFAULTS = {
+    "hero_desc": "Kami membantu bisnis Anda bertransformasi digital lewat pengembangan sistem, aplikasi, dan infrastruktur jaringan yang cepat, andal, dan tepat guna.",
+    "hero_desc_color": "#ffffff",
+    "about_desc": "Kami adalah mitra digital yang mengubah tantangan teknologi menjadi solusi nyata. Dengan semangat inovasi dan dedikasi tinggi, kami menghadirkan layanan information technology yang cepat, andal, dan tepat guna mulai dari pengembangan sistem, infrastruktur jaringan, hingga solusi digital yang disesuaikan dengan kebutuhan bisnis Anda. Bersama Gembong Information Technology, setiap langkah menuju transformasi digital menjadi lebih mudah, efisien, dan penuh keyakinan.",
+    "about_desc_color": "#d4af0e",
+}
+
 
 # --------------------------------------------------------------------------
 # Secret key: env first, then a generated file so production is never left
@@ -144,12 +152,22 @@ def load_data():
             slide["primary"] = _clean_color(slide.get("primary"), COLOR_DEFAULTS["primary"])
             slide["secondary"] = _clean_color(slide.get("secondary"), COLOR_DEFAULTS["secondary"])
             slide["text"] = _clean_color(slide.get("text"), COLOR_DEFAULTS["text"])
+            slide["hero_desc"] = _clean_color(slide.get("hero_desc"), COLOR_DEFAULTS["hero_desc"])
+            slide["about_desc"] = _clean_color(slide.get("about_desc"), COLOR_DEFAULTS["about_desc"])
     data["carousel_interval"] = _clean_interval(data.get("carousel_interval"))
     data["theme"] = _clean_theme(data.get("theme"))
     if not isinstance(data.get("projects"), list):
         data["projects"] = []
     if not isinstance(data.get("messages"), list):
         data["messages"] = []
+    content = data.get("content")
+    if not isinstance(content, dict):
+        content = {}
+    merged_content = dict(CONTENT_DEFAULTS)
+    merged_content.update({k: v for k, v in content.items() if k in CONTENT_DEFAULTS and isinstance(v, str)})
+    for field in ("hero_desc_color", "about_desc_color"):
+        merged_content[field] = _clean_color(merged_content[field], CONTENT_DEFAULTS[field])
+    data["content"] = merged_content
     contact = data.get("contact")
     if not isinstance(contact, dict):
         data["contact"] = json.loads(json.dumps(CONTACT_DEFAULTS))
@@ -197,7 +215,7 @@ def verify_login(username, password):
 # --------------------------------------------------------------------------
 # Matches slides[<token>][<field>] so both server-rendered (slides[0][title])
 # and JS-added (slides[3][title]) inputs are collected per card.
-SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text)\]$")
+SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text|hero_desc|about_desc)\]$")
 
 
 def collect_slides(form, files=None):
@@ -233,6 +251,8 @@ def collect_slides(form, files=None):
             "primary": _clean_color(card.get("primary"), COLOR_DEFAULTS["primary"]),
             "secondary": _clean_color(card.get("secondary"), COLOR_DEFAULTS["secondary"]),
             "text": _clean_color(card.get("text"), COLOR_DEFAULTS["text"]),
+            "hero_desc": _clean_color(card.get("hero_desc"), COLOR_DEFAULTS["hero_desc"]),
+            "about_desc": _clean_color(card.get("about_desc"), COLOR_DEFAULTS["about_desc"]),
         }
         uploaded = (files or {}).get(f"slides[{token}][image_file]")
         if uploaded and uploaded.filename:
@@ -297,6 +317,7 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
         projects=data["projects"],
         messages=data.get("messages", []),
         contact=data["contact"],
+        content=data["content"],
         carousel_interval=data["carousel_interval"],
         interval_min=INTERVAL_MIN,
         message=message,
@@ -311,7 +332,7 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
 @app.route("/")
 def index():
     data = load_data()
-    return render_template("index.html", carousel=data["carousel"], contact=data["contact"],
+    return render_template("index.html", carousel=data["carousel"], contact=data["contact"], content=data["content"],
                            carousel_interval=data["carousel_interval"])
 
 
@@ -402,6 +423,7 @@ def admin():
                 return redirect(url_for("admin"))
             error = "Invalid credentials"
         return render_template("admin.html", slides=[], projects=[], messages=[], contact={},
+                               content=CONTENT_DEFAULTS,
                                carousel_interval=INTERVAL_DEFAULT, interval_min=INTERVAL_MIN,
                                error=error, message=None, active_tab="carousel")
 
@@ -426,6 +448,10 @@ def admin_save():
     data = load_data()
     data["carousel"] = carousel
     data["carousel_interval"] = _clean_interval(request.form.get("carousel_interval"))
+    data["content"] = {
+        "hero_desc": (request.form.get("hero_desc") or "").strip() or CONTENT_DEFAULTS["hero_desc"],
+        "about_desc": (request.form.get("about_desc") or "").strip() or CONTENT_DEFAULTS["about_desc"],
+    }
     save_data(data)
     return _render_admin(message="Carousel updated successfully!", active_tab="carousel")
 

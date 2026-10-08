@@ -65,7 +65,6 @@
   .image-overlay{display:none;}
   #projects{background-color:var(--tp);}
   #projects h2,#projects > div > p{color:var(--tt);}
-  #projects .project-desc{opacity:.75;}
   .project-hp{background:rgba(0,0,0,.18);border-color:var(--tp);}
   .project-hp-fill{background:var(--tp);}
   .theme-arrow{border-color:var(--tp);color:var(--tp);background:rgba(var(--ts-rgb), .9);}
@@ -405,9 +404,8 @@
           Solusi <span class="text-[var(--tp)]">Teknologi Digital</span> untuk Bisnis Masa Kini<span class="cursor-blink"></span>
         </h1>
         <p class="font-script text-sm md:text-base text-[var(--tp)] mt-4">Gembong IT</p>
-        <p class="text-white/60 mt-5 max-w-md mx-auto md:mx-0 leading-loose text-xs">
-          Kami membantu bisnis Anda bertransformasi digital lewat pengembangan sistem,
-          aplikasi, dan infrastruktur jaringan yang cepat, andal, dan tepat guna.
+        <p id="heroDescription" class="mt-5 max-w-md mx-auto md:mx-0 leading-loose text-xs" style="color:{{ carousel[0].hero_desc if carousel else '#ffffff' }};">
+          {{ content.hero_desc }}
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-8">
@@ -504,13 +502,8 @@
     <div class="max-w-3xl mx-auto text-center reveal-on-scroll">
       <h2 class="font-script text-xl text-[var(--tp)] mb-6">★ About Us ★</h2>
       <div class="pixel-deco inline-block mb-6"></div>
-      <p class="text-[var(--tp)]/90 text-justify leading-loose text-xs">
-        "Kami adalah mitra digital yang mengubah tantangan teknologi menjadi solusi nyata.
-        Dengan semangat inovasi dan dedikasi tinggi, kami menghadirkan layanan information
-        technology yang cepat, andal, dan tepat guna mulai dari pengembangan sistem,
-        infrastruktur jaringan, hingga solusi digital yang disesuaikan dengan kebutuhan
-        bisnis Anda. Bersama Gembong Information Technology, setiap langkah menuju
-        transformasi digital menjadi lebih mudah, efisien, dan penuh keyakinan."
+      <p id="aboutDescription" class="text-justify leading-loose text-xs" style="color:{{ carousel[0].about_desc if carousel else '#d4af0e' }};">
+        {{ content.about_desc }}
       </p>
       <div class="flex justify-center gap-2 mt-8">
         <span class="pixel-deco"></span><span class="pixel-deco"></span><span class="pixel-deco"></span>
@@ -533,13 +526,11 @@
             <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
               <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-full w-full">
                 <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
-                {% if item.desc %}<span class="text-white/80 max-w-md text-xs">{{ item.desc }}</span>{% endif %}
               </div>
             </div>
             {% else %}
             <div class="project-card absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
               <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
-              <span class="project-desc max-w-md text-xs">{{ item.desc }}</span>
               <div class="hp-bar project-hp w-32 mt-2"><div class="hp-bar-fill project-hp-fill" style="width:{{ item.hp }}%"></div></div>
             </div>
             {% endif %}
@@ -557,7 +548,7 @@
         </div>
       </div>
 
-      <p class="text-[var(--ts)]/80 text-justify leading-loose mt-10 text-xs">
+      <p id="carouselDescription" class="text-[var(--ts)]/80 text-justify leading-loose mt-10 text-xs">
         Proyek Unggulan Kami — Sebagai bukti komitmen kami dalam dunia information technology,
         kami telah berhasil menghadirkan berbagai proyek unggulan yang memberikan dampak nyata
         bagi klien kami. Mulai dari pengembangan sistem manajemen bisnis, aplikasi berbasis web
@@ -739,6 +730,10 @@
     const SLIDE_PRIMARY = {{ carousel | map(attribute='primary') | list | tojson }};
     const SLIDE_SECONDARY = {{ carousel | map(attribute='secondary') | list | tojson }};
     const SLIDE_TEXT = {{ carousel | map(attribute='text') | list | tojson }};
+    const SLIDE_HERO_DESC = {{ carousel | map(attribute='hero_desc') | list | tojson }};
+    const SLIDE_ABOUT_DESC = {{ carousel | map(attribute='about_desc') | list | tojson }};
+    const SLIDE_DESCRIPTIONS = {{ carousel | map(attribute='desc') | list | tojson }};
+    const DEFAULT_CAROUSEL_DESCRIPTION = {{ 'Proyek Unggulan Kami — Sebagai bukti komitmen kami dalam dunia information technology, kami telah berhasil menghadirkan berbagai proyek unggulan yang memberikan dampak nyata bagi klien kami. Mulai dari pengembangan sistem manajemen bisnis, aplikasi berbasis web dan mobile, hingga solusi infrastruktur jaringan yang handal, setiap proyek kami kerjakan dengan standar kualitas tinggi dan pendekatan yang inovatif. Kepercayaan yang diberikan oleh para klien menjadi motivasi bagi kami untuk terus menghadirkan karya terbaik yang relevan dengan perkembangan teknologi masa kini.' | tojson }};
     const CAROUSEL_INTERVAL_MS = 15000;
     const rootEl = document.documentElement;
 
@@ -757,6 +752,10 @@
       rootEl.style.setProperty('--tp', p);
       rootEl.style.setProperty('--ts', s);
       rootEl.style.setProperty('--tt', t);
+      var heroDescription = document.getElementById('heroDescription');
+      var aboutDescription = document.getElementById('aboutDescription');
+      if(heroDescription) heroDescription.style.color = SLIDE_HERO_DESC[i] || '#ffffff';
+      if(aboutDescription) aboutDescription.style.color = SLIDE_ABOUT_DESC[i] || '#d4af0e';
       var pr = toRgbTriplet(p); if(pr) rootEl.style.setProperty('--tp-rgb', pr);
       var sr = toRgbTriplet(s); if(sr) rootEl.style.setProperty('--ts-rgb', sr);
     }
@@ -792,6 +791,8 @@
 
     function render(updateTheme = true){
       document.getElementById('carouselTrack').style.transform = `translateX(-${idx * 100}%)`;
+      var carouselDescription = document.getElementById('carouselDescription');
+      if(carouselDescription) carouselDescription.textContent = SLIDE_DESCRIPTIONS[idx] || DEFAULT_CAROUSEL_DESCRIPTION;
       dots.forEach((d,i) => {
         d.classList.toggle('active', i === idx);
         d.setAttribute('aria-pressed', String(i === idx));

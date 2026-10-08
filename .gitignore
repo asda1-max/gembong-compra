@@ -1,0 +1,18 @@
+# Runtime data and credentials (keep local/server copies, do not version)
+/data.json
+/auth.json
+/.flask_secret
+
+# User-uploaded assets
+/static/uploads/*
+!/static/uploads/.gitkeep
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environment files
+.env
+.venv/
+venv/

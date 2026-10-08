@@ -136,7 +136,7 @@
           <!-- THEME COLORS (apply to both text + image modes) -->
           <div class="color-fields mb-4">
             <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
                 <div class="flex gap-2 items-center">
@@ -158,6 +158,20 @@
                   <input type="text" class="pixel-input color-hex" value="{{ slide.text }}" maxlength="7" spellcheck="false" aria-label="Text color hex">
                 </div>
               </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HERO DESCRIPTION</label>
+                <div class="flex gap-2 items-center">
+                  <input type="color" name="slides[{{ loop.index0 }}][hero_desc]" value="{{ slide.hero_desc }}" class="color-swatch">
+                  <input type="text" class="pixel-input color-hex" value="{{ slide.hero_desc }}" maxlength="7" spellcheck="false" aria-label="Hero description color hex">
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">ABOUT US DESCRIPTION</label>
+                <div class="flex gap-2 items-center">
+                  <input type="color" name="slides[{{ loop.index0 }}][about_desc]" value="{{ slide.about_desc }}" class="color-swatch">
+                  <input type="text" class="pixel-input color-hex" value="{{ slide.about_desc }}" maxlength="7" spellcheck="false" aria-label="About Us description color hex">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -169,7 +183,7 @@
                 <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input" required>
               </div>
               <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
                 <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input" required>{{ slide.desc }}</textarea>
               </div>
               <div>
@@ -193,8 +207,8 @@
                 <input type="text" name="slides[{{ loop.index0 }}][title]" value="{{ slide.title }}" class="pixel-input">
               </div>
               <div>
-                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (optional overlay)</label>
-                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input"></textarea>
+                <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
+                <textarea name="slides[{{ loop.index0 }}][desc]" class="pixel-input">{{ slide.desc }}</textarea>
               </div>
             </div>
           </div>
@@ -208,6 +222,19 @@
             <span class="text-[10px] text-[var(--gold-light)]/70">MENIT</span>
           </div>
           <p class="hint mt-3">// Minimal {{ interval_min }} menit (wajib) supaya pergantian tema tidak terlalu sering dan halaman tetap ringan. Maksimal 1440 menit (24 jam).</p>
+        </div>
+
+        <div class="slide-card">
+          <p class="text-[10px] text-[var(--gold-light)]/70 mb-4">DESKRIPSI HERO & ABOUT US</p>
+          <div class="mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI HERO</label>
+            <textarea name="hero_desc" class="pixel-input" rows="3">{{ content.hero_desc }}</textarea>
+          </div>
+          <div class="mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI ABOUT US</label>
+            <textarea name="about_desc" class="pixel-input" rows="5">{{ content.about_desc }}</textarea>
+          </div>
+          <p class="hint">// Warna tiap slide diatur di SLIDE COLOR THEME pada kartu carousel.</p>
         </div>
 
         <div id="formActions" class="flex gap-4 mt-8">
@@ -300,7 +327,7 @@
               <span class="theme-choice-desc">Korporat, tegas, serif</span>
             </label>
           </div>
-          <p class="hint mt-4">// Tema hanya mengubah gaya (font, bentuk, efek). Warna tetap dari pengaturan carousel.</p>
+          <p class="hint mt-4">// Tema mengubah gaya (font, bentuk, efek). Deskripsi Hero/About dan warnanya tersedia di tab Carousel.</p>
           <div class="mt-8">
             <button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN TEMA</button>
           </div>
@@ -506,7 +533,7 @@ function addSlide(){
     </div>
     <div class="color-fields mb-4">
       <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PRIMARY</label>
           <div class="flex gap-2 items-center">
@@ -528,6 +555,20 @@ function addSlide(){
             <input type="text" class="pixel-input color-hex" value="#0d1b4c" maxlength="7" spellcheck="false">
           </div>
         </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">HERO DESCRIPTION</label>
+          <div class="flex gap-2 items-center">
+            <input type="color" name="slides[${id}][hero_desc]" value="#ffffff" class="color-swatch">
+            <input type="text" class="pixel-input color-hex" value="#ffffff" maxlength="7" spellcheck="false">
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">ABOUT US DESCRIPTION</label>
+          <div class="flex gap-2 items-center">
+            <input type="color" name="slides[${id}][about_desc]" value="#d4af0e" class="color-swatch">
+            <input type="text" class="pixel-input color-hex" value="#d4af0e" maxlength="7" spellcheck="false">
+          </div>
+        </div>
       </div>
     </div>
     <div class="text-fields">
@@ -537,7 +578,7 @@ function addSlide(){
           <input type="text" name="slides[${id}][title]" class="pixel-input" required placeholder="Slide title...">
         </div>
         <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION</label>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
           <textarea name="slides[${id}][desc]" class="pixel-input" required placeholder="Slide description..."></textarea>
         </div>
         <div>
@@ -559,7 +600,7 @@ function addSlide(){
           <input type="text" name="slides[${id}][title]" class="pixel-input">
         </div>
         <div>
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (optional overlay)</label>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESCRIPTION (ditampilkan di bawah carousel)</label>
           <textarea name="slides[${id}][desc]" class="pixel-input"></textarea>
         </div>
       </div>
