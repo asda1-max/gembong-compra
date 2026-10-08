@@ -3,6 +3,7 @@ import re
 import json
 import secrets
 from datetime import datetime
+from urllib.parse import urlsplit
 from flask import Flask, render_template, request, session, redirect, url_for
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,28 +22,27 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 
 CAROUSEL = [
-    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
-    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
-    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Sistem Manajemen Bisnis \u2605", "desc": "Platform terintegrasi untuk operasional dan pengambilan keputusan yang lebih cepat.", "hp": 90, "mode": "text", "image": "", "link": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Aplikasi Web & Mobile \u2605", "desc": "Produk digital custom yang responsif, cepat, dan mudah digunakan klien.", "hp": 85, "mode": "text", "image": "", "link": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
+    {"title": "\u2605 Infrastruktur Jaringan \u2605", "desc": "Solusi jaringan andal untuk mendukung skala bisnis yang terus bertumbuh.", "hp": 95, "mode": "text", "image": "", "link": "", "primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c"},
 ]
 
 COLOR_DEFAULTS = {"primary": "#d4af0e", "secondary": "#0d1b4c", "text": "#0d1b4c",
                   "hero_desc": "#ffffff", "about_desc": "#d4af0e"}
 HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
-# Carousel auto-rotate cooldown (minutes). Enforced floor so the full-page
-# theme change never fires too often and keeps the page smooth.
+# Carousel auto-rotate interval in seconds.
 INTERVAL_MIN = 15
-INTERVAL_MAX = 1440
+INTERVAL_MAX = 86400
 INTERVAL_DEFAULT = 15
 
 
 def _clean_interval(value):
     try:
-        minutes = int(float(value))
+        seconds = int(float(value))
     except (TypeError, ValueError):
         return INTERVAL_DEFAULT
-    return max(INTERVAL_MIN, min(INTERVAL_MAX, minutes))
+    return max(INTERVAL_MIN, min(INTERVAL_MAX, seconds))
 
 
 # Site theme presets. The visitor can override per-browser; this value is the
@@ -59,6 +59,19 @@ def _clean_theme(value):
 def _clean_color(value, default):
     v = (value or "").strip()
     return v if HEX_RE.match(v) else default
+
+
+def _clean_slide_link(value):
+    link = (value or "").strip()
+    try:
+        parsed = urlsplit(link)
+    except ValueError:
+        return ""
+    if parsed.scheme in ("http", "https") and parsed.netloc:
+        return link
+    if not parsed.scheme and not parsed.netloc and (link.startswith("/") and not link.startswith("//") or link.startswith("#")):
+        return link
+    return ""
 
 
 def _hex_to_rgba(value, alpha=1.0):
@@ -215,7 +228,7 @@ def verify_login(username, password):
 # --------------------------------------------------------------------------
 # Matches slides[<token>][<field>] so both server-rendered (slides[0][title])
 # and JS-added (slides[3][title]) inputs are collected per card.
-SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|primary|secondary|text|hero_desc|about_desc)\]$")
+SLIDE_KEY_RE = re.compile(r"^slides\[([^\]]*)\]\[(title|desc|hp|mode|image|link|primary|secondary|text|hero_desc|about_desc)\]$")
 
 
 def collect_slides(form, files=None):
@@ -248,6 +261,7 @@ def collect_slides(form, files=None):
             "hp": hp if hp_raw else 80,
             "mode": mode,
             "image": (card.get("image") or "").strip() if mode == "image" else "",
+            "link": _clean_slide_link(card.get("link")),
             "primary": _clean_color(card.get("primary"), COLOR_DEFAULTS["primary"]),
             "secondary": _clean_color(card.get("secondary"), COLOR_DEFAULTS["secondary"]),
             "text": _clean_color(card.get("text"), COLOR_DEFAULTS["text"]),
@@ -320,6 +334,7 @@ def _render_admin(message=None, error=None, active_tab="carousel"):
         content=data["content"],
         carousel_interval=data["carousel_interval"],
         interval_min=INTERVAL_MIN,
+        interval_max=INTERVAL_MAX,
         message=message,
         error=error,
         active_tab=active_tab,
@@ -425,6 +440,7 @@ def admin():
         return render_template("admin.html", slides=[], projects=[], messages=[], contact={},
                                content=CONTENT_DEFAULTS,
                                carousel_interval=INTERVAL_DEFAULT, interval_min=INTERVAL_MIN,
+                               interval_max=INTERVAL_MAX,
                                error=error, message=None, active_tab="carousel")
 
     if request.method == "POST":
@@ -452,8 +468,9 @@ def admin_save():
         "hero_desc": (request.form.get("hero_desc") or "").strip() or CONTENT_DEFAULTS["hero_desc"],
         "about_desc": (request.form.get("about_desc") or "").strip() or CONTENT_DEFAULTS["about_desc"],
     }
+    data["theme"] = _clean_theme(request.form.get("theme"))
     save_data(data)
-    return _render_admin(message="Carousel updated successfully!", active_tab="carousel")
+    return _render_admin(message="Appearance updated successfully!", active_tab="appearance")
 
 
 @app.route("/admin/projects/save", methods=["POST"])

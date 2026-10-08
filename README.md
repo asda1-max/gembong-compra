@@ -35,13 +35,13 @@ Website company profile Gembong Information Technology, dibangun dengan Flask, J
    source .venv/bin/activate
    ```
 
-3. Instal Flask:
+3. Instal dependensi Python:
 
    ```bash
-   python -m pip install Flask
+   python -m pip install -r requirements.txt
    ```
 
-   Werkzeug dipasang sebagai dependensi Flask. Belum ada `requirements.txt` di repository.
+   Werkzeug dan Jinja dipasang sebagai dependensi Flask.
 
 4. Jalankan aplikasi:
 
@@ -51,7 +51,7 @@ Website company profile Gembong Information Technology, dibangun dengan Flask, J
 
 5. Buka alamat lokal yang ditampilkan Flask (umumnya `http://127.0.0.1:5000`).
 
-Pada proses pertama, aplikasi menyiapkan `data.json`, `auth.json`, dan `.flask_secret` jika belum tersedia. Jangan hapus atau bagikan berkas rahasia dan data admin. Saat memperbarui instalasi server yang sudah berjalan, jalankan `git pull` di working tree yang sama; file yang diabaikan Git akan tetap berada di sana. Git menghapus berkas yang dilacak pada update pertama setelah berkas runtime dikeluarkan dari repository, sehingga salinan lokal/server yang sebelumnya dilacak perlu dipertahankan/di-restore sekali jika update tersebut menghapusnya.
+Pada proses pertama, aplikasi menyiapkan `data.json`, `auth.json`, dan `.flask_secret` jika belum tersedia. Interval carousel diatur dalam detik (default 15, rentang 15–86.400 detik) dan autoplay baru berjalan setelah pengunjung mencapai area carousel. Jangan hapus atau bagikan berkas rahasia dan data admin. Saat memperbarui instalasi server yang sudah berjalan, jalankan `git pull` di working tree yang sama; file yang diabaikan Git akan tetap berada di sana. Git menghapus berkas yang dilacak pada update pertama setelah berkas runtime dikeluarkan dari repository, sehingga salinan lokal/server yang sebelumnya dilacak perlu dipertahankan/di-restore sekali jika update tersebut menghapusnya.
 
 ## Akun admin
 

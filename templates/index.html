@@ -49,6 +49,32 @@
   .carousel-track{transition:transform .4s steps(4);}
   .project-card{background:linear-gradient(160deg,var(--ts) 0%,#000 170%);}
   .project-card-img{background-size:cover;background-position:center;}
+  .carousel-slide-frame{position:absolute;inset:12px;z-index:2;pointer-events:none;}
+  .carousel-slide-frame::before,.carousel-slide-frame::after{content:"";position:absolute;inset:0;}
+  .carousel-slide-frame::before{
+    background:
+      linear-gradient(var(--tp),var(--tp)) left top/54px 4px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) left top/4px 38px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) right top/54px 4px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) right top/4px 38px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) left bottom/54px 4px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) left bottom/4px 38px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) right bottom/54px 4px no-repeat,
+      linear-gradient(var(--tp),var(--tp)) right bottom/4px 38px no-repeat;
+    filter:drop-shadow(0 0 5px rgba(var(--tp-rgb),.7));
+  }
+  .carousel-slide-frame::after{
+    inset:8px;
+    border-top:1px solid rgba(var(--tp-rgb),.55);
+    border-bottom:1px solid rgba(var(--tp-rgb),.35);
+    clip-path:polygon(0 0,22% 0,25% 3px,75% 3px,78% 0,100% 0,100% 100%,78% 100%,75% calc(100% - 3px),25% calc(100% - 3px),22% 100%,0 100%);
+  }
+  .carousel-frame-label{position:absolute;top:2px;left:50%;transform:translateX(-50%);padding:4px 10px;background:var(--ts);border:1px solid rgba(var(--tp-rgb),.75);color:var(--tp);font:7px 'Press Start 2P',monospace;letter-spacing:1px;white-space:nowrap;box-shadow:0 0 12px rgba(var(--tp-rgb),.2);}
+  .carousel-frame-label::before,.carousel-frame-label::after{content:"";display:inline-block;width:5px;height:5px;margin:0 6px 1px 0;background:var(--tp);}
+  .carousel-frame-label::after{margin:0 0 1px 6px;}
+  .carousel-frame-readout{position:absolute;right:4px;bottom:2px;color:var(--tp);font:7px 'Press Start 2P',monospace;letter-spacing:1px;text-shadow:0 0 8px rgba(var(--tp-rgb),.8);}
+  .carousel-click-area{position:absolute;inset:0;z-index:1;display:block;color:inherit;}
+  .carousel-click-area:focus-visible{outline:3px dashed var(--tp);outline-offset:-8px;z-index:3;}
   .dot{transition:all .2s ease;background:rgba(var(--ts-rgb), .4);}
   .dot.active{background:var(--tp);width:14px;height:14px;border-radius:0;box-shadow:0 0 10px var(--tp);}
 
@@ -301,11 +327,9 @@
       </a>
       <!-- Desktop Nav -->
       <ul class="hidden sm:flex items-center gap-1">
-        <li><a href="#projects" class="px-4 py-2 font-display text-[10px] text-[var(--tp)]/60 hover:text-[var(--tp)] transition border border-transparent hover:border-[var(--tp)]/30 hover:bg-[var(--tp)]/5 tracking-wide">LATEST</a></li>
         <li><a href="/projects" class="px-4 py-2 font-display text-[10px] text-[var(--tp)]/60 hover:text-[var(--tp)] transition border border-transparent hover:border-[var(--tp)]/30 hover:bg-[var(--tp)]/5 tracking-wide">REPOSITORY</a></li>
         <li><a href="/info" class="px-4 py-2 font-display text-[10px] text-[var(--tp)]/60 hover:text-[var(--tp)] transition border border-transparent hover:border-[var(--tp)]/30 hover:bg-[var(--tp)]/5 tracking-wide">SERVICES</a></li>
         <li><a href="#home" class="px-4 py-2 font-display text-[10px] text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30 tracking-wide">HOME</a></li>
-        <li><a href="#contact" class="px-4 py-2 font-display text-[10px] text-[var(--tp)]/60 hover:text-[var(--tp)] transition border border-transparent hover:border-[var(--tp)]/30 hover:bg-[var(--tp)]/5 tracking-wide">CONTACT</a></li>
       </ul>
       <div class="flex items-center gap-2">
         <select id="themeSelect" data-theme-select class="theme-select" aria-label="Pilih tema situs">
@@ -325,11 +349,9 @@
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--tp)]/30" style="background:rgba(var(--ts-rgb), .98);">
       <ul class="flex flex-col p-4 gap-2">
-        <li><a href="#projects" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 hover:text-[var(--tp)] border border-[var(--tp)]/20 hover:bg-[var(--tp)]/10 text-center tracking-wide">► LATEST PROJECT</a></li>
         <li><a href="/projects" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 hover:text-[var(--tp)] border border-[var(--tp)]/20 hover:bg-[var(--tp)]/10 text-center tracking-wide">► REPOSITORY</a></li>
         <li><a href="/info" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 hover:text-[var(--tp)] border border-[var(--tp)]/20 hover:bg-[var(--tp)]/10 text-center tracking-wide">► SERVICES &amp; FAQ</a></li>
         <li><a href="#home" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30 text-center tracking-wide">► HOME</a></li>
-        <li><a href="#contact" onclick="closeMenu()" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 hover:text-[var(--tp)] border border-[var(--tp)]/20 hover:bg-[var(--tp)]/10 text-center tracking-wide">► CONTACT</a></li>
       </ul>
     </div>
   </nav>
@@ -522,18 +544,20 @@
         <div id="carouselTrack" class="carousel-track w-full flex">
           {% for item in carousel %}
           <div class="min-w-full relative aspect-[16/9]">
-            {% if item.mode == "image" and item.image %}
-            <div class="project-card-img absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center" style="background-image:url('{{ item.image }}');">
-              <div class="relative z-10 flex flex-col items-center justify-center gap-3 px-8 text-center h-full w-full">
-                <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
-              </div>
+            <div class="carousel-slide-frame" aria-hidden="true">
+              <span class="carousel-frame-label">{{ item.title or 'MISSION DATA' }}</span>
+              <span class="carousel-frame-readout">{{ '%02d'|format(loop.index) }} / {{ '%02d'|format(carousel|length) }}</span>
             </div>
+            {% if item.link %}<a href="{{ item.link }}" class="carousel-click-area" aria-label="Buka {{ item.title or 'slide carousel' }}">{% endif %}
+            {% if item.mode == "image" and item.image %}
+            <div class="project-card-img absolute inset-0" style="background-image:url('{{ item.image }}');"></div>
             {% else %}
             <div class="project-card absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
               <span class="project-title font-display text-xs md:text-sm font-semibold">{{ item.title }}</span>
               <div class="hp-bar project-hp w-32 mt-2"><div class="hp-bar-fill project-hp-fill" style="width:{{ item.hp }}%"></div></div>
             </div>
             {% endif %}
+            {% if item.link %}</a>{% endif %}
           </div>
           {% endfor %}
         </div>
@@ -734,7 +758,7 @@
     const SLIDE_ABOUT_DESC = {{ carousel | map(attribute='about_desc') | list | tojson }};
     const SLIDE_DESCRIPTIONS = {{ carousel | map(attribute='desc') | list | tojson }};
     const DEFAULT_CAROUSEL_DESCRIPTION = {{ 'Proyek Unggulan Kami — Sebagai bukti komitmen kami dalam dunia information technology, kami telah berhasil menghadirkan berbagai proyek unggulan yang memberikan dampak nyata bagi klien kami. Mulai dari pengembangan sistem manajemen bisnis, aplikasi berbasis web dan mobile, hingga solusi infrastruktur jaringan yang handal, setiap proyek kami kerjakan dengan standar kualitas tinggi dan pendekatan yang inovatif. Kepercayaan yang diberikan oleh para klien menjadi motivasi bagi kami untuk terus menghadirkan karya terbaik yang relevan dengan perkembangan teknologi masa kini.' | tojson }};
-    const CAROUSEL_INTERVAL_MS = 15000;
+    const CAROUSEL_INTERVAL_MS = {{ carousel_interval * 1000 }};
     const rootEl = document.documentElement;
 
     function toRgbTriplet(hex){
@@ -815,6 +839,7 @@
       resetAutoplay();
     }
     let autoplay = null;
+    let hasVisitedCarousel = false;
     function moveCarouselAuto(){
       if(total < 1) return;
       idx = (idx + 1) % total;
@@ -823,12 +848,24 @@
     }
     function resetAutoplay(){
       clearInterval(autoplay);
-      if(total > 1 && !document.hidden){
-        autoplay = setInterval(moveCarouselAuto, Math.max(1000, CAROUSEL_INTERVAL_MS));
+      if(hasVisitedCarousel && total > 1 && !document.hidden){
+        autoplay = setInterval(moveCarouselAuto, CAROUSEL_INTERVAL_MS);
       }
     }
-    function startAutoplay(){ resetAutoplay(); }
-    startAutoplay();
+    const carouselSection = document.getElementById('projects');
+    if('IntersectionObserver' in window){
+      const carouselObserver = new IntersectionObserver(function(entries){
+        if(entries.some(function(entry){ return entry.isIntersecting; })){
+          hasVisitedCarousel = true;
+          carouselObserver.disconnect();
+          resetAutoplay();
+        }
+      }, {threshold: 0.1});
+      carouselObserver.observe(carouselSection);
+    }else{
+      hasVisitedCarousel = true;
+      resetAutoplay();
+    }
 
     // Respect the admin-controlled cooldown: pause while the tab is hidden so
     // the theme doesn't silently rotate in the background, resume on return.

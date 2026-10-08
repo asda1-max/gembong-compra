@@ -1,109 +1,110 @@
-# AI Read — Workspace Scan
+# AI Read - Workspace Guide
 
-> Project overview refreshed 2026-10-05 · Repo: `C:\Productivity\Coding\gembonf compra` · Branch `main` @ `490bfc8`
-> Working tree was clean at scan time; HEAD tracks `origin/main`.
+> Updated 2026-10-08 for the current workspace. This document describes tracked source files and does not include secrets or private runtime data.
 
-## 1. Project overview
+## Project Overview
 
-**Gembong IT** is an Indonesian-language Flask/Jinja marketing site for an IT services company in Yogyakarta. The public site has a retro arcade baseline plus `modern` and `professional` themes. Frontend uses Tailwind Play CDN, custom CSS, and vanilla JavaScript. Content is stored in JSON; image uploads live under `static/uploads/`.
+Gembong IT is an Indonesian-language company profile and portfolio website implemented as a Flask application with Jinja templates, vanilla JavaScript, and CSS. The visual design is retro arcade by default, with `modern` and `professional` visitor-selectable themes. Tailwind Play CDN and Google Fonts are loaded by the pages at runtime.
 
-The app serves a home page, services/FAQ page, project listing, contact form, and session-protected admin dashboard. Root `index.html` is a legacy static copy; Flask renders `templates/index.html` for `/`.
+The app provides a public home page, project repository, services/FAQ and contact form, plus a session-protected admin dashboard. Content and admin authentication are stored in local JSON files created at runtime. Uploaded carousel images are stored under `static/uploads/`.
 
-## 2. Project files
+## Workspace Layout
 
 ```text
-gembonf compra/
-├── app.py                         # Flask app, data/auth helpers and routes
-├── data.json                      # carousel, projects, messages, contact, theme
-├── auth.json                      # admin account data — confidential
-├── .flask_secret                  # secret key material — confidential
-├── ai_read.md                     # this context document
-├── index.html                     # legacy static copy, not served by Flask
-├── static/theme.css               # modern/professional theme skins
-├── static/theme.js                # visitor theme selector and localStorage
-├── static/uploads/                # carousel image uploads
-└── templates/
-    ├── index.html                 # home, carousel and contact terminal
-    ├── admin.html                 # login and dashboard
-    ├── info.html                  # services, FAQ, contact form
-    └── projects.html              # project/repository listing
+gembong-compra/
+├── app.py                         # Flask app, storage helpers, form collectors and routes
+├── ai_read.md                     # This project context document
+├── README.md                      # Setup, run and deployment notes
+├── requirements.txt               # Python runtime dependencies
+├── index.html                     # Legacy static copy; not served by Flask
+├── static/
+│   ├── theme.css                  # Modern/professional theme skins and transitions
+│   └── theme.js                   # Visitor theme selection and page transitions
+├── templates/
+│   ├── admin.html                 # Admin login and dashboard UI
+│   ├── hud_navbar.html            # Shared public navigation/HUD include
+│   ├── index.html                 # Flask home page, carousel and contact terminal
+│   ├── info.html                  # Services, FAQ and contact form
+│   └── projects.html              # Project listing, search and status filters
+└── tests/
+    └── test_admin_image_upload.py # unittest checks for admin image inputs and carousel output
 ```
 
-Approximate line counts at scan: `app.py` 524; `templates/index.html` 1244; `templates/admin.html` 710; `templates/info.html` 399; `templates/projects.html` 343; `static/theme.css` 390; `static/theme.js` 57; `data.json` 66. No tracked requirements manifest, tests, CI, README, or `.gitignore` were found.
+Runtime files (`data.json`, `auth.json`, `.flask_secret`, and uploaded images) are intentionally ignored by Git. `.gitignore` also excludes virtual environments, Python bytecode, and pytest cache. Do not add secrets or private runtime data to documentation or version control.
 
-## 3. Architecture and routes
+## Architecture and Routes
 
-`app.py` normalizes JSON data on load. `_write_json()` writes to a temporary file, fsyncs, then atomically replaces the destination. `data.json` stores carousel, projects, messages, contact info, carousel interval, and default theme. `auth.json` stores a password hash, migrating a legacy plaintext password field if found. Secret key is read from `FLASK_SECRET_KEY` or generated and persisted in `.flask_secret`.
+`app.py` is a single-module Flask application. It normalizes persisted content on load and writes JSON atomically using a temporary file, `fsync`, and `os.replace`. The generated session secret is saved locally when `FLASK_SECRET_KEY` is unset. Admin passwords are hashed with Werkzeug; a legacy plaintext password field is migrated on load.
 
 Public routes:
-- `GET /` — home page and carousel
-- `GET /projects` — project listing
-- `GET /info` — services, FAQ, contact details/form
-- `POST /contact` — validates name/message and stores the submission
+
+- `GET /` - home page and configurable carousel
+- `GET /projects` - project repository listing
+- `GET /info` - services, FAQ, contact details and message form
+- `POST /contact` - validates name/message and stores a contact submission
 
 Admin routes:
-- `GET|POST /admin` — login/dashboard
-- `POST /admin/save` — carousel and interval
-- `POST /admin/projects/save` — project records
-- `POST /admin/contact/save` — contact information
-- `POST /admin/appearance/save` — default theme
-- `POST /admin/password` — username/password change
-- `POST /admin/messages/<index>/delete` — delete a message
-- `GET /admin/logout` — clear the session
 
-Dashboard tabs: Carousel, Projects, Appearance, Contact, Messages, Account. Form collectors group indexed slide/project fields in submitted order. Image uploads allow JPG/JPEG/PNG/GIF/WEBP and are stored with randomized names.
+- `GET|POST /admin` - login or dashboard
+- `POST /admin/save` - carousel, content and interval
+- `POST /admin/projects/save` - project records
+- `POST /admin/contact/save` - contact details
+- `POST /admin/appearance/save` - default theme
+- `POST /admin/password` - admin username/password change
+- `POST /admin/messages/<index>/delete` - remove a stored contact message
+- `GET /admin/logout` - clear admin session state
 
-## 4. Current content (`data.json`)
+Dashboard tabs are Appearance, Projects, Contact, Messages, and Account. Appearance contains default style, Hero/About Us copy, and carousel settings in that order. Each carousel slide can optionally redirect to an HTTP(S) URL or same-site path when clicked. Carousel image uploads accept JPG/JPEG, PNG, GIF, and WEBP extensions and are saved using randomized filenames. JSON storage is suitable for a small single-instance site; atomic replacement does not prevent concurrent lost updates.
 
-- Carousel: 4 slides, mixed image/text modes; some titles/descriptions are empty. One uses a local upload, another an external image URL.
-- Projects: 1 record: name `kontol`, description `kontil`, repository/demo URL `https://kedungwinangun.com`, tag `flask`, status `active`.
-- Messages: none.
-- Contact values are populated with WhatsApp, email, phone, Yogyakarta address, Instagram and LinkedIn.
-- Carousel interval: 15 minutes; accepted range is 15–1440 minutes.
-- Default theme: `retro`.
+## Data and Configuration
 
-Review public-facing placeholder or inappropriate data before deployment.
+- `data.json` is created on first use and holds carousel slides, projects, contact messages, contact details, content, carousel interval, and default theme.
+- `auth.json` is created on first admin authentication load. Initial username/password come from `GEMBONG_ADMIN_USER` and `GEMBONG_ADMIN_PASS`, defaulting to `admin` / `gembong2024`; change the initial credentials immediately.
+- `.flask_secret` is generated if `FLASK_SECRET_KEY` is not provided. For deployment, provide a strong `FLASK_SECRET_KEY` through the environment instead.
+- Carousel interval is stored in seconds and clamped to 15-86400 seconds (15 seconds to 24 hours). Available themes are `retro`, `modern`, and `professional`.
+- Current runtime content is not assumed in this document because those local files may be absent and are excluded from the tracked workspace.
 
-## 5. UI behavior
+## Frontend Behavior
 
-- Home: hero/about, latest-project carousel, contact terminal and footer.
-- Theme selector supports `retro`, `modern`, `professional`; visitor choice persists in `localStorage` key `gembong_theme` and overrides the admin default in that browser.
-- Services form asynchronously posts to `/contact`.
-- Tailwind Play CDN is used; it is convenient for development but not a production build pipeline.
+- The public home page includes the carousel, contact terminal, boot sequence, achievements, sound effects, and scroll-based HUD progress. Carousel autoplay starts only after the carousel has entered the viewport once; it then pauses while the browser tab is hidden.
+- The admin chooses the site's default visual theme. Visitors can override it per browser; `static/theme.js` stores the override under localStorage key `gembong_theme`.
+- `templates/hud_navbar.html` is the shared public navigation and includes mobile-menu behavior.
+- The contact form posts asynchronously to `/contact`; submissions are stored locally and do not trigger email delivery.
+- Tailwind Play CDN and Google Fonts require network access. Tailwind Play CDN is convenient for development, not a production CSS build pipeline.
+- Root `index.html` is a legacy static snapshot. The Flask route `/` renders `templates/index.html` instead.
 
-## 6. Git state
+## Setup, Run and Tests
 
-- Remote: `https://github.com/asda1-max/gembong-compra.git`
-- Branch `main`, tracking `origin/main`; current HEAD `490bfc8` (`cmt`), preceding `afecd30`, `d1f0719`, `420ee0f`.
-- Working tree clean at scan time.
-- `.flask_secret`, `auth.json`, and `__pycache__/app.cpython-312.pyc` are tracked. Never disclose secret/auth file contents. Remove secrets from version control and rotate credentials if repository is shared.
-- Recent commits added multi-page project/services/contact features, account management, themes, and image uploads.
-
-## 7. Security and reliability
-
-- Direct-run app uses `debug=True` and binds `0.0.0.0:9012`; do not expose Werkzeug debugger or use this for production.
-- Initial admin credentials come from `GEMBONG_ADMIN_USER` / `GEMBONG_ADMIN_PASS` only when `auth.json` is absent. Subsequent updates use the admin UI.
-- Secret key is configurable/generated, but `.flask_secret` is tracked: rotate it and remove it from Git history when appropriate.
-- `SESSION_COOKIE_HTTPONLY=True` and `SESSION_COOKIE_SAMESITE=Lax` are configured.
-- No CSRF protection or login rate limiting was identified in reviewed routes.
-- Atomic JSON replacement prevents partial-file writes but does not prevent concurrent lost updates.
-- Contact messages are stored locally; no email delivery integration identified.
-- Remote carousel images may expire or reject hotlinking.
-
-## 8. Run and validate
+Python 3.10+ and pip are expected. Create/activate a virtual environment, then install dependencies and run the application:
 
 ```sh
+python -m pip install -r requirements.txt
 python app.py
 ```
 
-Development server binds `0.0.0.0:9012` with debug enabled. Install Flask in the active environment if needed. There is no tracked dependency pin or automated test suite; add tests for routes, auth, normalization, collectors, uploads, and contact submissions, then smoke-test browser flows.
+Direct execution starts Flask's development server with debug enabled, bound to `0.0.0.0:9012`. Use this only for local development; deploy through a production WSGI server and disable debug mode.
 
-## 9. Recommended work
+Run the existing standard-library test suite with:
 
-1. Remove `.flask_secret` from Git tracking, rotate the key, and review/rotate admin credentials.
-2. Disable debug mode outside local development and serve production through a WSGI server.
-3. Add `.gitignore`; untrack bytecode and secrets.
-4. Add dependency manifest and tests.
-5. Review carousel/project content and verify external image availability.
-6. Add CSRF protection and login throttling before public exposure.
-7. Consider a production Tailwind build and a database if traffic/concurrent edits grow.
+```sh
+python -m unittest discover -s tests
+```
+
+The tests use Flask's test client. They verify the admin image field is upload-only and that the home page does not render the removed dark image overlay. Tests may initialize local runtime JSON files if they do not already exist.
+
+## Security and Operational Notes
+
+- Never publish `.flask_secret`, `auth.json`, passwords, or contact submissions. Rotate credentials and session secrets if they have been exposed.
+- The default initial admin password is known; change it on first login and set admin credentials through environment variables before first startup on a new deployment.
+- Do not expose the development server or Werkzeug debugger to the public internet.
+- Session cookies set `HttpOnly` and `SameSite=Lax`. No CSRF protection or login throttling is implemented in the reviewed routes.
+- Contact messages and site content are stored in local JSON files. There is no database, email integration, or multi-process concurrency control.
+- Uploaded filenames are sanitized and randomized, but file type checking is extension-based; validate uploads more strongly before accepting untrusted public traffic.
+
+## Useful Follow-up Work
+
+1. Use a production WSGI server, disable debug, and configure secret/admin values in the deployment environment.
+2. Add CSRF protection and login throttling before public exposure.
+3. Add stronger upload validation and request size limits.
+4. Expand tests to cover authentication, form collectors, data normalization, contact submissions, and admin mutations.
+5. Consider a database if concurrent edits or traffic outgrow local JSON storage, and a production Tailwind build if CDN dependence is undesirable.

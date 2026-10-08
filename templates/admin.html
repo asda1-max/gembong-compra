@@ -100,9 +100,8 @@
     {% endif %}
 
     <div class="tabs">
-      <button type="button" class="tab-btn {{ 'active' if active_tab not in ['projects','contact','messages','account','appearance'] else '' }}" data-tab="carousel">CAROUSEL</button>
+      <button type="button" class="tab-btn {{ 'active' if active_tab in ['carousel','appearance'] else '' }}" data-tab="appearance">APPEARANCE</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'projects' else '' }}" data-tab="projects">PROJECTS ({{ projects | length }})</button>
-      <button type="button" class="tab-btn {{ 'active' if active_tab == 'appearance' else '' }}" data-tab="appearance">APPEARANCE</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'contact' else '' }}" data-tab="contact">CONTACT</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'messages' else '' }}" data-tab="messages">MESSAGES ({{ messages | length }})</button>
       <button type="button" class="tab-btn {{ 'active' if active_tab == 'account' else '' }}" data-tab="account">ACCOUNT</button>
@@ -110,12 +109,51 @@
       <a href="/projects" target="_blank" class="tab-btn">VIEW SITE &nearr;</a>
     </div>
 
-    <!-- ===================== CAROUSEL TAB ===================== -->
-    <section class="tab-panel {{ 'active' if active_tab not in ['projects','account','messages','contact','appearance'] else '' }}" id="panel-carousel">
-      <p class="text-[10px] text-white/40 mb-6">Edit Carousel Slides</p>
+    <!-- ===================== APPEARANCE TAB ===================== -->
+    <section class="tab-panel {{ 'active' if active_tab in ['carousel','appearance'] else '' }}" id="panel-appearance">
       <form method="POST" action="/admin/save" enctype="multipart/form-data">
+        <h2 class="font-display text-[10px] text-[var(--gold-light)] mb-4">DEFAULT STYLE</h2>
+        <div class="slide-card mb-8">
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-3 block">TEMA DEFAULT</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <label class="theme-choice">
+              <input type="radio" name="theme" value="retro" {{ 'checked' if site_theme == 'retro' else '' }}>
+              <span class="theme-choice-name">RETRO</span>
+              <span class="theme-choice-desc">Pixel / arcade 8-bit (saat ini)</span>
+            </label>
+            <label class="theme-choice">
+              <input type="radio" name="theme" value="modern" {{ 'checked' if site_theme == 'modern' else '' }}>
+              <span class="theme-choice-name">MODERN</span>
+              <span class="theme-choice-desc">Rounded, lembut, sans-serif</span>
+            </label>
+            <label class="theme-choice">
+              <input type="radio" name="theme" value="professional" {{ 'checked' if site_theme == 'professional' else '' }}>
+              <span class="theme-choice-name">PROFESIONAL</span>
+              <span class="theme-choice-desc">Korporat, tegas, serif</span>
+            </label>
+          </div>
+          <p class="hint mt-4">// Tema mengubah gaya situs. Pengunjung tetap dapat memilih tema sendiri.</p>
+        </div>
+
+        <h2 class="font-display text-[10px] text-[var(--gold-light)] mb-4">HERO &amp; ABOUT US</h2>
+        <div class="slide-card mb-8">
+          <div class="mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI HERO</label>
+            <textarea name="hero_desc" class="pixel-input" rows="3">{{ content.hero_desc }}</textarea>
+          </div>
+          <div class="mb-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI ABOUT US</label>
+            <textarea name="about_desc" class="pixel-input" rows="5">{{ content.about_desc }}</textarea>
+          </div>
+          <p class="hint">// Warna deskripsi diatur per slide di bagian Carousel.</p>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-display text-[10px] text-[var(--gold-light)]">CAROUSEL</h2>
+          <span class="hint">Atur jeda otomatis dalam detik ({{ interval_min }}–{{ interval_max }} detik).</span>
+        </div>
         {% for slide in slides %}
-        <div class="slide-card" id="card-{{ loop.index0 }}">
+        <div class="slide-card carousel-slide-card" id="card-{{ loop.index0 }}">
           <div class="flex items-center gap-3 mb-4">
             <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE {{ loop.index }}</span>
             <span class="text-[10px] text-white/30">{{ loop.index0 + 1 }} of {{ slides | length }}</span>
@@ -133,7 +171,7 @@
             </div>
           </div>
 
-          <!-- THEME COLORS (apply to both text + image modes) -->
+          <!-- SLIDE COLORS (apply to both text + image modes) -->
           <div class="color-fields mb-4">
             <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">SLIDE COLOR THEME</label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,34 +250,26 @@
               </div>
             </div>
           </div>
+
+          <div class="mt-4">
+            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">CLICK REDIRECT URL (optional)</label>
+            <input type="url" name="slides[{{ loop.index0 }}][link]" value="{{ slide.link|default('', true) }}" class="pixel-input" placeholder="https://example.com">
+          </div>
         </div>
         {% endfor %}
 
         <div class="slide-card" id="intervalCard">
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">CAROUSEL COOLDOWN — GANTI SLIDE &amp; TEMA SETIAP</label>
+          <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">AUTOMATIC SLIDE CHANGE EVERY</label>
           <div class="flex items-center gap-3 flex-wrap">
-            <input type="number" name="carousel_interval" value="{{ carousel_interval }}" min="{{ interval_min }}" max="1440" step="1" class="pixel-input" style="max-width:160px;" required>
-            <span class="text-[10px] text-[var(--gold-light)]/70">MENIT</span>
+            <input type="number" name="carousel_interval" value="{{ carousel_interval }}" min="{{ interval_min }}" max="{{ interval_max }}" step="1" class="pixel-input" style="max-width:160px;" required>
+            <span class="text-[10px] text-[var(--gold-light)]/70">DETIK</span>
           </div>
-          <p class="hint mt-3">// Minimal {{ interval_min }} menit (wajib) supaya pergantian tema tidak terlalu sering dan halaman tetap ringan. Maksimal 1440 menit (24 jam).</p>
-        </div>
-
-        <div class="slide-card">
-          <p class="text-[10px] text-[var(--gold-light)]/70 mb-4">DESKRIPSI HERO & ABOUT US</p>
-          <div class="mb-4">
-            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI HERO</label>
-            <textarea name="hero_desc" class="pixel-input" rows="3">{{ content.hero_desc }}</textarea>
-          </div>
-          <div class="mb-4">
-            <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">DESKRIPSI ABOUT US</label>
-            <textarea name="about_desc" class="pixel-input" rows="5">{{ content.about_desc }}</textarea>
-          </div>
-          <p class="hint">// Warna tiap slide diatur di SLIDE COLOR THEME pada kartu carousel.</p>
+          <p class="hint mt-3">// Carousel berpindah otomatis setiap interval ini setelah pengunjung mencapai area carousel.</p>
         </div>
 
         <div id="formActions" class="flex gap-4 mt-8">
           <button type="button" onclick="addSlide()" class="pixel-btn pixel-btn-secondary text-xs px-6 py-3">+ ADD SLIDE</button>
-          <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE CHANGES</button>
+          <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE APPEARANCE</button>
         </div>
       </form>
     </section>
@@ -302,37 +332,6 @@
           <button type="submit" class="pixel-btn text-xs px-8 py-3">SAVE PROJECTS</button>
         </div>
       </form>
-    </section>
-
-    <!-- ===================== APPEARANCE TAB ===================== -->
-    <section class="tab-panel {{ 'active' if active_tab == 'appearance' else '' }}" id="panel-appearance">
-      <p class="text-[10px] text-white/40 mb-6">Tema default situs (pengunjung tetap bisa ganti sendiri)</p>
-      <div class="slide-card">
-        <form method="POST" action="/admin/appearance/save">
-          <label class="text-[10px] text-[var(--gold-light)]/70 mb-3 block">TEMA DEFAULT</label>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="retro" {{ 'checked' if site_theme == 'retro' else '' }}>
-              <span class="theme-choice-name">RETRO</span>
-              <span class="theme-choice-desc">Pixel / arcade 8-bit (saat ini)</span>
-            </label>
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="modern" {{ 'checked' if site_theme == 'modern' else '' }}>
-              <span class="theme-choice-name">MODERN</span>
-              <span class="theme-choice-desc">Rounded, lembut, sans-serif</span>
-            </label>
-            <label class="theme-choice">
-              <input type="radio" name="theme" value="professional" {{ 'checked' if site_theme == 'professional' else '' }}>
-              <span class="theme-choice-name">PROFESIONAL</span>
-              <span class="theme-choice-desc">Korporat, tegas, serif</span>
-            </label>
-          </div>
-          <p class="hint mt-4">// Tema mengubah gaya (font, bentuk, efek). Deskripsi Hero/About dan warnanya tersedia di tab Carousel.</p>
-          <div class="mt-8">
-            <button type="submit" class="pixel-btn text-xs px-8 py-3">SIMPAN TEMA</button>
-          </div>
-        </form>
-      </div>
     </section>
 
     <!-- ===================== CONTACT TAB ===================== -->
@@ -513,9 +512,9 @@ function previewImageFile(input){
 function addSlide(){
   const id = getUniqueId();
   const card = document.createElement('div');
-  card.className = 'slide-card';
+  card.className = 'slide-card carousel-slide-card';
   card.dataset.id = id;
-  const total = document.querySelectorAll('#panel-carousel .slide-card').length + 1;
+  const total = document.querySelectorAll('#panel-appearance .carousel-slide-card').length + 1;
   card.innerHTML = `
     <div class="flex items-center gap-3 mb-4">
       <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">SLIDE <span class="new-index">${total}</span></span>
@@ -605,7 +604,11 @@ function addSlide(){
         </div>
       </div>
     </div>`;
-  const form = document.querySelector('#panel-carousel form');
+  const redirectField = document.createElement('div');
+  redirectField.className = 'mt-4';
+  redirectField.innerHTML = `<label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">CLICK REDIRECT URL (optional)</label><input type="url" name="slides[${id}][link]" class="pixel-input" placeholder="https://example.com">`;
+  card.appendChild(redirectField);
+  const form = document.querySelector('#panel-appearance form[action="/admin/save"]');
   form.insertBefore(card, document.getElementById('intervalCard'));
   applyMode(card, 'text');
   initColorPairs(card);
@@ -617,7 +620,7 @@ function removeSlide(btn){
 }
 
 function refreshLabels(){
-  const cards = document.querySelectorAll('#panel-carousel .slide-card');
+  const cards = document.querySelectorAll('#panel-appearance .carousel-slide-card');
   cards.forEach((card, i) => {
     const badge = card.querySelector('span.text-\\[var\\(--gold-light\\)\\].text-\\[10px\\]');
     if(badge){
@@ -631,7 +634,7 @@ function refreshLabels(){
 }
 
 // Apply the saved mode to every slide card on load.
-document.querySelectorAll('#panel-carousel .slide-card').forEach(card => {
+document.querySelectorAll('#panel-appearance .carousel-slide-card').forEach(card => {
   const modeInput = card.querySelector('.mode-value');
   applyMode(card, modeInput ? modeInput.value : 'text');
 });

@@ -19,11 +19,9 @@
       <span class="font-display text-xs text-[var(--tp)] hidden sm:inline">GEMBONG IT</span>
     </a>
     <ul class="hidden sm:flex items-center gap-1">
-      <li><a href="/#projects" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">LATEST</a></li>
       <li><a href="/projects" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'projects' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">REPOSITORY</a></li>
       <li><a href="/info" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'info' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">SERVICES</a></li>
-      <li><a href="/#home" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">HOME</a></li>
-      <li><a href="/#contact" class="px-3 py-2 font-display text-[10px] text-[var(--tp)]/60 border border-transparent hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">CONTACT</a></li>
+      <li><a href="/" class="px-3 py-2 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border border-[var(--tp)]/30' if page_id == 'home' else 'text-[var(--tp)]/60 border border-transparent' }} hover:text-[var(--tp)] hover:border-[var(--tp)]/30 tracking-wide">HOME</a></li>
     </ul>
     <div class="flex items-center gap-2">
       <select data-theme-select class="theme-select" aria-label="Pilih tema situs">
@@ -37,11 +35,9 @@
   </div>
   <div id="mobileMenu" class="hidden sm:hidden border-2 border-[var(--tp)]/30" style="background:rgba(var(--ts-rgb), .98);">
     <ul class="flex flex-col p-4 gap-2">
-      <li><a href="/#projects" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► LATEST PROJECTS</a></li>
       <li><a href="/projects" class="block px-4 py-3 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border-[var(--tp)]/30' if page_id == 'projects' else 'text-[var(--tp)]/70 border-[var(--tp)]/20' }} border text-center">► REPOSITORY</a></li>
       <li><a href="/info" class="block px-4 py-3 font-display text-[10px] {{ 'text-[var(--tp)] bg-[var(--tp)]/10 border-[var(--tp)]/30' if page_id == 'info' else 'text-[var(--tp)]/70 border-[var(--tp)]/20' }} border text-center">► SERVICES &amp; FAQ</a></li>
-      <li><a href="/#home" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► HOME</a></li>
-      <li><a href="/#contact" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► CONTACT</a></li>
+      <li><a href="/" class="block px-4 py-3 font-display text-[10px] text-[var(--tp)]/70 border border-[var(--tp)]/20 text-center">► HOME</a></li>
       {% if page_id == 'home' %}<li class="text-center"><button id="mobileSfxBtn" type="button" aria-pressed="true" class="px-4 py-3 font-display text-[10px] border border-[var(--tp)]/30 text-[var(--tp)]">SFX ON / OFF</button></li>{% endif %}
     </ul>
   </div>
