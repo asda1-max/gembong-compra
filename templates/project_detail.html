@@ -21,7 +21,26 @@
     :root{--navy:#0d1b4c;--gold-light:#f2c94c;--tp:#f2c94c;--ts:#0d1b4c;--tp-rgb:242,201,76;--ts-rgb:13,27,76;}
     html,body{min-height:100%;box-sizing:border-box;} html{scroll-behavior:smooth;}
     body{background:var(--ts);font-family:'Press Start 2P',monospace;} *{image-rendering:pixelated;}
-    .hero-bg{background:radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+    .hero-bg{background:radial-gradient(ellipse at 75% 0%,rgba(var(--tp-rgb),.16),transparent 35%),radial-gradient(ellipse at top,#182a6b 0%,#0d1b4c 55%,#081132 100%);}
+    .detail-world{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,rgba(var(--tp-rgb),.055),transparent 48%),linear-gradient(180deg,#0b153d,var(--ts) 44%,#08112f);}
+    .detail-world::before{content:'';position:absolute;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(var(--tp-rgb),.075) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--tp-rgb),.075) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,black 0%,rgba(0,0,0,.6) 58%,transparent 100%);animation:gridPulse 5s ease-in-out infinite;}
+    .detail-world::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.3;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);}
+    @keyframes gridPulse{0%,100%{opacity:.55}50%{opacity:1}}
+    .world-particle{position:absolute;width:5px;height:5px;background:var(--tp);opacity:.3;pointer-events:none;box-shadow:0 0 12px rgba(var(--tp-rgb),.5);animation:pixelFloat 7s ease-in-out infinite;}
+    .world-particle:nth-child(2n){width:3px;height:3px;animation-duration:5s;}
+    @keyframes pixelFloat{0%,100%{transform:translateY(8px);opacity:.16}50%{transform:translateY(-22px);opacity:.55}}
+    .world-diamond{position:absolute;width:14px;height:14px;border:2px solid rgba(var(--tp-rgb),.32);transform:rotate(45deg);animation:diamondDrift 6s ease-in-out infinite;pointer-events:none;}
+    @keyframes diamondDrift{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(-14px)}}
+    .quest-hud{font:8px/1.8 'Press Start 2P',monospace;color:rgba(var(--tp-rgb),.62);letter-spacing:.08em;text-shadow:0 0 10px rgba(var(--tp-rgb),.2);}
+    .quest-meter{height:7px;border:1px solid rgba(var(--tp-rgb),.42);background:rgba(0,0,0,.32);padding:1px;}
+    .quest-meter-fill{height:100%;width:var(--quest-progress);background:var(--tp);box-shadow:0 0 10px rgba(var(--tp-rgb),.75);}
+    .collectible{position:relative;display:inline-grid;place-items:center;width:36px;height:36px;border:2px solid rgba(var(--tp-rgb),.56);background:rgba(var(--tp-rgb),.08);color:var(--tp);font:12px 'Press Start 2P',monospace;box-shadow:3px 3px 0 rgba(0,0,0,.5);transition:transform .15s steps(2),background .15s,box-shadow .15s;}
+    .collectible:hover{transform:translateY(-4px) rotate(-5deg);background:rgba(var(--tp-rgb),.2);box-shadow:4px 7px 0 rgba(0,0,0,.52),0 0 15px rgba(var(--tp-rgb),.2);}
+    .collectible[aria-label]:hover::after{content:attr(aria-label);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);padding:7px 9px;background:#08112f;border:1px solid var(--tp);white-space:nowrap;font:8px 'Press Start 2P',monospace;z-index:5;}
+    .pixel-divider{height:7px;background:repeating-linear-gradient(90deg,var(--tp) 0 12px,transparent 12px 18px);opacity:.42;clip-path:polygon(0 0,100% 0,100% 65%,96% 65%,96% 100%,4% 100%,4% 65%,0 65%);}
+    .secret-toast{position:fixed;right:22px;bottom:22px;z-index:80;max-width:min(360px,calc(100vw - 32px));padding:16px 18px;background:#091333;border:3px solid var(--tp);box-shadow:5px 5px 0 rgba(0,0,0,.65),0 0 24px rgba(var(--tp-rgb),.2);font:9px/1.9 'Press Start 2P',monospace;color:var(--tp);animation:toastPop .3s steps(4) both;}
+    .secret-toast[hidden]{display:none;}
+    @keyframes toastPop{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
     .pixel-border{border:3px solid var(--gold-light);box-shadow:6px 6px 0 rgba(0,0,0,.55);}
     .pixel-btn{border:3px solid var(--tp);padding:12px 18px;display:inline-block;transition:transform .1s,background-color .1s;}
     .pixel-btn:hover{transform:translate(2px,2px);}
@@ -40,59 +59,213 @@
     .stack-mark{display:grid;place-items:center;width:23px;height:23px;border-radius:4px;background:var(--badge-color,#64748b);color:#fff;font:700 10px/1 Inter,system-ui,sans-serif;flex:0 0 auto;text-align:center;}
     .stack-mark[hidden]{display:none;}
     .stack-logo{width:23px;height:23px;object-fit:contain;flex:0 0 auto;image-rendering:auto;}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.pixel-btn{transition:none;}}
+    .detail-shell{position:relative;isolation:isolate;background:linear-gradient(160deg,#162963 0%,#0d1b4c 72%);border:3px solid var(--tp);box-shadow:5px 5px 0 rgba(0,0,0,.62),inset 0 0 0 1px rgba(var(--tp-rgb),.18);transition:transform .16s steps(3),box-shadow .16s steps(3),border-color .16s;}
+    .detail-shell::before{content:'';position:absolute;inset:5px;border:1px solid rgba(var(--tp-rgb),.12);pointer-events:none;z-index:0;}
+    .detail-shell::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.24;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,0,0,.2) 3px,rgba(0,0,0,.2) 4px);}
+    .detail-shell:hover{transform:translate(-2px,-2px);border-color:#ffe27a;box-shadow:8px 8px 0 rgba(0,0,0,.65),0 0 22px rgba(var(--tp-rgb),.14),inset 0 0 0 1px rgba(var(--tp-rgb),.28);}
+    .detail-shell:focus-within{box-shadow:0 0 0 3px rgba(var(--tp-rgb),.16),5px 5px 0 rgba(0,0,0,.62);}
+    .detail-shell > *{position:relative;z-index:1;}
+    .pixel-corners{position:relative;}
+    .pixel-corners:before,.pixel-corners:after{content:'';position:absolute;width:13px;height:13px;z-index:2;pointer-events:none;}
+    .pixel-corners:before{top:-3px;left:-3px;border-top:3px solid #fff0a6;border-left:3px solid #fff0a6;}
+    .pixel-corners:after{right:-3px;bottom:-3px;border-right:3px solid #fff0a6;border-bottom:3px solid #fff0a6;}
+    .detail-shell.detail-nav:hover{transform:none;}
+    .detail-shell.detail-nav{box-shadow:4px 4px 0 rgba(0,0,0,.55);}
+    .detail-shell.detail-nav::after{opacity:.13;}
+    .detail-shell.detail-nav a{position:relative;z-index:2;}
+    html[data-theme="modern"] .detail-shell{border-width:1px;border-radius:22px;background:rgba(255,255,255,.055);box-shadow:0 20px 50px rgba(0,0,0,.34);}
+    html[data-theme="modern"] .detail-shell::before,html[data-theme="modern"] .detail-shell::after{display:none;}
+    html[data-theme="modern"] .detail-shell:hover{transform:translateY(-3px);box-shadow:0 28px 72px rgba(0,0,0,.34),0 0 0 1px rgba(var(--tp-rgb),.08);}
+    html[data-theme="modern"] .detail-shell.detail-nav:hover{transform:none;}
+    html[data-theme="modern"] .pixel-corners::before,html[data-theme="modern"] .pixel-corners::after{display:none;}
+    html[data-theme="modern"] .project-visual{border-width:1px!important;border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+    html[data-theme="modern"] .project-visual:after{display:none;}
+    html[data-theme="modern"] .screen-frame{border-width:1px;border-radius:18px;padding:10px;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+    html[data-theme="modern"] .screen-frame::before{border-radius:999px;left:22px;}
+    html[data-theme="modern"] .screen-frame::after{border-radius:12px;}
+    html[data-theme="modern"] .section-flag .flag-no{border-radius:9px;}
+    html[data-theme="modern"] .tag-pill{font-family:inherit!important;font-size:11px!important;}
+    html[data-theme="professional"] .detail-shell{border-width:1px;border-radius:0;background:rgba(255,255,255,.025);box-shadow:none;}
+    html[data-theme="professional"] .detail-shell::before,html[data-theme="professional"] .detail-shell::after{display:none;}
+    html[data-theme="professional"] .detail-shell:hover{transform:none;box-shadow:none;}
+    html[data-theme="professional"] .pixel-corners::before,html[data-theme="professional"] .pixel-corners::after{display:none;}
+    html[data-theme="professional"] .project-visual{border-width:1px!important;box-shadow:none;}
+    html[data-theme="professional"] .project-visual:after{display:none;}
+    html[data-theme="professional"] .screen-frame{border-width:1px;padding:10px;box-shadow:none;}
+    html[data-theme="professional"] .screen-frame::before,html[data-theme="professional"] .screen-frame::after{display:none;}
+    html[data-theme="professional"] .section-flag .flag-no{background:transparent;color:var(--tp);border:1px solid var(--tp);box-shadow:none;}
+    html[data-theme="professional"] .tag-pill{font-family:inherit!important;font-size:10px!important;}
+    html[data-theme="modern"] .detail-world,html[data-theme="professional"] .detail-world{background:var(--ts);}
+    html[data-theme="modern"] .detail-world::before,html[data-theme="modern"] .detail-world::after,html[data-theme="professional"] .detail-world::before,html[data-theme="professional"] .detail-world::after{display:none;}
+    html[data-theme="modern"] .world-particle,html[data-theme="modern"] .world-diamond,html[data-theme="professional"] .world-particle,html[data-theme="professional"] .world-diamond{display:none;}
+    html[data-theme="modern"] .quest-hud,html[data-theme="professional"] .quest-hud{font-family:inherit;letter-spacing:.08em;}
+    html[data-theme="modern"] .collectible{border-radius:10px;box-shadow:none;}
+    html[data-theme="professional"] .collectible{box-shadow:none;}
+    .project-visual{border:3px solid var(--tp)!important;box-shadow:7px 7px 0 rgba(0,0,0,.62),inset 0 0 0 1px rgba(var(--tp-rgb),.2);transition:transform .16s steps(3),box-shadow .16s steps(3),border-color .16s;}
+    .project-visual:after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);opacity:.35;}
+    .project-visual:hover{transform:translate(-2px,-2px);border-color:#ffe27a!important;box-shadow:10px 10px 0 rgba(0,0,0,.65),0 0 24px rgba(var(--tp-rgb),.2);}
+    .project-visual:hover img{transform:scale(1.035);}
+    .tag-pill{font-family:'Press Start 2P',monospace!important;font-size:8px!important;}
+    .detail-kicker{font:600 10px/1.4 Inter,system-ui,sans-serif;letter-spacing:.2em;color:rgba(var(--tp-rgb),.72);text-transform:uppercase;}
+    .detail-copy{font:400 15px/1.85 Inter,system-ui,sans-serif;color:rgba(255,255,255,.7);}
+    .detail-title{font-size:clamp(26px,5vw,54px);line-height:1.16;letter-spacing:-.045em;overflow-wrap:anywhere;text-shadow:0 12px 40px rgba(0,0,0,.35);}
+    .dossier-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr);gap:20px;align-items:stretch;}
+    .screen-frame{position:relative;background:#07102e;border:3px solid var(--tp);box-shadow:8px 8px 0 rgba(0,0,0,.65),0 0 30px rgba(var(--tp-rgb),.12);padding:12px;}
+    .screen-frame::before{content:'GEMBONG // VISUAL ARCHIVE';position:absolute;top:-12px;left:24px;padding:4px 9px;background:var(--ts);border:1px solid var(--tp);font:8px 'Press Start 2P',monospace;color:var(--tp);letter-spacing:.08em;z-index:3;}
+    .screen-frame::after{content:'';position:absolute;inset:12px;pointer-events:none;border:1px solid rgba(var(--tp-rgb),.38);z-index:2;}
+    .screen-frame .project-visual{border-width:0!important;box-shadow:none!important;}
+    .screen-frame .project-visual:hover{transform:none;}
+    .screen-frame .project-visual img{filter:saturate(.86) contrast(1.08);}
+    .screen-caption{display:flex;justify-content:space-between;gap:12px;padding:10px 4px 0;color:rgba(var(--tp-rgb),.55);font:8px/1.6 'Press Start 2P',monospace;}
+    .mission-panel{display:flex;flex-direction:column;justify-content:space-between;min-height:100%;}
+    .mission-panel .panel-row{padding:14px 0;border-top:1px solid rgba(var(--tp-rgb),.22);}
+    .mission-panel .panel-row:last-child{border-bottom:1px solid rgba(var(--tp-rgb),.22);}
+    .brief-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(250px,.9fr);gap:20px;}
+    .section-flag{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+    .section-flag .flag-no{display:grid;place-items:center;width:30px;height:30px;background:var(--tp);color:var(--ts);font:10px 'Press Start 2P',monospace;box-shadow:3px 3px 0 rgba(0,0,0,.5);}
+    .section-flag .flag-label{font:9px 'Press Start 2P',monospace;letter-spacing:.08em;color:var(--tp);}
+    .status{border:2px solid;font:8px 'Press Start 2P',monospace;padding:5px 8px;letter-spacing:.06em;white-space:nowrap;}
+    .status-active{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.1);}
+    .status-beta{border-color:var(--tp);color:var(--tp);background:rgba(var(--tp-rgb),.1);}
+    .status-wip{border-color:#fb923c;color:#fb923c;background:rgba(251,146,60,.1);}
+    .status-archived{border-color:#94a3b8;color:#cbd5e1;background:rgba(148,163,184,.1);}
+    .story-intro{border-left:4px solid var(--tp);padding-left:18px;color:rgba(255,255,255,.65);font:600 12px/1.9 Inter,system-ui,sans-serif;}
+    .story-content blockquote{margin:1.5rem 0;padding:14px 18px;border-left:3px solid var(--tp);background:rgba(var(--tp-rgb),.06);color:rgba(255,255,255,.82);}
+    .detail-nav a{font:600 11px/1.4 Inter,system-ui,sans-serif;color:rgba(255,255,255,.58);transition:color .2s,border-color .2s;}
+    .detail-nav a:hover,.detail-nav a[aria-current="location"]{color:var(--tp);}
+    .project-visual{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at center,rgba(var(--tp-rgb),.12),transparent 65%),#091333;}
+    .project-visual img{transition:transform .65s cubic-bezier(.2,.75,.25,1);}
+    .project-visual:hover img{transform:scale(1.025);}
+    .story-content{font-size:15px;line-height:1.9;}
+    .story-content h3,.story-content h4,.story-content h5{font-size:13px;}
+    .detail-card{border-color:rgba(var(--tp-rgb),.55);}
+    .stack-badge{border-radius:0;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(0,0,0,.12));box-shadow:2px 2px 0 rgba(0,0,0,.38);transition:transform .12s steps(2),border-color .12s,box-shadow .12s;}
+    .stack-badge:hover{transform:translate(-1px,-1px);border-color:var(--tp);box-shadow:3px 3px 0 rgba(0,0,0,.5),0 0 10px rgba(var(--tp-rgb),.16);}
+    .meta-cell{border-left:2px solid rgba(var(--tp-rgb),.32);}
+    .detail-kicker:before{content:'◆';font-size:.72em;margin-right:.65em;color:var(--tp);}
+    .meta-cell{border-left:1px solid rgba(var(--tp-rgb),.2);}
+    .image-dialog{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;background:rgba(3,8,25,.92);backdrop-filter:blur(14px);}
+    .image-dialog[hidden]{display:none;}
+    .image-dialog img{max-width:min(1100px,100%);max-height:82vh;object-fit:contain;box-shadow:0 28px 90px rgba(0,0,0,.55);}
+    .image-dialog-close{position:absolute;top:22px;right:22px;}
+    :where(a,button):focus-visible{outline:2px dashed var(--tp);outline-offset:4px;}
+    @media(max-width:639px){.detail-title{font-size:28px;}.detail-copy{font-size:14px;}.detail-nav{overflow-x:auto;}.detail-nav a{white-space:nowrap;}.meta-cell:nth-child(odd){border-left:0;}}
+    @media(max-width:900px){.dossier-grid,.brief-layout{grid-template-columns:1fr;}.mission-panel{min-height:auto;}.screen-frame{margin-top:8px;}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.pixel-btn,.detail-shell,.project-visual,.stack-badge,.collectible{transition:none;}.detail-shell:hover,.project-visual:hover,.stack-badge:hover,.collectible:hover{transform:none;}.detail-world::before,.world-particle,.world-diamond{animation:none;}}
   </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
 </head>
 <body class="text-white">
   {% include 'hud_navbar.html' %}
-  <header class="hero-bg px-6 md:px-16 pt-16 pb-14">
-    <div class="max-w-5xl mx-auto">
-      <a href="{{ url_for('projects') }}" class="font-display text-[9px] text-[var(--tp)]/60 hover:text-[var(--tp)]">← BACK TO REPOSITORY</a>
+  <header class="hero-bg relative overflow-hidden px-6 md:px-16 pt-12 md:pt-16 pb-14">
+    <div class="absolute inset-0 opacity-20 pointer-events-none" aria-hidden="true" style="background-image:linear-gradient(rgba(var(--tp-rgb),.12) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--tp-rgb),.12) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(to bottom,black,transparent)"></div>
+    <div class="relative max-w-6xl mx-auto">
+      <a href="{{ url_for('projects') }}" class="font-display text-[9px] text-[var(--tp)]/60 hover:text-[var(--tp)]">← BACK TO PROJECTS</a>
       {% if project %}
-      <div class="mt-12 flex flex-wrap items-center gap-3">
-        <span class="font-display text-[9px] text-[var(--tp)]/70 tracking-[.2em]">PROJECT DETAIL / {{ '%02d'|format(project_index + 1) }}</span>
-        <span class="font-display text-[9px] border border-[var(--tp)]/40 px-3 py-2 text-[var(--tp)]">{{ project.status|upper }}</span>
+      <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 lg:gap-14 items-end mt-10">
+       <div>
+        <div class="flex flex-wrap items-center gap-3 mb-7">
+          <span class="detail-kicker">FIELD REPORT / {{ '%02d'|format(project_index + 1) }}</span>
+          <span class="status status-{{ project.status }}">{{ project.status|upper }}</span>
+        </div>
+        <h1 class="font-display detail-title text-white">{{ project.name }}</h1>
+        <p class="detail-kicker mt-5">{{ project.type or 'Software' }} <span class="text-white/30 mx-2">/</span> Gembong IT archive</p>
+        <div class="flex flex-wrap gap-3 mt-8">
+          {% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px]">LIVE DEMO ↗</a>{% endif %}
+          {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px]">VIEW SOURCE ↗</a>{% endif %}
+        </div>
+       </div>
       </div>
-      <h1 class="font-display text-lg md:text-2xl leading-loose mt-6">{{ project.name }}</h1>
-      <p class="mt-4 text-[var(--tp)] text-xs">{{ project.type or 'Software' }}</p>
       {% endif %}
     </div>
   </header>
-  <main class="px-6 md:px-16 py-12 bg-[var(--ts)]">
-    <div class="max-w-5xl mx-auto">
+  <main class="detail-world px-6 md:px-16 py-10 md:py-14">
+    <span class="world-particle" style="top:9%;left:7%;animation-delay:-2s" aria-hidden="true"></span><span class="world-particle" style="top:21%;left:92%;animation-delay:-4s" aria-hidden="true"></span><span class="world-particle" style="top:49%;left:4%;animation-delay:-1s" aria-hidden="true"></span><span class="world-particle" style="top:67%;left:96%;animation-delay:-3s" aria-hidden="true"></span><span class="world-particle" style="top:84%;left:13%;animation-delay:-5s" aria-hidden="true"></span><span class="world-diamond" style="top:13%;right:12%" aria-hidden="true"></span><span class="world-diamond" style="top:61%;left:8%;width:10px;height:10px;animation-delay:-3s" aria-hidden="true"></span>
+    <div class="max-w-6xl mx-auto">
       {% if project %}
-      {% if project.banner %}<div class="mb-9 overflow-hidden border border-[var(--tp)]/25 shadow-[8px_8px_0_rgba(0,0,0,.3)]"><img src="{{ project.banner }}" alt="Banner {{ project.name }}" class="w-full aspect-video object-cover" fetchpriority="high"></div>{% endif %}
-      <div class="grid grid-cols-1 lg:grid-cols-[1.4fr_.8fr] gap-8">
-        <section class="detail-card pixel-border p-7 md:p-10">
-          <p class="font-display text-[9px] text-[var(--tp)] mb-5">// ABOUT THIS PROJECT</p>
-          <p class="text-white/70 text-[11px] leading-loose">{{ project.description or 'Detail project belum ditambahkan.' }}</p>
-          {% if project.tags %}
-          <div class="mt-9"><p class="font-display text-[9px] text-[var(--tp)]/70 mb-3">TAGS</p><div class="flex flex-wrap gap-2">{% for tag in project.tags %}<span class="border border-[var(--tp)]/35 px-3 py-2 text-[9px] text-[var(--tp)]">{{ tag }}</span>{% endfor %}</div></div>
-          {% endif %}
-        </section>
-        <aside class="detail-card pixel-border p-7 md:p-8">
-          <p class="font-display text-[9px] text-[var(--tp)] mb-5">TECH STACK</p>
+      <div class="relative z-10 flex flex-wrap items-center justify-between gap-5 px-1 mb-5">
+        <div class="flex items-center gap-3"><span class="collectible" aria-label="Quest item: project shard" title="Project shard">◆</span><div><p class="quest-hud">QUEST LOG / PROJECT {{ '%02d'|format(project_index + 1) }}</p><p class="text-[9px] text-white/40 mt-2">DATA FRAGMENT RECOVERED</p></div></div>
+        <div class="flex items-center gap-4"><div class="w-32 sm:w-44"><div class="flex justify-between quest-hud mb-2"><span>SCAN</span><span>100%</span></div><div class="quest-meter" style="--quest-progress:100%"><div class="quest-meter-fill"></div></div></div><button type="button" id="shareProject" class="detail-kicker hover:text-white">SHARE ↗</button></div>
+      </div>
+      <div class="dossier-grid relative z-10 mb-12">
+       {% if project.banner %}
+       <div class="screen-frame"><button type="button" class="project-visual w-full text-left" id="openProjectImage" aria-label="Expand project image"><img id="projectBanner" src="{{ project.banner }}" alt="{{ project.name }} project preview" class="w-full aspect-[16/8] object-cover" fetchpriority="high"><span class="absolute bottom-4 right-4 z-10 px-3 py-2 detail-shell detail-kicker">OPEN SCREEN ↗</span></button><div class="screen-caption"><span>FIG {{ '%02d'|format(project_index + 1) }} / CAPTURED BUILD</span><span>IMAGE VIEW: <button type="button" id="captionZoom" class="hover:text-white">EXPAND +</button></span></div></div>
+       {% else %}
+       <div class="screen-frame"><div class="project-visual w-full aspect-[16/8] grid place-items-center"><div class="text-center"><span class="collectible mx-auto mb-4">?</span><p class="quest-hud">VISUAL DATA NOT FOUND</p></div></div><div class="screen-caption"><span>FIG {{ '%02d'|format(project_index + 1) }} / ARCHIVE</span><span>NO SIGNAL</span></div></div>
+       {% endif %}
+       <aside class="detail-shell pixel-corners mission-panel p-6 md:p-7">
+        <div><p class="detail-kicker mb-5">Mission specs</p><div class="flex items-center gap-2 mb-5" aria-label="Collected project attributes"><span class="collectible" aria-label="Project type unlocked" title="Type unlocked">▣</span><span class="collectible" aria-label="Project status unlocked" title="Status unlocked">★</span><span class="collectible" aria-label="Technology data unlocked" title="Tech unlocked">⌘</span><span class="quest-hud ml-2">3 ITEMS</span></div>
+         <div class="panel-row"><p class="detail-kicker">Discipline</p><p class="text-white mt-2 text-sm">{{ project.type or 'Software' }}</p></div>
+         <div class="panel-row"><p class="detail-kicker">Mission status</p><span class="status status-{{ project.status }} mt-3 inline-block">{{ project.status|upper }}</span></div>
+         <div class="panel-row"><p class="detail-kicker">Loadout</p><p class="text-white mt-2 text-sm">{{ project.tech_stack|length }} technologies</p></div>
+        </div>
+        <div class="flex items-center justify-between gap-3 pt-5"><button type="button" id="copyLink" class="detail-kicker hover:text-white">COPY COORDINATES</button><span id="copyFeedback" class="text-[10px] text-[var(--tp)]" aria-live="polite"></span></div>
+       </aside>
+      </div>
+      <nav class="detail-nav relative z-10 flex items-center gap-7 w-fit max-w-full px-5 py-4 mb-8 detail-shell" aria-label="Project sections">
+        <a href="#overview" aria-current="location">Briefing</a>
+        {% if project.tech_stack %}<a href="#technology">Loadout</a>{% endif %}
+        {% if project.detail_markdown %}<a href="#story">Field notes</a>{% endif %}
+      </nav>
+      <section id="overview" class="brief-layout relative z-10 scroll-mt-28">
+        <div class="detail-card detail-shell pixel-corners p-7 md:p-10">
+          <div class="section-flag"><span class="flag-no">01</span><span class="flag-label">MISSION BRIEFING</span></div>
+          <h2 class="font-display text-sm md:text-base text-white leading-loose mb-5">The objective</h2>
+          <p class="detail-copy">{{ project.description or 'Detail project belum ditambahkan.' }}</p>
+          {% if project.tags %}<div class="mt-9"><p class="detail-kicker mb-3">Mission keywords</p><div class="flex flex-wrap gap-2">{% for tag in project.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}</div></div>{% endif %}
+        </div>
+        <aside id="technology" class="detail-card detail-shell pixel-corners p-7 md:p-8 scroll-mt-28">
+          <div class="section-flag"><span class="flag-no">02</span><span class="flag-label">EQUIPPED LOADOUT</span></div>
+          <h2 class="font-display text-sm text-white leading-loose mb-6">Tools of the trade</h2>
           {% if project.tech_stack %}<div class="flex flex-wrap gap-2">{% for tech in project.tech_stack %}{% set b = tech|tech_badge %}<span class="stack-badge" style="--badge-color:{{ b.color }}">{% if b.icon %}<img class="stack-logo" src="{{ b.icon }}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">{% endif %}<span class="stack-mark" {{ 'hidden' if b.icon else '' }} aria-hidden="true">{{ b.mark }}</span>{{ b.label }}</span>{% endfor %}</div>{% else %}<p class="text-[10px] text-white/40 leading-loose">Tech stack belum ditambahkan.</p>{% endif %}
         </aside>
-      </div>
+      </section>
       {% if project.detail_markdown %}
-      <section class="detail-card pixel-border p-7 md:p-10 mt-8">
-        <p class="font-display text-[9px] text-[var(--tp)] mb-5">PROJECT STORY</p>
+      <section id="story" class="detail-card detail-shell pixel-corners p-7 md:p-12 mt-6 md:mt-8 scroll-mt-28">
+        <div class="section-flag"><span class="flag-no">03</span><span class="flag-label">FIELD NOTES / PROJECT STORY</span></div>
         <article class="story-content">{{ project.detail_markdown|safe_markdown }}</article>
       </section>
       {% endif %}
-      <div class="flex flex-wrap gap-3 mt-8">
-        {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px]">SOURCE CODE ↗</a>{% endif %}
-        {% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-glass font-display text-[9px]">LIVE DEMO ↗</a>{% endif %}
-      </div>
+      <section class="detail-shell pixel-corners mt-10 md:mt-14 p-7 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+        <div><p class="quest-hud mb-3">NEXT QUEST UNLOCKED</p><p class="detail-kicker mb-3">Have a similar challenge?</p><h2 class="font-display text-xs md:text-sm text-white leading-loose">Let’s build what’s next.</h2></div>
+        <div class="flex flex-wrap gap-3">{% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer" class="pixel-btn pixel-btn-gold font-display text-[9px]">OPEN LIVE DEMO ↗</a>{% endif %}<a href="/#contact" class="pixel-btn pixel-btn-glass font-display text-[9px]">START A PROJECT →</a></div>
+      </section>
       {% else %}
       <section class="pixel-border max-w-xl mx-auto text-center p-10"><p class="font-display text-sm text-[var(--tp)] mb-5">// PROJECT NOT FOUND</p><a href="{{ url_for('projects') }}" class="pixel-btn pixel-btn-gold font-display text-[9px]">BACK TO REPOSITORY</a></section>
       {% endif %}
     </div>
   </main>
-  <footer class="px-6 py-8 text-center border-t-4 border-[var(--tp)]"><p class="font-display text-[9px] text-[var(--tp)]/50">&copy; <span id="year"></span> Gembong IT</p></footer>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <footer class="px-6 py-8 mt-12 text-center border-t border-[var(--tp)]/20"><p class="font-display text-[9px] text-[var(--tp)]/50">&copy; <span id="year"></span> Gembong IT <span class="mx-2">/</span> Made to move ideas forward</p></footer>
+  {% if project and project.banner %}<div id="imageDialog" class="image-dialog" role="dialog" aria-modal="true" aria-label="Project image preview" hidden><button type="button" id="closeProjectImage" class="pixel-btn pixel-btn-glass image-dialog-close font-display text-[9px]" aria-label="Close image preview">CLOSE ×</button><img src="{{ project.banner }}" alt="{{ project.name }} project preview enlarged"></div>{% endif %}
+  <div id="secretToast" class="secret-toast" role="status" aria-live="polite" hidden>ACHIEVEMENT UNLOCKED<br>↑ ↑ ↓ ↓ ← → ← → B A<br><span style="color:rgba(255,255,255,.65)">RETRO MODE: +30 XP</span></div>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    (function(){
+      var copy = document.getElementById('copyLink');
+      var feedback = document.getElementById('copyFeedback');
+      function copyUrl(){
+        if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(location.href);
+        var input = document.createElement('textarea'); input.value = location.href; input.style.position = 'fixed'; input.style.opacity = '0'; document.body.appendChild(input); input.select(); document.execCommand('copy'); input.remove(); return Promise.resolve();
+      }
+      if(copy) copy.addEventListener('click', function(){copyUrl().then(function(){feedback.textContent='Project link copied to clipboard.';}).catch(function(){feedback.textContent='Unable to copy link. Please copy it from your address bar.';});});
+      var share = document.getElementById('shareProject');
+      if(share) share.addEventListener('click', function(){if(navigator.share) navigator.share({title:document.title,url:location.href}).catch(function(){}); else if(copy) copy.click();});
+      var dialog = document.getElementById('imageDialog');
+      var open = document.getElementById('openProjectImage');
+      var close = document.getElementById('closeProjectImage');
+      var captionZoom = document.getElementById('captionZoom');
+      function closeDialog(){if(!dialog)return;dialog.hidden=true;document.body.style.overflow='';if(open)open.focus();}
+      if(open && dialog){open.addEventListener('click',function(){dialog.hidden=false;document.body.style.overflow='hidden';close.focus();});close.addEventListener('click',closeDialog);dialog.addEventListener('click',function(event){if(event.target===dialog)closeDialog();});document.addEventListener('keydown',function(event){if(event.key==='Escape'&&!dialog.hidden)closeDialog();});}
+      if(captionZoom && open) captionZoom.addEventListener('click',function(){open.click();});
+      var secret='ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight b a'.split(' ');
+      var entered=[];var toast=document.getElementById('secretToast');var toastTimer;
+      document.addEventListener('keydown',function(event){
+        if(event.target.matches('input,textarea,select,[contenteditable="true"]'))return;
+        entered.push(event.key.length===1?event.key.toLowerCase():event.key);if(entered.length>secret.length)entered.shift();
+        if(entered.join(' ')===secret.join(' ')){toast.hidden=false;window.clearTimeout(toastTimer);toastTimer=window.setTimeout(function(){toast.hidden=true;},5200);entered=[];}
+      });
+    })();
+  </script>
   <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>
