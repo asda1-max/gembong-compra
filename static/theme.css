@@ -541,14 +541,10 @@ html[data-theme="professional"] .repo-card:hover{
   box-shadow:0 0 0 1px var(--tp) inset !important;
 }
 
-/* 8-bit pixel-block wipe: stagger chunky tiles from right to left. */
+/* Full-screen pixel wipe; the transition surface uses the active page palette. */
 .page-strip{
   position:fixed;inset:0;z-index:9999;pointer-events:none;
-  background-color:var(--ts,#0d1b4c);
-  background-image:linear-gradient(var(--ts,#0d1b4c) 0 0);
-  background-size:34% 52%;
-  background-position:100% 0;
-  background-repeat:no-repeat;
+  background:var(--page-strip-background,var(--ts,#0d1b4c));
 }
 .page-strip-out{animation:pixelTilesOut .5s steps(1,end) forwards;}
 .page-strip-in{animation:pixelTilesIn .5s steps(1,end) forwards;}
@@ -566,11 +562,7 @@ html[data-theme="professional"] .repo-card:hover{
 }
 html.page-strip-pending::before{
   content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;
-  background-color:var(--ts,#0d1b4c);
-  background-image:linear-gradient(var(--ts,#0d1b4c) 0 0);
-  background-size:34% 52%;
-  background-position:100% 0;
-  background-repeat:no-repeat;
+  background:var(--page-strip-background,var(--ts,#0d1b4c));
   animation:pixelTilesIn .5s steps(1,end) forwards;
 }
 @media(prefers-reduced-motion:reduce){.page-strip,.page-strip-pending::before{display:none !important;animation:none !important;}}

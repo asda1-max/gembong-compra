@@ -95,6 +95,16 @@ def _hex_to_rgba(value, alpha=1.0):
         a = 1.0
     return "rgba(%d, %d, %d, %s)" % (r, g, b, a)
 
+
+def _hex_to_rgb(value):
+    color = _clean_color(value, "#000000").lstrip("#")
+    if len(color) == 3:
+        color = "".join(char * 2 for char in color)
+    return ",".join(str(int(color[index:index + 2], 16)) for index in (0, 2, 4))
+
+
+app.jinja_env.filters["hex_rgb"] = _hex_to_rgb
+
 REPO_STATUS = ("active", "beta", "wip", "archived")
 
 CONTACT_DEFAULTS = {
@@ -111,6 +121,14 @@ CONTENT_DEFAULTS = {
     "hero_desc_color": "#ffffff",
     "about_desc": "Kami adalah mitra digital yang mengubah tantangan teknologi menjadi solusi nyata. Dengan semangat inovasi dan dedikasi tinggi, kami menghadirkan layanan information technology yang cepat, andal, dan tepat guna mulai dari pengembangan sistem, infrastruktur jaringan, hingga solusi digital yang disesuaikan dengan kebutuhan bisnis Anda. Bersama Gembong Information Technology, setiap langkah menuju transformasi digital menjadi lebih mudah, efisien, dan penuh keyakinan.",
     "about_desc_color": "#d4af0e",
+}
+
+PROJECT_DETAIL_PALETTE_DEFAULTS = {
+    "title": "#ffffff",
+    "text": "#d1d5db",
+    "primary": "#f2c94c",
+    "secondary": "#0d1b4c",
+    "card": "#12245e",
 }
 
 
@@ -243,6 +261,13 @@ def _normalize_project(project):
     if isinstance(stack, str):
         stack = [item.strip() for item in stack.split(",") if item.strip()]
     normalized["tech_stack"] = stack if isinstance(stack, list) else []
+    palette = normalized.get("detail_palette")
+    if not isinstance(palette, dict):
+        palette = {}
+    normalized["detail_palette"] = {
+        field: _clean_color(palette.get(field), default)
+        for field, default in PROJECT_DETAIL_PALETTE_DEFAULTS.items()
+    }
     return normalized
 
 
@@ -446,7 +471,7 @@ def collect_slides(form, files=None):
     return carousel
 
 
-REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|type|repo_url|demo_url|tags|tech_stack|detail_markdown|banner|featured|status)\]$")
+REPO_KEY_RE = re.compile(r"^repos\[([^\]]*)\]\[(name|description|type|repo_url|demo_url|tags|tech_stack|detail_markdown|banner|featured|status|palette_title|palette_text|palette_primary|palette_secondary|palette_card)\]$")
 
 
 def collect_projects(form, files=None, existing_projects=None):
@@ -524,6 +549,10 @@ def collect_projects(form, files=None, existing_projects=None):
             "tags": tags,
             "tech_stack": tech_stack,
             "status": status,
+            "detail_palette": {
+                field: _clean_color(card.get("palette_" + field), default)
+                for field, default in PROJECT_DETAIL_PALETTE_DEFAULTS.items()
+            },
         })
     return projects
 
@@ -573,8 +602,9 @@ def projects():
 def project_detail(project_index):
     projects = _order_projects(_get_projects())
     if project_index < 0 or project_index >= len(projects):
-        return render_template("project_detail.html", project=None, project_index=project_index, projects=projects), 404
-    return render_template("project_detail.html", project=projects[project_index], project_index=project_index, projects=projects)
+        return render_template("project_detail.html", project=None, project_index=project_index, projects=projects, project_detail_palette=PROJECT_DETAIL_PALETTE_DEFAULTS), 404
+    project = _normalize_project(projects[project_index])
+    return render_template("project_detail.html", project=project, project_index=project_index, projects=projects, project_detail_palette=project["detail_palette"])
 
 
 @app.route("/info")

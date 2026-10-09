@@ -71,10 +71,19 @@
       var outgoing = document.createElement('div');
       outgoing.className = 'page-strip page-strip-out';
       outgoing.setAttribute('aria-hidden', 'true');
+      var palette = getComputedStyle(document.documentElement);
+      var accent = palette.getPropertyValue('--tp').trim();
+      var background = palette.getPropertyValue('--ts').trim();
+      var nextBackground = link.getAttribute('data-page-secondary') || background;
+      if (accent) outgoing.style.setProperty('--page-strip-accent', accent);
+      if (nextBackground) outgoing.style.setProperty('--page-strip-background', nextBackground);
       document.body.appendChild(outgoing);
 
       window.setTimeout(function () {
-        try { sessionStorage.setItem('gembong_page_strip_in', '1'); } catch (e) {}
+        try {
+          sessionStorage.setItem('gembong_page_strip_in', '1');
+          if (nextBackground) sessionStorage.setItem('gembong_page_strip_background', nextBackground);
+        } catch (e) {}
         window.location.assign(destination.href);
       }, 520);
     });

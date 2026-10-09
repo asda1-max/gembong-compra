@@ -282,6 +282,7 @@
       </div>
       <form method="POST" action="/admin/projects/save" id="repoForm" enctype="multipart/form-data">
         {% for repo in projects %}
+        {% set repo_index = loop.index0 %}
         <div class="slide-card repo-edit-card">
           <div class="flex items-center gap-3 mb-4">
             <span class="px-2 py-1 border border-[var(--gold-light)] text-[var(--gold-light)] text-[10px]">REPO {{ loop.index }}</span>
@@ -307,6 +308,20 @@
               <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">PROJECT STORY (MARKDOWN, OPSIONAL)</label>
               <textarea name="repos[{{ loop.index0 }}][detail_markdown]" class="pixel-input" rows="8" placeholder="## Tantangan&#10;Masalah yang ingin diselesaikan...&#10;&#10;## Solusi&#10;- Fitur utama&#10;- Dampak untuk pengguna&#10;&#10;![Screenshot project](https://example.com/screenshot.png)">{{ repo.detail_markdown }}</textarea>
               <p class="text-[9px] text-white/30 mt-2">Mendukung heading (##), list (-), bold (**teks**), link [teks](URL), gambar ![deskripsi](URL), dan inline code.</p>
+            </div>
+            <div class="color-fields border border-[var(--gold-light)]/20 bg-black/10 p-4">
+              <label class="text-[10px] text-[var(--gold-light)]/70 mb-3 block">DETAIL PAGE COLOR PALETTE</label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for field, label in [('title', 'PROJECT TITLE COLOR'), ('text', 'TEXT COLOR'), ('primary', 'PRIMARY / ACCENT'), ('secondary', 'SECONDARY / BACKGROUND'), ('card', 'CARD BACKGROUND')] %}
+                <div>
+                  <label class="text-[9px] text-white/50 mb-2 block">{{ label }}</label>
+                  <div class="flex gap-2 items-center">
+                    <input type="color" name="repos[{{ repo_index }}][palette_{{ field }}]" value="{{ repo.detail_palette[field] }}" class="color-swatch">
+                    <input type="text" class="pixel-input color-hex" value="{{ repo.detail_palette[field] }}" maxlength="7" spellcheck="false" aria-label="{{ label }} hex">
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
             </div>
             <div>
               <input type="hidden" name="repos[{{ loop.index0 }}][banner]" value="{{ repo.banner or '' }}">
@@ -753,6 +768,13 @@ function addRepo(){
         <textarea name="repos[${id}][detail_markdown]" class="pixel-input" rows="8" placeholder="## Tantangan&#10;Masalah yang ingin diselesaikan...&#10;&#10;## Solusi&#10;- Fitur utama&#10;- Dampak untuk pengguna&#10;&#10;![Screenshot project](https://example.com/screenshot.png)"></textarea>
         <p class="text-[9px] text-white/30 mt-2">Mendukung heading (##), list (-), bold (**teks**), link [teks](URL), gambar ![deskripsi](URL), dan inline code.</p>
       </div>
+      <div class="color-fields border border-[var(--gold-light)]/20 bg-black/10 p-4">
+        <label class="text-[10px] text-[var(--gold-light)]/70 mb-3 block">DETAIL PAGE COLOR PALETTE</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${[['title','PROJECT TITLE COLOR','#ffffff'],['text','TEXT COLOR','#d1d5db'],['primary','PRIMARY / ACCENT','#f2c94c'],['secondary','SECONDARY / BACKGROUND','#0d1b4c'],['card','CARD BACKGROUND','#12245e']].map(([field,label,value]) => `
+          <div><label class="text-[9px] text-white/50 mb-2 block">${label}</label><div class="flex gap-2 items-center"><input type="color" name="repos[${id}][palette_${field}]" value="${value}" class="color-swatch"><input type="text" class="pixel-input color-hex" value="${value}" maxlength="7" spellcheck="false" aria-label="${label} hex"></div></div>`).join('')}
+        </div>
+      </div>
       <div>
         <input type="hidden" name="repos[${id}][banner]" value="">
         <label class="text-[10px] text-[var(--gold-light)]/70 mb-2 block">BANNER 16:9 (OPSIONAL)</label>
@@ -799,6 +821,7 @@ function addRepo(){
     </div>`;
   const form = document.getElementById('repoForm');
   form.insertBefore(card, document.getElementById('repoActions'));
+  initColorPairs(card);
 }
 
 function removeRepo(btn){
